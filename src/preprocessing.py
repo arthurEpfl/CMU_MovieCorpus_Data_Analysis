@@ -7,6 +7,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+import ast
 
 def download_imdb_dataset():
     """
@@ -22,7 +23,7 @@ def download_imdb_dataset():
 
 def load_movies_from_corpus():
     """
-    Loads movies from the corpus into a DataFrame.
+    Loads movies from the corpus into a DataFrame and preprocesses columns.
     """
     movies = pd.read_csv('../data/MovieSummaries/movie.metadata.tsv', sep='\t', header=None)
     movies.columns = [
@@ -30,38 +31,77 @@ def load_movies_from_corpus():
         'movie_box_office_revenue', 'movie_runtime', 'movie_languages', 'movie_countries',
         'movie_genres'
     ]
+    
+    # Convert dictionary-like columns to lists
+    movies['movie_countries'] = movies['movie_countries'].apply(extract_dict_to_list)
+    movies['movie_genres'] = movies['movie_genres'].apply(extract_dict_to_list)
+    movies['movie_languages'] = movies['movie_languages'].apply(extract_dict_to_list)
+
+    # Convert 'movie_release_date' to year only
+    movies['movie_release_date'] = movies['movie_release_date'].apply(extract_release_year).astype(pd.Int64Dtype())
+
+    # Fill missing values for runtime using the median
+    movies['movie_runtime'] = movies['movie_runtime'].fillna(movies['movie_runtime'].median())
+
     return movies
+
+def extract_dict_to_list(entry):
+    """
+    Extracts values from a dictionary-like string and returns a list of values.
+    """
+    try:
+        entry_dict = ast.literal_eval(entry)
+        return list(entry_dict.values())
+    except (ValueError, SyntaxError):
+        return []
+
+def extract_release_year(date_str):
+    """
+    Extracts the year from a date string.
+    """
+    try:
+        return pd.to_datetime(date_str).year
+    except (ValueError, TypeError):
+        try:
+            return int(date_str)
+        except ValueError:
+            return None
 
 def load_imdb_data():
     """
-    Loads IMDB data and preprocesses it.
+    Loads IMDB data and preprocesses it, converting title_year to integer format and handling missing values.
     """
     imdb_movies = pd.read_csv('../data/raw/imdb_5000_movies.csv')
     imdb_movies['movie_title'] = imdb_movies['movie_title'].str.strip().str.replace(u'\xa0', '')
-    imdb_movies = imdb_movies[['movie_title', 'gross']]
 
-    # Convert 'gross' to numeric to fill empty values later
+    # Convert title_year to integer type, handling missing values as pd.NA
+    imdb_movies['title_year'] = imdb_movies['title_year'].fillna(0).astype(int).replace({0: pd.NA})
+    imdb_movies = imdb_movies[['movie_title', 'title_year', 'gross']]
+
+    # Convert 'gross' to numeric
     imdb_movies['gross'] = pd.to_numeric(imdb_movies['gross'], errors='coerce')
     imdb_movies = imdb_movies.dropna(subset=['gross'])
     return imdb_movies
 
+
 def merge_movies_data(movies, imdb_movies):
     """
-    Merges the movies DataFrame with the IMDB data on movie names and updates box office revenue.
+    Merges the movies DataFrame with the IMDB data on movie names and release dates to account for different versions.
     """
     # Convert 'movie_box_office_revenue' to numeric, handling missing values
     movies['movie_box_office_revenue'] = pd.to_numeric(movies['movie_box_office_revenue'], errors='coerce')
 
-    # Merge the two DataFrames on movie name/title
+    # Merge on both 'movie_name' and 'movie_release_date' to differentiate versions
     merged_movies = pd.merge(
         movies, imdb_movies,
-        left_on='movie_name', right_on='movie_title',
+        left_on=['movie_name', 'movie_release_date'],
+        right_on=['movie_title', 'title_year'],
         how='left'
     )
 
     # Update 'movie_box_office_revenue' where it's NaN with 'gross' from IMDB
     merged_movies['movie_box_office_revenue'] = merged_movies['movie_box_office_revenue'].fillna(merged_movies['gross'])
-    merged_movies.drop(columns=['movie_title', 'gross'], inplace=True)
+    merged_movies.drop(columns=['movie_title', 'title_year', 'gross'], inplace=True)
     merged_movies = merged_movies.dropna(subset=['movie_box_office_revenue'])
     return merged_movies
 
@@ -69,9 +109,9 @@ def download_nltk_data():
     """
     Downloads necessary NLTK data files.
     """
-    nltk.download('punkt')        # For tokenization
-    nltk.download('stopwords')    # For stopwords
-    nltk.download('wordnet')      # For lemmatization
+    nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('wordnet')
 
 def initialize_nlp_tools():
     """
@@ -82,15 +122,13 @@ def initialize_nlp_tools():
     lemmatizer = WordNetLemmatizer()
     return stop_words, lemmatizer
 
-# Text preprocessing functions from eda_adam.ipynb
-
 def clean_text(text):
     """
     Cleans the input text by converting to lowercase, removing special characters and numbers.
     """
-    text = text.lower()  # Convert to lowercase
-    text = re.sub(r'[^a-z\s]', '', text)  # Remove special characters and numbers
-    text = re.sub(r'\s+', ' ', text).strip()  # Remove extra whitespace
+    text = text.lower()
+    text = re.sub(r'[^a-z\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
     return text
 
 def tokenize_text(text):
