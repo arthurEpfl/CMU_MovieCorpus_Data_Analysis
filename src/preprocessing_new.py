@@ -330,6 +330,8 @@ def load_movies_with_actors_and_BO_IMDB(movies):
 def adjust_for_inflation(df, year):
 
     def get_year(date):
+        if pd.isna(date):  # Check if the date is NaN
+            return None
         if isinstance(date, (int, float)):  # If it's already a year
             return int(date)
         elif isinstance(date, str):  # If it's a string, try to parse it as a date
@@ -350,7 +352,8 @@ def adjust_for_inflation(df, year):
     )
 
     df['adjusted_revenue'] = df.apply(
-        lambda row: cpi.inflate(row['movie_box_office_revenue'], row['years_only'], to=year),
+        lambda row: cpi.inflate(row['movie_box_office_revenue'], int(row['years_only']), to=year) 
+        if pd.notna(row['movie_box_office_revenue']) and pd.notna(row['years_only']) else None,
         axis=1
     )
     return df
