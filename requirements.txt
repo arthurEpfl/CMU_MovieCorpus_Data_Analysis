@@ -3,5 +3,5 @@ pandas
 matplotlib
 seaborn
 nltk
-sklearn
+scikit-learn
 cpi
