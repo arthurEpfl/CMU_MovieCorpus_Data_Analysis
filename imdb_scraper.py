@@ -88,21 +88,24 @@ class ImdbScraper:
             try:
                 brut_li = box_office.find('li', {'data-testid': "title-boxoffice-cumulativeworldwidegross"})
                 global_revenue_raw = brut_li.find('span', {'class': "ipc-metadata-list-item__list-content-item"}).text
-                global_revenue = float(re.findall(r'\d+', global_revenue_raw.replace('\u202f', ''))[0])
+                cleaned_revenue = re.sub(r'[^\d,]', '', global_revenue_raw)  # Removes everything except digits and commas
+                global_revenue = float(cleaned_revenue.replace(',', ''))  # Removes commas and converts to a float
             except:
                 global_revenue = None
 
             try:
                 budget_li = box_office.find('li', {'data-testid': "title-boxoffice-budget"})
                 budget_raw = budget_li.find('span', {'class': "ipc-metadata-list-item__list-content-item"}).text
-                budget = float(re.findall(r'\d+', budget_raw.replace('\u202f', ''))[0])
+                cleaned_budget = re.sub(r'[^\d,]', '', budget_raw)
+                budget = float(cleaned_budget.replace(',', ''))  
             except:
                 budget = None
 
             try:
                 opening_weekend_li = box_office.find('li', {'data-testid': "title-boxoffice-openingweekenddomestic"})
                 opening_weekend_raw = opening_weekend_li.find('span', {'class': "ipc-metadata-list-item__list-content-item"}).text
-                opening_weekend = float(re.findall(r'\d+', opening_weekend_raw.replace('\u202f', ''))[0])
+                cleaned_opening_weekend = re.sub(r'[^\d,]', '', opening_weekend_raw)
+                opening_weekend = float(cleaned_opening_weekend.replace(',', ''))  
             except:
                 opening_weekend = None
 
