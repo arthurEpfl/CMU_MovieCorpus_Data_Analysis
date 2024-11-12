@@ -3,14 +3,14 @@
 # Team Adarable 
 
 ## Abstract
-The project investigates how different plot structures and narrative formulas affect a movie’s box office success and their evolution over time and genres. By applying NLP techniques to classify plot summaries into narrative archetypes, it analyzes trends and examines the financial success of certain structures.
+The project investigates how different genres, plot structures and narrative formulas affect a movie’s box office success and their evolution over time and genres. By applying NLP techniques to classify plot summaries into narrative archetypes, it analyzes trends and examines the financial success of certain structures.
 
 The project involves scraping and merging IMDb data with the original dataset, preprocessing it to handle missing values and convert data types. It explores the recycling of plot structures like the hero's journey, love triangles, and rags-to-riches stories, investigating their correlation with box office success.
 
 Using plot summaries and metadata, the project applies NLP to identify recurring narrative structures and tracks their popularity shifts over time and genres. The goal is to understand audience responses to these structures and their appeal across demographic segments, offering insights into societal preferences and the impact of narrative structures on a film’s commercial success.
 
 ## Research Questions
-1. How do different plot structures and narrative formulas impact a movie’s box office revenue?
+1. How do different genres, plot structures and narrative formulas impact a movie’s box office revenue?
 2. What are the most common genres associated with various narrative archetypes?
 3. How has the popularity of different plot structures evolved over different time periods?
 4. What are the key factors that contribute to the commercial success of movies with different narrative structures?
