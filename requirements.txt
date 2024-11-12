@@ -1,1 +1,7 @@
 kagglehub
+pandas
+matplotlib
+seaborn
+nltk
+sklearn
+cpi
