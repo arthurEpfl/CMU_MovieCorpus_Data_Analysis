@@ -3,13 +3,11 @@
 # Team Adarable 
 
 ## Abstract
-## Abstract
-The project investigates how different plot structures and narrative formulas affect a movie’s box office success. It explores how these structures evolve over time and across genres. By applying natural language processing (NLP) techniques to classify plot summaries into various narrative archetypes, the project analyzes trends over different periods and examines whether certain plot structures tend to be more financially successful.
+The project investigates how different plot structures and narrative formulas affect a movie’s box office success and their evolution over time and genres. By applying NLP techniques to classify plot summaries into narrative archetypes, it analyzes trends and examines the financial success of certain structures.
 
-The project involves scraping and merging IMDb data with the original dataset. The data is then preprocessed to handle missing values and convert data types.
+The project involves scraping and merging IMDb data with the original dataset, preprocessing it to handle missing values and convert data types. It explores the recycling of plot structures like the hero's journey, love triangles, and rags-to-riches stories, investigating their correlation with box office success.
 
-Additionally, the project explores the idea that certain plot structures are frequently recycled across decades and genres. It investigates how often narrative formulas such as the hero's journey, love triangles, or rags-to-riches stories are reused and whether this repetition correlates with box office success. Using the provided plot summaries and metadata, the project applies NLP to identify recurring narrative structures and tracks how the popularity of these plots has shifted over time and across genres. The goal is to understand how audiences respond to such plot structures and whether this appeal varies across demographic segments. This approach offers insights into societal preferences and how narrative structures impact a film’s commercial success.
-
+Using plot summaries and metadata, the project applies NLP to identify recurring narrative structures and tracks their popularity shifts over time and genres. The goal is to understand audience responses to these structures and their appeal across demographic segments, offering insights into societal preferences and the impact of narrative structures on a film’s commercial success.
 
 ## Research Questions
 1. How do different plot structures and narrative formulas impact a movie’s box office revenue?
@@ -23,40 +21,84 @@ Additionally, the project explores the idea that certain plot structures are fre
 
 
 ## Methods
-1. **Data Collection and Cleaning**: Gather additional datasets from sources like Kaggle and clean the data to ensure consistency and accuracy. This includes handling missing values and converting data types.
-2. **Data Scraping**: Use the ImdbScraper class to scrape additional data from IMDB, extracting useful information such as revenue, budget, and ratings.
-3. **Data Merging**: Merge the collected datasets with the IMDB data to create a comprehensive dataset for analysis, ensuring that different versions of movies are accounted for.
-4. **Exploratory Data Analysis (EDA)**: Perform EDA to understand the distribution and characteristics of the data, including checking for duplicates and missing values.
-5. **Text Preprocessing**: Apply natural language processing (NLP) techniques to clean and preprocess plot summaries, including tokenization, stopword removal, and lemmatization.
-6. **Narrative Archetype Classification**: Use NLP techniques to classify plot summaries into various narrative archetypes.
-7. **Statistical Analysis**: Use statistical methods to compare the box office revenue of movies with different narrative structures and to identify trends over different time periods.  
-8. **Visualization**: Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres and narrative archetypes.
-9. **Machine Learning**: Build predictive models to identify key factors contributing to the success of movies with different narrative structures, using features engineered from the data.
-10. **Temporal Analysis**: Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
 
-## Proposed Timeline
-- **Week 1 (16.11.2024-22.11.2024)**: Finalize data collection, preprocessing, cleaning and finalize the first visualisations.    
-- **Week 2 (23.11.2024-29.11.2024)**: Narrative Archetype Classification, using NLP techniques to classify plot summaries into various narrative archetypes.  
-- **29.11.2024** : Homework 2 to be submitted.
-- **Week 3 (30.11.2024-06.12.2024)** Statistical Analysis, 
-using statistical methods to compare the box office revenue of movies with different narrative structures and to identify trends over different time periods.  
-- **Week 4 (07.12.2024-13.12.2024)** Visualization, 
-creating visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres and narrative archetypes.  
-- **Week 5 (14.12.2024-20.12.2024)** Temporal Analysis, 
-analyzing how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres. Finalisation of project structure and design.  
+1. **Data Collection and Cleaning**:
+   - Gather additional datasets from sources like Kaggle (IMDb 5000).
+   - Clean the data to ensure consistency and accuracy.
+   - Handle missing values using imputation techniques.
+   - Convert data types to appropriate formats for analysis (dictionnary and lists)
+
+2. **Data Scraping**:
+   - Use the `ImdbScraper` class to scrape additional data from IMDB.
+   - Extract useful information such as revenue, budget, and ratings.
+   - Store the scraped data in a structured format for further processing.
+
+3. **Data Merging**:
+   - Merge the collected datasets with the IMDB data.
+   - Ensure that different versions of movies are accounted for.
+   - Resolve any conflicts or duplicates during the merging process.
+
+4. **Exploratory Data Analysis (EDA)**:
+   - Perform EDA to understand the distribution and characteristics of the data.
+   - Check for duplicates and missing values.
+   - Use summary statistics and visualizations to explore data patterns.
+
+5. **Text Preprocessing**:
+   - Apply natural language processing (NLP) techniques to clean and preprocess plot summaries.
+   - Tokenize the text into individual words or phrases.
+   - Remove stopwords to focus on meaningful words.
+   - Perform lemmatization to reduce words to their base forms.
+
+6. **Narrative Archetype Classification**:
+   - Use NLP techniques to classify plot summaries into various narrative archetypes.
+   - Implement machine learning models such as Naive Bayes or SVM for classification.
+   - Train the models on labeled data and evaluate their performance.  
+  
+
+7. **Clustering**:
+   - Apply clustering algorithms to group movies based on narrative structures and other features.
+   - Use techniques like K-means, hierarchical clustering, or DBSCAN.
+   - Analyze the clusters to identify common patterns and trends.
+
+8. **Statistical Analysis**:
+   - Use statistical methods to compare the box office revenue of movies with different narrative structures.
+   - Conduct hypothesis testing to identify significant differences.
+   - Analyze trends over different time periods using time series analysis.
+
+9. **Visualization**:
+   - Create visualizations to illustrate the findings and provide insights into the data.
+   - Use bar plots, line plots, and stacked bar plots for genres and narrative archetypes.
+   - Employ tools like Matplotlib, Seaborn, or Plotly for visualization.
+
+10. **Temporal Analysis**:
+    - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
+    - Use time series analysis techniques to identify trends and patterns.
+    - Visualize the temporal changes using line plots or heatmaps.
+
+
+## Proposed Timeline and Organisation within the team
+- **Week 1 (16.11.2024-22.11.2024)**:   
+  - Finalize data collection, preprocessing, cleaning, scraping, and merging.
+  - Finalize initial visualizations.  
+    
+- **Week 2 (23.11.2024-29.11.2024)**: 
+  - Scrape additional data from IMDB using the ImdbScraper class.
+  - Classify plot summaries into various narrative archetypes using NLP techniques.
+
+- **29.11.2024** : Homework 2 to be submitted.  
+  
+- **Week 3 (30.11.2024-06.12.2024)**   
+  - Perform statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods.  
+  
+- **Week 4 (07.12.2024-13.12.2024)**        
+  - Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres and narrative archetypes.  
+   
+- **Week 5 (14.12.2024-20.12.2024)**       
+  - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
+  - Finalize the project structure, overall comments, interpretation and design.
+  
 - **20.12.2024** : Project to be submitted.
 
-## Organization Within the Team  
 
--Finalize data collection, preprocessing, cleaning, scraping and merging : Anders & Malak
 
--Scrape additional data from IMDB using the ImdbScraper class : Malak 
-
--Classify plot summaries into various narrative archetypes using NLP techniques : Adam & Arthur  
-
--Perform statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods : Adam & Arthur  
-
--Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres and narrative archetypes : Sven
-
--Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres, finalize the project structure and design : Anders & Sven
 
