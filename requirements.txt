@@ -5,3 +5,7 @@ seaborn
 nltk
 scikit-learn
 cpi
+torch
+transformers
+joblib
+numpy
