@@ -83,11 +83,77 @@ def load_imdb_data():
     imdb_movies = imdb_movies.dropna(subset=['gross'])
     return imdb_movies
 
+def get_matching_duplicates(movies, imdb_movies):
+    """
+    Get duplicates on the ['movie_name', 'movie_release_date'] subset in the movies dataframe that are also in the imdb_movies dataframe.
+    Also return the number of duplicate pairs that have at least one missing value for box office revenue between them,
+    the number of duplicate pairs without any missing values for box office,
+    and the total number of imdb_films that match a duplicate pair. 
+    """
+    # Group by on the ['movie_name', 'release_year'] subset in movies and count occurrences
+    duplicate_combinations = movies.groupby(['movie_name', 'movie_release_date']).size()
+    duplicates = duplicate_combinations[duplicate_combinations > 1].index
 
-def merge_movies_data(movies, imdb_movies):
+    # Get the actual duplicates
+    duplicate_rows_in_movies = movies[movies[['movie_name', 'movie_release_date']].apply(tuple, axis=1).isin(duplicates)]
+
+    # Check if these duplicates are also in imdb_movies
+    matching_duplicates = duplicate_rows_in_movies[
+        duplicate_rows_in_movies[['movie_name', 'movie_release_date']].apply(tuple, axis=1).isin(
+            imdb_movies[['movie_title', 'title_year']].apply(tuple, axis=1)
+        )
+    ]
+
+    count_pairs_having_nan = 0
+    count_pairs_not_having_nan = 0
+    count_corresponding_imdb_movies = 0
+
+    # Find the cases that will lead to potential issues during merge
+    if not matching_duplicates.empty:
+        for i, row in matching_duplicates.iterrows():
+            sample_combination = row[['movie_name', 'movie_release_date']]
+
+            sample_movies = movies[
+                (movies['movie_name'] == sample_combination['movie_name']) &
+                (movies['movie_release_date'] == sample_combination['movie_release_date'])
+            ]
+
+            if sample_movies['movie_box_office_revenue'].notnull().sum() == len(sample_movies):
+                sample_imdb_movies = imdb_movies[
+                    (imdb_movies['movie_title'] == sample_combination['movie_name']) &
+                    (imdb_movies['title_year'] == sample_combination['movie_release_date'])
+                ]
+                count_pairs_not_having_nan += 1
+            elif sample_movies['movie_box_office_revenue'].notnull().sum() != len(sample_movies):
+                sample_imdb_movies = imdb_movies[
+                    (imdb_movies['movie_title'] == sample_combination['movie_name']) &
+                    (imdb_movies['title_year'] == sample_combination['movie_release_date'])
+                ]
+                count_pairs_having_nan += 1
+                count_corresponding_imdb_movies += sample_imdb_movies.shape[0]
+    else:
+        print("No duplicates found in movies that also match imdb_movies.")
+
+    # Dataframe to store variables
+    counts_data = {
+        'count_pairs_having_nan': [count_pairs_having_nan],
+        'count_pairs_not_having_nan': [count_pairs_not_having_nan],
+        'count_corresponding_imdb_movies': [count_corresponding_imdb_movies]
+    }
+    counts_nan_df = pd.DataFrame(counts_data)
+
+    return matching_duplicates, counts_nan_df
+
+def merge_movies_data(movies, imdb_movies, matching_duplicates):
     """
     Merges the movies DataFrame with the IMDB data on movie names and release dates to account for different versions.
+    Removes movies that could be ambiguous when merging using the matching_duplicates dataframe produced.
     """
+
+    # Remove appropriate movies from movies
+    movies_to_remove = matching_duplicates[matching_duplicates['movie_box_office_revenue'].isna()]
+    movies = movies[~movies['wikipedia_movie_id'].isin(movies_to_remove['wikipedia_movie_id'])]
+
     # Convert 'movie_box_office_revenue' to numeric, handling missing values
     movies['movie_box_office_revenue'] = pd.to_numeric(movies['movie_box_office_revenue'], errors='coerce')
 
@@ -104,6 +170,35 @@ def merge_movies_data(movies, imdb_movies):
     merged_movies.drop(columns=['movie_title', 'title_year', 'gross'], inplace=True)
     merged_movies = merged_movies.dropna(subset=['movie_box_office_revenue'])
     return merged_movies
+
+def filter_with_summaries(merged_movies, summaries):
+    """
+    Get only movies with a box office revenue and plot summary available.
+    """
+    common_index = merged_movies['wikipedia_movie_id'].isin(summaries['wikipedia_movie_id'])
+    filtered_movies_summaries_BO = merged_movies[common_index]
+    # We remove duplicates
+    filtered_movies_summaries_BO = filtered_movies_summaries_BO.drop_duplicates(subset='wikipedia_movie_id', keep='first')
+
+    return filtered_movies_summaries_BO
+
+def add_scraped_features(filtered_movies_summaries_BO):
+    """
+    Add features obtained from scraping on the movies with summaries and box office available.
+    """
+    # Load the new imdb_additional_movies_data_left_1.csv
+    scraped_data = pd.read_csv('../data/processed/scraped_data_all.csv')
+
+    # Merge the two DataFrames on 'wikipedia_movie_id'
+    movies_scraped_data = pd.merge(filtered_movies_summaries_BO, scraped_data, on='wikipedia_movie_id', how='left')
+
+    # Ensure there are no duplicates on 'wikipedia_movie_id'
+    movies_scraped_data = movies_scraped_data.drop_duplicates(subset=['wikipedia_movie_id'])
+
+    movies_scraped_data.drop(columns=['Unnamed: 0', 'movie_box_office_revenue_y', 'release_year'], inplace=True)
+    movies_scraped_data.rename(columns={'movie_box_office_revenue_x': 'movie_box_office_revenue'}, inplace=True)
+
+    return movies_scraped_data
 
 def download_nltk_data():
     """
@@ -172,17 +267,42 @@ if __name__ == "__main__":
     movies = load_movies_from_corpus()
     imdb_movies = load_imdb_data()
 
+    # Identify duplicates that could cause inconsistencies with merging on IMDB dataset
+    matching_duplicates, counts_nan_df = get_matching_duplicates(movies, imdb_movies)
+
     # Merge datasets and update box office revenue
-    merged_movies = merge_movies_data(movies, imdb_movies)
+    merged_movies = merge_movies_data(movies, imdb_movies, matching_duplicates)
 
     # Load and preprocess summaries
     summaries = load_and_preprocess_summaries(stop_words, lemmatizer)
 
+    # Get movies with a summary and box office revenue available
+    filtered_movies_summaries_BO = filter_with_summaries(merged_movies, summaries)
+
+    # Add the features obtained from the web scraping
+    movies_scraped_data = add_scraped_features(filtered_movies_summaries_BO)
+
     output_path = "../data/processed/merged_movies.csv"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     merged_movies.to_csv(output_path, index=False)
+    print(f"Preprocessed merged_movies saved to: {output_path}")
 
     summaries_output_path = "../data/processed/summaries_preprocessed.csv"
     os.makedirs(os.path.dirname(summaries_output_path), exist_ok=True)
     summaries.to_csv(summaries_output_path, index=False)
     print(f"Preprocessed summaries saved to: {summaries_output_path}")
+
+    counts_nan_df_output_path = "../data/processed/counts_nan_df.csv"
+    os.makedirs(os.path.dirname(counts_nan_df_output_path), exist_ok=True)
+    counts_nan_df.to_csv(counts_nan_df_output_path, index=False)
+    print(f"Counts_nan_df saved to: {counts_nan_df_output_path}")
+
+    filtered_movies_summaries_BO_output_path = "../data/processed/filtered_movies_summaries_BO_output_path.csv"
+    os.makedirs(os.path.dirname(filtered_movies_summaries_BO_output_path), exist_ok=True)
+    filtered_movies_summaries_BO.to_csv(filtered_movies_summaries_BO_output_path, index=False)
+    print(f"Filtered movies with summary and BO saved to: {filtered_movies_summaries_BO_output_path}")
+
+    movies_scraped_data_output_path = "../data/processed/movies_scraped_data.csv"
+    os.makedirs(os.path.dirname(movies_scraped_data_output_path), exist_ok=True)
+    movies_scraped_data.to_csv(movies_scraped_data_output_path, index=False)
+    print(f"Filtered movies scraped saved to: {movies_scraped_data_output_path}")
