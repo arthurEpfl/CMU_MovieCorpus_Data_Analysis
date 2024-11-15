@@ -55,10 +55,10 @@ Using plot summaries and metadata, the project applies NLP to identify narrative
       - Apply clustering algorithms to group movies based on narrative structures and other features.
       - Use techniques like K-means, hierarchical clustering, or DBSCAN.
       - Analyze the clusters to identify common patterns and trends.
-   4.2. Summarization:
+   4.2 Summarization:
       - Apply natural language processing (NLP) techniques to clean and preprocess plot summaries to make them shorter.
       - Using a summarization pipeline from LLM models from TheHuggingFace: `facebook/bart-large-cnn`
-   4.3. Plot Structure Classification:
+   4.3 Plot Structure Classification:
       - Use LLM (`facebook/bart-large-mnli`) and zero-shot classification to classify plot summaries into various plot structures.
    4.4 Analysis of Plot Structure:
       - Distribution of plot structure across the dataset and the years.
