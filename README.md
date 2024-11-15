@@ -9,7 +9,7 @@ The project involves scraping and merging IMDb data with the original dataset, p
 
 Using plot summaries and metadata, the project applies NLP to identify narrative structures and tracks their popularity shifts over time and genres. The goal is to understand audience responses to these structures and their appeal across demographic segments, offering insights into societal preferences and the impact of narrative structures on a film’s commercial success.
 
-## Research Questions
+## Research Questions:
 1. How do different genre and plot structures impact a movie’s box office revenue?
 2. What are the most common genres associated with various plot structures?
 3. How has the popularity of different plot structures evolved over different time periods?
