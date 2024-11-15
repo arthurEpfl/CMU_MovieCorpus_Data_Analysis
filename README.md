@@ -21,7 +21,7 @@ Using plot summaries and metadata, the project applies NLP to identify narrative
 
 
 ## Methods
-1. **First exploration of the data***
+1. **First exploration of the data**
    - Loading the data
    - Checking samples of the different tables
    - Apply basic preprocessing such as adding column names
@@ -45,12 +45,12 @@ Using plot summaries and metadata, the project applies NLP to identify narrative
       - Resolve any conflicts or duplicates during the merging process.
       - Merge with the plot summaries
 
-3. **Exploratory Data Analysis (EDA)**:
+3. **Exploratory Data Analysis (EDA)**
    - First visualizations and quick analysis after preprocessing.
    - Perform EDA to understand the distribution and characteristics of the data.
    - Check for duplicates and missing values.
 
-4. **Natural Language Processing:**
+4. **Natural Language Processing**
    4.1 Clustering :
       - Apply clustering algorithms to group movies based on narrative structures and other features.
       - Use techniques like K-means, hierarchical clustering, or DBSCAN.
@@ -64,17 +64,17 @@ Using plot summaries and metadata, the project applies NLP to identify narrative
       - Distribution of plot structure across the dataset and the years.
       - Relation between plot structure and box office revenues/profit. 
 
-8. **Statistical Analysis**:
+8. **Statistical Analysis**
    - Use statistical methods to compare the box office revenue of movies with different narrative structures.
    - Conduct hypothesis testing to identify significant differences.
    - Analyze trends over different time periods using time series analysis.
 
-9. **Visualization**:
+9. **Visualization**
    - Create visualizations to illustrate the findings and provide insights into the data.
    - Use bar plots, line plots, and stacked bar plots for genres and narrative archetypes.
    - Employ tools like Matplotlib, Seaborn, or Plotly for visualization.
 
-10. **Temporal Analysis**:
+10. **Temporal Analysis**
     - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
     - Use time series analysis techniques to identify trends and patterns.
     - Visualize the temporal changes using line plots or heatmaps.
