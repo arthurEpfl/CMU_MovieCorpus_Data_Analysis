@@ -17,7 +17,19 @@ Using plot summaries and metadata, the project applies NLP to identify narrative
 5. How do plot structures correlate with box office success across different genres and time periods?
 
 ## Proposed Additional Dataset
--[IMDb 5000](https://www.kaggle.com/datasets/carolzhangdc/imdb-5000-movie-dataset) (to complete the revenue where it was missing in the original dataset from CMU Movie Summary Corpus)
+To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary Corpus), we incorporated the following additional datasets:
+
+1. **[IMDb 5000](https://www.kaggle.com/datasets/carolzhangdc/imdb-5000-movie-dataset)**  
+   - **Purpose**: Used to supplement missing revenue information in the original dataset.  
+   - **Why**: The CMU Movie Summary Corpus lacked comprehensive financial data for several movies. This dataset provides detailed box office revenue for a broader range of movies.
+
+2. **[US Inflation Dataset](https://www.kaggle.com/datasets/pavankrishnanarne/us-inflation-dataset-1947-present)**  
+   - **Purpose**: Used to adjust revenue and budget data for inflation to ensure consistency across movies released in different time periods.  
+   - **Why**: Revenue and budget figures need to be standardized to account for changes in the value of money over time, making comparisons between older and newer movies more meaningful.
+
+3. **Custom Web Scraping (IMDb and Wikipedia)**  
+   - **Purpose**: Used to gather additional metrics like IMDb ratings, producers, opening weekend earnings, and missing revenue or budget data.  
+   - **Why**: Some key information, such as audience ratings and financial details, was unavailable in the existing datasets. Scraping ensured that our analysis included these critical features.  
 
 
 ## Methods
