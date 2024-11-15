@@ -94,19 +94,19 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
 
 ## Proposed Timeline and Organisation within the team
 - **Week 1 (16.11.2024-22.11.2024)**:   
-  - Enhance our preprocessing pipeline.  
+  - Enhance our preprocessing pipeline.   
     
 - **Week 2 (23.11.2024-29.11.2024)**: 
-  - Scrape additional data from IMDB using the ImdbScraper class.
+  - Scrape additional data from IMDB using the ImdbScraper class. Correct the values to only have budget in dollars for the scraping.
   - Enhance our plot structure pipeline.
 
 - **29.11.2024** : Homework 2 to be submitted.  
   
 - **Week 3 (30.11.2024-06.12.2024)**   
-  - Perform statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods.  
+  - Perform statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods, taking also into account inflation.
   
 - **Week 4 (07.12.2024-13.12.2024)**        
-  - Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres and narrative archetypes.  
+  - Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres, characters, and narrative archetypes.  
    
 - **Week 5 (14.12.2024-20.12.2024)**       
   - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
