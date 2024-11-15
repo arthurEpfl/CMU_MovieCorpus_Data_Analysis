@@ -94,21 +94,27 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
 
 ## Proposed Timeline and Organisation within the team
 - **Week 1 (16.11.2024-22.11.2024)**:   
-  - Enhance our preprocessing pipeline.   
+  - Enhance our preprocessing pipeline.
+  - Include analysis of characters, observing wether or not they have influence on the financial success of the movie.
+  - Update our revenue, profit and budget values to take inflation into account. 
     
 - **Week 2 (23.11.2024-29.11.2024)**: 
-  - Scrape additional data from IMDB using the ImdbScraper class. Correct the values to only have budget in dollars for the scraping.
-  - Enhance our plot structure pipeline.
+  - Modify values obtained by the web scraping to ensure that the budget for every movie is in the correct currency (USD). 
+  - Include analysis of opening-weekend and ratings features obtained from the web scraping to measure their impact on the financial sucess of the movie.
+  - Enhance our plot structure pipeline. More specifically the zero-shot classification into 20 plot structures. Address the challenge of class imbalance, as the distribution of movies across these plot structures is highly skewed.
 
 - **29.11.2024** : Homework 2 to be submitted.  
   
 - **Week 3 (30.11.2024-06.12.2024)**   
-  - Perform statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods, taking also into account inflation.
+  - Perform statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods, taking also into account inflation. Completing the analysis of the evolution of profit per movie genre over time. 
+  - Decide on the structure and layout of the data story and start website page.
   
 - **Week 4 (07.12.2024-13.12.2024)**        
-  - Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres, characters, and narrative archetypes.  
+  - Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres, characters, and narrative archetypes.
+  - Finish a first complete draft of the website page with all the graphs and data ready that are necessary for the data story.  
    
 - **Week 5 (14.12.2024-20.12.2024)**       
+  - Finalize the web page.
   - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
   - Finalize the project structure, overall comments, interpretation and design.
   
