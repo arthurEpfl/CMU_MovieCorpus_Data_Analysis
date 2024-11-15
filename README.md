@@ -62,17 +62,17 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
    - Perform EDA to understand the distribution and characteristics of the data.
    - Check for duplicates and missing values.
 
-4. **Natural Language Processing**
-   4.1 Clustering :
+4. **Natural Language Processing**  
+   4.1 Clustering:  
       - Apply clustering algorithms to group movies based on narrative structures and other features.
       - Use techniques like K-means, hierarchical clustering, or DBSCAN.
-      - Analyze the clusters to identify common patterns and trends.
-   4.2. Summarization:
+      - Analyze the clusters to identify common patterns and trends.  
+   4.2 Summarization:  
       - Apply natural language processing (NLP) techniques to clean and preprocess plot summaries to make them shorter.
-      - Using a summarization pipeline from LLM models from TheHuggingFace: `facebook/bart-large-cnn`
-   4.3. Plot Structure Classification:
-      - Use LLM (`facebook/bart-large-mnli`) and zero-shot classification to classify plot summaries into various plot structures.
-   4.4 Analysis of Plot Structure:
+      - Using a summarization pipeline from LLM models from TheHuggingFace: `facebook/bart-large-cnn`  
+   4.3 Plot Structure Classification:  
+      - Use LLM (`facebook/bart-large-mnli`) and zero-shot classification to classify plot summaries into various plot structures.  
+   4.4 Analysis of Plot Structure:  
       - Distribution of plot structure across the dataset and the years.
       - Relation between plot structure and box office revenues/profit. 
 
