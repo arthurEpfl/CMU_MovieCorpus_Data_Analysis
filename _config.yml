@@ -21,7 +21,7 @@
 title: "Adarable Project"
 description: "Your project's tagline or mission statement."
 baseurl: "/ada-2024-project-adarable" # Add this line
-url: "https://epfl-ada.github.io"
+url: "https://epfl-ada-2024-project-adarabl.github.io"
 
 # Build settings
 theme: minima
