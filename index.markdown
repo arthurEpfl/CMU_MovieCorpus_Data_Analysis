@@ -6,6 +6,7 @@ title: Adarable, as you <3
 body {
     background-color: #333;
     color: white;
+    font-family: Arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6, p, a {
@@ -37,14 +38,18 @@ nav ul li {
 nav ul li a {
     color: white;
     text-decoration: none;
+    padding: 8px 16px;
+    display: block;
 }
 
 nav ul li a:hover {
+    background-color: #555;
     text-decoration: underline;
 }
 
 .content {
     margin-top: 60px; /* Adjust this value if the nav bar height changes */
+    padding: 20px;
 }
 </style>  
 
@@ -79,50 +84,23 @@ Main Jupyter Notebook files with first results of the project and our initial da
     - [2.2. Rename the columns](#22-rename-the-columns)
     - [2.3. Missing box office revenues in CMU corpus dataset](#23-missing-box-office-revenues-in-cmu-corpus-dataset)
   - [3. Preprocessing](#3-preprocessing)
-    - [3.1. Cleaning of movies dataframe](#31-cleaning-of-movies-dataframe)
-    - [3.2. Loading and handling of Kaggle IMDb 5000 Movie Dataset](#32-loading-and-handling-of-kaggle-imdb-5000-movie-dataset)
-    - [3.3. Using Kaggle IMDb 5000 Movie Dataset to fill in missing box office revenues](#33-using-kaggle-imdb-5000-movie-dataset-to-fill-in-missing-box-office-revenues)
-  - [4. Exploratory Data Analysis](#4-exploratory-data-analysis)
-  - [5. Analyses of how genres are related to box offices revenues and commercial success](#5-analyses-of-how-genres-are-related-to-box-offices-revenues-and-commercial-success)
-  - [6. Extracting a Plot Structure for the plot summaries](#6-extracting-a-plot-structure-for-the-plot-summaries)
-  - [7. Inflation over the years](#7-inflation-over-the-years)
-  - [8. Characters](#8-characters)
 - [Streamlit App](#streamlit-app)
 
-## 1. Imports
 
-Main packages are imported here, other useful packages are imported directly in .py files, in sources.
+## 1. Imports
 
 ## 2. First Explorations
 
 ### 2.1. Checking samples
 
-
 ### 2.2. Rename the columns
-
 
 ### 2.3. Missing box office revenues in CMU corpus dataset
 
 ## 3. Preprocessing
 
-### 3.1. Cleaning of movies dataframe
-
-### 3.2. Loading and handling of Kaggle IMDb 5000 Movie Dataset
-
-### 3.3. Using Kaggle IMDb 5000 Movie Dataset to fill in missing box office revenues
-
-## 4. Exploratory Data Analysis
-
-## 5. Analyses of how genres are related to box offices revenues and commercial success
-
-## 6. Extracting a Plot Structure for the plot summaries
-
-## 7. Inflation over the years
-
-## 8. Characters
 
 # Streamlit App
 
 Streamlit website :  [Streamlit app](http://localhost:8501) for more interactive content.
-</div>  
-
+</div>
