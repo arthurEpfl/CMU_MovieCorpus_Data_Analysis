@@ -18,6 +18,4 @@ Let's have some context here
 
 # Streamlit App
 
-Streamlit website :  [Streamlit app](https://appwebsitepy-wvq5tctdwcnihsuytbhidt.streamlit.app/)  
-
 Other test : [Streamlit app updated](https://streamappadarabletest.streamlit.app/)
