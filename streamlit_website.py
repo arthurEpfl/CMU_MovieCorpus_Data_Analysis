@@ -5,13 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Title and description
-st.title("Welcome to My Enhanced Streamlit App")
-st.write("This is a more interactive and visually appealing Streamlit app integrated with a Jekyll website.")
-
-# Sidebar for user input
-st.sidebar.title("User Input")
-user_name = st.sidebar.text_input("Enter your name:", "Guest")
-st.sidebar.write(f"Hello, {user_name}!")
+st.title("Welcome to Cinematic Moral Dilemmas !")
+st.write("Are searching for the most profitable plot structrue ? Haha, great, let's go!")
 
 # Display a random dataframe
 st.header("Random DataFrame")

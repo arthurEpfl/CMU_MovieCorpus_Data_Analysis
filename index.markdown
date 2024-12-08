@@ -18,4 +18,4 @@ Let's have some context here
 
 # Streamlit App
 
-Streamlit website :  [Streamlit app](https://appwebsitepy-wvq5tctdwcnihsuytbhidt.streamlit.app/) 
+<iframe src="https://appwebsitepy-wvq5tctdwcnihsuytbhidt.streamlit.app/" width="100%" height="800px"></iframe>  
