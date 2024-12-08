@@ -5,7 +5,12 @@
 layout: home  
 title: Adarable, as you <3  
 ---  
-
+<style>
+body {
+    background-color: black;
+    color: white;
+}
+</style>
 
 # Streamlit App
 
