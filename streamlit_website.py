@@ -8,11 +8,6 @@ import seaborn as sns
 st.title("Welcome to Cinematic Moral Dilemmas !")
 st.write("Are searching for the most profitable plot structrue ? Haha, great, let's go!")
 
-# Display a random dataframe
-st.header("Random DataFrame")
-df = pd.DataFrame(np.random.randn(10, 5), columns=list('ABCDE'))
-st.write(df)
-
 # Line chart
 st.header("Line Chart")
 st.line_chart(df)
