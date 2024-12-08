@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Title and description
-st.title("Welcome to Cinematic Moral Dilemmas !")
+st.title("Welcome to Cinematic Moral Dilemmas !")  
+st.title("Hey !")
 st.write("Are searching for the most profitable plot structrue ? Haha, great, let's go!")
 
 # Display a random dataframe
