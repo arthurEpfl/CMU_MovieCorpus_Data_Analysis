@@ -5,13 +5,6 @@
 layout: home  
 title: Adarable, as you <3  
 ---  
-<style>
-body {
-    background-color: #2500;
-    color: white;
-}
-</style>  
-
 # Welcome to Cinematic Moral Dilemmas !  
 
 You'll discover today if the plot structures affect a movie’s box office success and their evolution over time and genres. Let's go !  
