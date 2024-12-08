@@ -18,4 +18,4 @@ Let's have some context here
 
 # Streamlit App
 
-Streamlit website :  [Streamlit app](http://localhost:8501)  for more interactive content.
+Streamlit website :  [Streamlit app](https://appwebsitepy-wvq5tctdwcnihsuytbhidt.streamlit.app/) 
