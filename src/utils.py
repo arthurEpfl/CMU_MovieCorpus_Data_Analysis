@@ -22,12 +22,6 @@ def extract_release_year(date_str):
             return int(date_str)
         except ValueError:
             return None
-        
-def clean_title(title):
-    """
-    Cleans movie title by stripping whitespace and removing non-breaking space characters.
-    """
-    return title.strip().replace(u'\xa0', '')
 
 def safe_literal_eval(val):
     """
@@ -49,3 +43,15 @@ def parse_genres(genres):
         return ast.literal_eval(genres)
     except (ValueError, SyntaxError):
         return genres.strip('[]').replace("'", "").split(', ')
+    
+def add_scraped_features(scraped_data, filtered_movies_summaries_BO):
+    """
+    Add features obtained from scraping on the movies with summaries and box office available.
+    """
+    # Merge the two DataFrames on 'wikipedia_movie_id'
+    movies_scraped_data = pd.merge(filtered_movies_summaries_BO, scraped_data, on='wikipedia_movie_id', how='left')
+
+    # Ensure there are no duplicates on 'wikipedia_movie_id'
+    movies_scraped_data = movies_scraped_data.drop_duplicates(subset=['wikipedia_movie_id'])
+
+    return movies_scraped_data
