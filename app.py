@@ -59,6 +59,13 @@ st.subheader("Team Adarable")
 
 st.markdown("""
 Welcome to our comprehensive exploration of cinematic moral dilemmas. Here, we present a refined dashboard with smaller, dark-themed graphs (with white text) and additional visualizations.
+""")  
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("images_datastory/movie_clap.png", use_container_width=True)
+st.markdown("""
+Hello you
 """)
 
 st.markdown("## Table of Contents")
@@ -265,4 +272,5 @@ st.markdown("""
 This analysis highlights the complexity of film profitability and the potential for more advanced methods or richer data (e.g., marketing spend, star power) to improve predictions.
 """)
 
-st.markdown("**Thank you for exploring Cinematic Moral Dilemmas with us!**")
+st.markdown("**Thank you for exploring Cinematic Moral Dilemmas with us!**")  
+
