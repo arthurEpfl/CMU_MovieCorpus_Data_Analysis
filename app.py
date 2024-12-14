@@ -4,7 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import ast
-import os
+import os  
+
+import plot_app
+
+import plotly.express as px
+import plotly.graph_objects as go  
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
@@ -54,12 +59,20 @@ if 'movie_countries' in movies.columns:
 if 'movie_genres' in movies.columns:
     movies['movie_genres'] = movies['movie_genres'].apply(safe_literal_eval)
 
-st.title("🎬 Cinematic Moral Dilemmas - Dark Mode Edition")
+st.title("🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success")
 st.subheader("Team Adarable")
 
 st.markdown("""
-Welcome to our comprehensive exploration of cinematic moral dilemmas. Here, we present a refined dashboard with smaller, dark-themed graphs (with white text) and additional visualizations.
-""")  
+<div style="font-size:16px;">
+    What makes a movie both unforgettable and successful? 
+    Is it the incredible acting, the clever marketing, or the relatable themes that stick with us? 
+    While all of these play a part, history has shown that the real magic lies in the story—the way 
+    it draws us in, connects with us, and keeps us hooked. From the magical world of Harry Potter 
+    to the mind-bending twists of Inception, blockbuster movies all have something special in their 
+    plots that audiences can’t get enough of. But can we measure that? Is there a way to figure out 
+    what makes a story truly successful?
+</div>
+""", unsafe_allow_html=True) 
 
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
@@ -75,8 +88,7 @@ st.markdown("""
 - **4. Exploratory Data Analysis**  
 - **5. Genres, Revenues, and Commercial Success**  
 - **6. Plot Structure Analysis with Clustering & LLM Classification**  
-- **7. Inflation Adjustments**  
-- **8. Predictive Modeling**  
+- **7. Predictive Modeling**  
 """)
 
 st.markdown("---")
@@ -109,6 +121,32 @@ st.markdown("---")
 
 # ===================== SECTION 4: EDA =====================
 st.header("4. Exploratory Data Analysis")
+
+
+st.markdown("Let's analyse")  
+
+# Load data from plot_app.py
+# Interactive Plot: Movie Release Years  
+
+st.markdown("Let's see what are the movie release years !")
+
+fig1 = plot_app.plot_movie_release_years(movies)
+st.plotly_chart(fig1)
+
+# Interactive Plot: Total Box Office Revenue by Year  
+
+st.markdown("What are the box office revenues by years ?")
+
+fig2 = plot_app.plot_box_office_revenue_by_year(movies)
+st.plotly_chart(fig2) 
+
+# Interactive Plot: Language Distribution  
+
+st.markdown("What is the language distribution in movies ?")
+
+fig3 = plot_app.plot_language_distribution(movies)
+st.plotly_chart(fig3)
+
 
 with st.expander("Filters for EDA"):
     year_range_eda = st.slider("Select Year Range for EDA", 1900, 2020, (1980, 2000))
