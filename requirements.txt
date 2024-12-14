@@ -10,3 +10,4 @@ transformers
 joblib
 numpy
 streamlit
+statsmodels
