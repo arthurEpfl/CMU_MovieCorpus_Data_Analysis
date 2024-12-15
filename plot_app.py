@@ -14,6 +14,9 @@ def safe_literal_eval(val):
     except (ValueError, SyntaxError):
         return val
 
+
+# Part 4 - Exploratory Data Analysis
+
 def plot_movie_release_years(movies):
     movies = movies[movies['movie_release_date'] >= 1920]
     revenue_counts_by_year = movies.groupby('movie_release_date').size().reset_index(name='count')
@@ -122,3 +125,44 @@ def plot_runtime_and_release_year_distributions(movies):
     return fig
 
 
+# Part 5 - Genre Analysis
+def plot_top_genres(movies):
+    movies['movie_genres'] = movies['movie_genres'].apply(safe_literal_eval)
+    movies_genres_exploded = movies.explode('movie_genres')
+    genre_counts = movies_genres_exploded['movie_genres'].value_counts()
+    genre_percentages = (genre_counts / genre_counts.sum()) * 100
+    top_genre = genre_percentages.head(15)
+    
+    fig = px.bar(top_genre, x=top_genre.index, y=top_genre.values, 
+                 title='Distribution of Top 15 Movie Genres',
+                 labels={'x': 'Genres', 'y': 'Frequency (%)'},
+                 color=top_genre.index, color_discrete_sequence=px.colors.qualitative.Plotly)
+    fig.update_layout(xaxis_title='Genres', yaxis_title='Frequency (%)', 
+                      xaxis_tickangle=-45, title_font_size=16)
+    return fig
+
+
+def plot_mean_revenues_by_genre(movies):
+    # Ensure that the movie_genres column is parsed as lists
+    movies['movie_genres'] = movies['movie_genres'].apply(safe_literal_eval)
+    movies_genres_exploded = movies.explode('movie_genres')
+    
+    # Calculate the top 15 genres
+    genre_counts = movies_genres_exploded['movie_genres'].value_counts()
+    top_genre = genre_counts.head(15).index
+    
+    # Filter the dataframe to include only the top 15 genres
+    filtered_df = movies_genres_exploded[movies_genres_exploded['movie_genres'].isin(top_genre)]
+    
+    # Calculate the mean revenues and sort them in descending order
+    mean_revenues = filtered_df.groupby('movie_genres')['movie_box_office_revenue'].mean().reset_index()
+    mean_revenues = mean_revenues.sort_values(by='movie_box_office_revenue', ascending=False)
+    
+    # Plot the mean revenues using Plotly
+    fig = px.bar(mean_revenues, x='movie_genres', y='movie_box_office_revenue', 
+                 title='Mean Box Office Revenues by Top 15 Movie Genres',
+                 labels={'movie_genres': 'Movie Genres', 'movie_box_office_revenue': 'Mean Box Office Revenue'},
+                 color='movie_genres', color_discrete_sequence=px.colors.qualitative.Plotly)
+    fig.update_layout(xaxis_title='Movie Genres', yaxis_title='Mean Box Office Revenue', 
+                      xaxis_tickangle=-45, title_font_size=16)
+    return fig

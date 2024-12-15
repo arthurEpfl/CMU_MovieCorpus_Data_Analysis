@@ -316,12 +316,23 @@ and some that go way over. Now, let's focus on how genres can be linked to comme
 # à voir si on garde
 
 st.markdown("""
-<div style="text-align:center; font-size:21px;">
-    Let's focus now on how genres are related to worldwide box offices revenues and analyses of commercial successes.  
-</div>
+<div style="font-size:18px; text-align:center;">
+    <em>Before that, don't forget to grab some popcorn (sweet or salty ?)</em>
+</div> 
+""", unsafe_allow_html=True)  
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("images_datastory/popcorn_image.jpg", use_container_width=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+    <em>Did you know? The ideal temperature for creating popcorn is 180 degrees Celsius.</em>
+</div> 
 """, unsafe_allow_html=True)
 
-st.markdown("---")  
+
+st.markdown("---")    
 
 
 # ===================== SECTION 5: Genres and Commercial Success =====================  
@@ -354,6 +365,10 @@ plt.xticks(rotation=45, fontsize=6)  # Adjust the x-tick labels font size
 plt.yticks(fontsize=6)  # Adjust the y-tick labels font size
 st.pyplot(fig)  
 
+
+fig6 = plot_app.plot_top_genres(movies)
+st.plotly_chart(fig6)
+
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
 We notice here, in terms of frequency in percentage, Drama movies are the most distributed ones, 
@@ -361,7 +376,7 @@ followed by comedy movies and thrillers. We display here only the 15 most distri
 processed dataset. We now have a question, which genres are generating the highest revenues ? 
 This may be an excellent question for a filmmakers, we want a movie to generate money, right ? 
 <br><br> 
-""", unsafe_allow_html=True)   
+""", unsafe_allow_html=True) 
 
 
 st.markdown("""
@@ -370,14 +385,16 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)  
 
-# ADD PLOT HERE  
-# 
+fig7 = plot_app.plot_mean_revenues_by_genre(movies)
+st.plotly_chart(fig7)
+
+
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
 We notice here that Fantasy, Adventure and Family Film movies are the one that have the highest mean 
 box office revenues. Drama movies are the most distributed ones, but do not generated high mean revenues !  
 <br><br>
-""", unsafe_allow_html=True)  
+""", unsafe_allow_html=True)    
 
 st.markdown("""
 <div style="text-align:center; font-size:24px;">
@@ -432,7 +449,6 @@ A dollar forty years ago worths much nowadays.
 """, unsafe_allow_html=True)   
 
 
-
 st.markdown("""
 ### Commercial successes
 """)
@@ -443,7 +459,7 @@ st.markdown("---")
 # ===================== SECTION 6: Plot Structure Analysis =====================
 st.markdown("""
 <div style="text-align:center;">
-    <h2>Plot Structure Analysis with Clustering & LLM Classification**  
+    <h2>Plot Structure Analysis with Clustering & LLM Classification 
 </h2>
 </div>
 """, unsafe_allow_html=True) 
