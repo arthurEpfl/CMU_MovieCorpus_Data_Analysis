@@ -1,6 +1,9 @@
-# Cinematic Moral Dilemmas
+# Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success
 
-# Team Adarable 
+# Team Adarable  
+
+## Data Story  
+The data story for this project may be found on this link : ...
 
 ## Abstract
 The project investigates how different genres and plot structures affect a movie’s box office success and their evolution over time and genres. By applying NLP techniques to classify plot summaries into narrative archetypes, it analyzes trends and examines the financial success of certain structures.
@@ -39,20 +42,22 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
    - Apply basic preprocessing such as adding column names
    - First explorations
 
-2. **Preprocessing**
+2. **Preprocessing** 
+   
    2.1 Data Cleaning:
       - Gather additional dataset from Kaggle (IMDb 5000) to complete missing values.
       - Clean the data to ensure consistency.
       - Handle missing values using imputation techniques.
-      - Convert data types to appropriate formats for analysis (dictionaries nd lists)
+      - Convert data types to appropriate formats for analysis (dictionaries and lists)
    
    2.2 Data Scraping:
-      - Use the `ImdbScraper` class to scrape additional data from IMDB.
+      - Use the `ImdbScraper` class to scrape additional data from IMDb.
       - Extract useful information such as revenue, budget, and ratings.
-      - Store the scraped data in a structured format.
+      - Store the scraped data in a structured format.  
+      - The scraping has been re-runned for Milestone 3 because types of currencies had not been taken into account initially.  
 
    2.3 Data Merging:
-      - Merge the collected datasets with the IMDB data.
+      - Merge the collected datasets with the IMDb data.
       - Ensure that different versions of movies are accounted for.
       - Resolve any conflicts or duplicates during the merging process.
       - Merge with the plot summaries
@@ -62,63 +67,75 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
    - Perform EDA to understand the distribution and characteristics of the data.
    - Check for duplicates and missing values.
 
-4. **Natural Language Processing**  
+4. **Natural Language Processing** 
+  
    4.1 Clustering:  
       - Apply clustering algorithms to group movies based on narrative structures and other features.
       - Use techniques like K-means, hierarchical clustering, or DBSCAN.
       - Analyze the clusters to identify common patterns and trends.  
+    
    4.2 Summarization:  
       - Apply natural language processing (NLP) techniques to clean and preprocess plot summaries to make them shorter.
       - Using a summarization pipeline from LLM models from TheHuggingFace: `facebook/bart-large-cnn`  
+  
    4.3 Plot Structure Classification:  
-      - Use LLM (`facebook/bart-large-mnli`) and zero-shot classification to classify plot summaries into various plot structures.  
+      - Use LLM (`facebook/bart-large-mnli`) and zero-shot classification to classify plot summaries into various plot structures.
+    
    4.4 Analysis of Plot Structure:  
       - Distribution of plot structure across the dataset and the years.
       - Relation between plot structure and box office revenues/profit. 
 
-8. **Statistical Analysis**
-   - Use statistical methods to compare the box office revenue of movies with different narrative structures.
+5. **Statistical Analysis**
+   - Use statistical methods to compare the box office revenue of movies with different narrative structures.  
    - Conduct hypothesis testing to identify significant differences.
-   - Analyze trends over different time periods using time series analysis.
+   - Analyze trends over different time periods using time series analysis.  
+  
+6. **Inflation**  
+   -Taking into account the inflation so that movies budget, revenues and profits may be comparable between movies, to give the same order of magnitude to the currency for each year.
 
-9. **Visualization**
+7. **Visualization**
    - Create visualizations to illustrate the findings and provide insights into the data.
    - Use bar plots, line plots, and stacked bar plots for genres and narrative archetypes.
    - Employ tools like Matplotlib, Seaborn, or Plotly for visualization.
 
-10. **Temporal Analysis**
+8.  **Temporal Analysis**
     - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
     - Use time series analysis techniques to identify trends and patterns.
-    - Visualize the temporal changes using line plots or heatmaps.
+    - Visualize the temporal changes using line plots or heatmaps.  
+  
+9.  **Predictive modelling**  
+   -predict if a movie will be profitable based on its plot structure. 
+   -Two predictions are done, one using only base features and an other by adding also the plot structure that we classified, in order to check if it enhances the probability of having a profitable movie !
 
-
-## Proposed Timeline and Organisation within the team
+## Timeline
 - **Week 1 (16.11.2024-22.11.2024)**:   
-  - Enhance our preprocessing pipeline.
-  - Include analysis of characters, observing wether or not they have influence on the financial success of the movie.
-  - Update our revenue, profit and budget values to take inflation into account. 
+  - The preprocessing pipeline has been enhanced.  
+  - Revenues, budgets and profits values are now taken into account with inflation.  
     
 - **Week 2 (23.11.2024-29.11.2024)**: 
-  - Modify values obtained by the web scraping to ensure that the budget for every movie is in the correct currency (USD). 
-  - Include analysis of opening-weekend and ratings features obtained from the web scraping to measure their impact on the financial sucess of the movie.
-  - Enhance our plot structure pipeline. More specifically the zero-shot classification into 20 plot structures. Address the challenge of class imbalance, as the distribution of movies across these plot structures is highly skewed.
-
-- **29.11.2024** : Homework 2 to be submitted.  
+  - Values obtained by the web scraping to ensure that the budget for every movie is now in the correct currency (USD). 
   
 - **Week 3 (30.11.2024-06.12.2024)**   
-  - Perform statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods, taking also into account inflation. Completing the analysis of the evolution of profit per movie genre over time. 
-  - Decide on the structure and layout of the data story and start website page.
+  - Statistical analysis to compare the box office revenue of movies with different narrative structures and identify trends over different time periods, taking also into account inflation.
+  - Completing the analysis of the evolution of profit per movie genre over time. 
+  - `results.ipynb`has been updated and the choice of `streamlit`to host the datastory has been retained.  
   
 - **Week 4 (07.12.2024-13.12.2024)**        
-  - Create visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres, characters, and narrative archetypes.
-  - Finish a first complete draft of the website page with all the graphs and data ready that are necessary for the data story.  
+  - Visualizations to illustrate the findings and provide insights into the data, such as bar plots, line plots, and stacked bar plots for genres, characters, and narrative archetypes has been created.  
+  - Predictive modelling with linear regression.  
+  - `results.ipynb`has been reviewed to check which graphs and analysis one shall keep for the datastory itself.  
    
 - **Week 5 (14.12.2024-20.12.2024)**       
-  - Finalize the web page.
-  - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
-  - Finalize the project structure, overall comments, interpretation and design.
+  - Finalize the project structure, overall comments, interpretation and design.  
+  - Web page and datastory has been finalized and deployed.  
+
+## Organization withing the team
+- **Adam**: Preprocessing, Clustering, Zero-shot Classification, Analyses, Predictive modelling, Presenting results.  
+- **Arthur**: Web scraping, Preprocessing, Predictive modelling, Presenting results.  
+- **Malak**: Web scraping, Preprocessing, Inflation, Analyses, Presenting results.  
+- **Anders**: Preprocessing, Zero-shot Classification, Presenting results, Interactive plots for Datastory.  
+- **Sven**: Preprocessing, Inflation, Analyses, Presenting results, Structure of `results.ipynb`, Datastory.
   
-- **20.12.2024** : Project to be submitted.
 
 
 
