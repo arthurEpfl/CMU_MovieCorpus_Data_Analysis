@@ -7,6 +7,7 @@ import ast
 import os  
 
 import plot_app
+import mod
 
 import plotly.express as px
 import plotly.graph_objects as go  
@@ -347,203 +348,295 @@ st.markdown("""
 with st.expander("Filters for Genre Analysis"):
     genre_year_range = st.slider("Year Range for Genre Analysis", 1900, 2020, (1980, 2000))
 
-genre_filtered = movies[(movies['movie_release_date'] >= genre_year_range[0]) & (movies['movie_release_date'] <= genre_year_range[1])]
-genre_exploded = genre_filtered.explode('movie_genres')
+genre_exploded, mean_revenues = mod.return_processed_genre_df(movies, genre_year_range)
 
-top_15_genres = genre_exploded['movie_genres'].value_counts().head(15)
-
-# Define a consistent color palette
-palette = sns.color_palette("husl", 15)
-color_dict = {genre: palette[i] for i, genre in enumerate(top_15_genres.index)}
-
-fig, ax = plt.subplots(figsize=(8, 2))
-sns.barplot(x=top_15_genres.index, y=top_15_genres.values, palette=[color_dict[genre] for genre in top_15_genres.index], ax=ax)
-ax.set_title('Top 15 Genres')
-ax.set_xlabel('Genre')
-ax.set_ylabel('Count')
-plt.xticks(rotation=45, fontsize=6)  # Adjust the x-tick labels font size
-plt.yticks(fontsize=6)  # Adjust the y-tick labels font size
-st.pyplot(fig)  
-
-
-fig6 = plot_app.plot_top_genres(movies)
-st.plotly_chart(fig6)
+fig6 = plot_app.plot_genre_distribution(genre_exploded)
+st.plotly_chart(fig6, use_container_width=True)
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
 We notice here, in terms of frequency in percentage, Drama movies are the most distributed ones, 
-followed by comedy movies and thrillers. We display here only the 15 most distributed ones in the 
+followed by comedy movies and thrillers. We display here only the 10 most distributed ones in the 
 processed dataset. We now have a question, which genres are generating the highest revenues ? 
 This may be an excellent question for a filmmakers, we want a movie to generate money, right ? 
 <br><br> 
 """, unsafe_allow_html=True) 
 
 
-st.markdown("""
-<div style="text-align:center; font-size:21px;">
-    Which genres generate the highest revenues ?
-</div>
-""", unsafe_allow_html=True)  
-
-fig7 = plot_app.plot_mean_revenues_by_genre(movies)
-st.plotly_chart(fig7)
+#Use same filter
+fig7 = plot_app.plot_genre_revenue(mean_revenues)
+st.plotly_chart(fig7, use_container_width=True)
 
 
-st.markdown("""
-<div style="font-size:18px; text-align:center;">
-We notice here that Fantasy, Adventure and Family Film movies are the one that have the highest mean 
-box office revenues. Drama movies are the most distributed ones, but do not generated high mean revenues !  
-<br><br>
-""", unsafe_allow_html=True)    
-
-st.markdown("""
-<div style="text-align:center; font-size:24px;">
- There is one thing we forgot...To truly see which genres make the most money, we need to take into account inflation over the years ! 
-
-</div>
-<br><br>
-""", unsafe_allow_html=True)  
-
-
-st.markdown("""
-### Adjusting Movie Box Office Revenues for Inflation
-
-We want to make movie box office revenues comparable across different release years by adjusting them for inflation. We use the Consumer Price Index (CPI) data to account for inflation and bring all revenues to a common base year. This way, we can fairly compare the earnings of movies released in different years.
-
-### Steps
-
-- We start with CPI data indexed by date, which represents the inflation rate over time.
-- We choose a **base year** (2023) to normalize all other CPI values.
-
-- For each year in our CPI dataset, we calculate an **adjustment factor** by dividing the CPI value of the base year by the CPI of that specific year:
-""")
-
-st.latex(r'''
-\text{Adjustment Factor} = \frac{\text{CPI of Base Year}}{\text{CPI of Movie Year}}
-''')
-
-st.markdown("""
-- Using the adjustment factors calculated above, we adjust each movie’s box office revenue based on its release year.
-""")  
-
-
-# PLOT 
-
-
-st.markdown("""
-<div style="font-size:18px; text-align:center;">
-In the inflation-adjusted view, Family Films and Dramas rise to the top, showcasing their enduring appeal 
-and the lasting power of their stories. On the other hand, the non-adjusted view highlights the dominance of 
-blockbuster genres like Adventure, Action, and Fantasy, driven by modern budgets and global excitement. It’s like looking at two sides of the same coin: one celebrates the stories that last forever, and the 
-other shows off the thrill of today’s biggest hits.  
-<br><br>
-""", unsafe_allow_html=True)  
-
-st.markdown("""
-<div style="font-size:18px; text-align:center;">
-Let's analyse evolution over time of revenues and profits, according to the 15 main genres. 
-For the rest of the analyses, we'll only use datasets where the inflation is used to adjust the revenues, 
-budget and profit values. It's important to compare the films on same values of revenue. 
-A dollar forty years ago worths much nowadays.  
-<br><br>
-""", unsafe_allow_html=True)   
-
-
-st.markdown("""
-### Commercial successes
-""")
-
-
-st.markdown("---")
-
-# ===================== SECTION 6: Plot Structure Analysis =====================
 st.markdown("""
 <div style="text-align:center;">
-    <h2>Plot Structure Analysis with Clustering & LLM Classification 
-</h2>
+    <h3>💰 Adjusting Box Office Revenues for Inflation</h3>
 </div>
-""", unsafe_allow_html=True) 
-
+""", unsafe_allow_html=True)
 
 st.markdown("""
-<div style="font-size:18px; text-align:center;">
-Some explanation on what we done.    
-<br><br>
-""", unsafe_allow_html=True) 
+<div style="font-size:18px; text-align:justify;">
+To make fair comparisons between movies released in different eras, we need to account for inflation. 
+A movie making $1 million in 1980 is very different from making $1 million today!
 
-with st.expander("Filters for Plot Structure"):
-    ps_year_range = st.slider("Year Range for Plot Structure Analysis", 1900, 2020, (1980, 2000))
+Here's how we adjusted the revenues:
 
-ps_filtered = classified[(classified['movie_release_date'] >= ps_year_range[0]) & (classified['movie_release_date'] <= ps_year_range[1])]
+1. **Base Year Selection**: We chose 2023 as our reference point
+2. **CPI Data**: Used Consumer Price Index data to track inflation over time
+3. **Adjustment Formula**: Applied this formula to normalize revenues:
 
-plot_counts = ps_filtered['plot_structure'].value_counts()
-fig, ax = plt.subplots(figsize=(8,4))
-plot_counts.plot(kind='bar', color='lime', ax=ax)
-ax.set_title('Distribution of Plot Structures')
-ax.set_xlabel('Plot Structure')
-ax.set_ylabel('Count')
-plt.xticks(rotation=90)
-st.pyplot(fig)
-
-st.markdown("Some plot structures correlate with higher revenues. For example, 'Quest for Vengeance or Justice' often correlates with higher median revenues.")
-
-# Additional Graph: Boxplot of Profit by Plot Structure (if data available)
-if 'profit' in ps_filtered.columns and 'plot_structure' in ps_filtered.columns:
-    fig, ax = plt.subplots(figsize=(8,4))
-    sns.boxplot(x='plot_structure', y='profit', data=ps_filtered, color='orange', ax=ax)
-    ax.set_title('Profit Distribution by Plot Structure')
-    plt.xticks(rotation=90)
-    st.pyplot(fig)
-else:
-    st.info("Profit or plot_structure not available in selected subset.")
-
-st.markdown("---")
-
-
-# ===================== SECTION 7: Predictive Modeling =====================
-st.markdown("""
-<div style="text-align:center;">
-    <h2>Predictive Modeling</h2>
 </div>
-""", unsafe_allow_html=True)  
+""", unsafe_allow_html=True)
+
+st.latex(r"\text{Adjusted Revenue} = \text{Original Revenue} \times \frac{\text{CPI}_{2023}}{\text{CPI}_{\text{Movie Year}}}")
 
 st.markdown("""
-<div style="font-size:18px; text-align:center;">
-Some explanation on what we done.    
-<br><br>
-""", unsafe_allow_html=True) 
+<div style="font-size:18px; text-align:justify;">
+This adjustment helps us:
+- Compare movies across different decades fairly
+- Understand true financial impact in today's terms
+- Make more accurate assessments of commercial success
+</div>
+<br>
+""", unsafe_allow_html=True)
 
+st.markdown("## 💰 Inflation-Adjusted Revenue Analysis")
+
+# Add filters in an expander
+with st.expander("Adjust Analysis Parameters"):
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        year_range = st.slider(
+            "Select Year Range",
+            min_value=1920,
+            max_value=2023,
+            value=(1980, 2020),
+            key="inflation_year_range"
+        )
+    
+    with col2:
+        # Get unique genres from the data
+        all_genres = sorted(list(set([genre for genres in movies['movie_genres'] for genre in genres])))
+        selected_genres = st.multiselect(
+            "Filter by Genres",
+            options=all_genres,
+            default=None,
+            key="inflation_genres"
+        )
+    
+    metric = st.radio(
+        "Select Revenue Metric",
+        options=['Mean', 'Sum', 'Max'],
+        horizontal=True
+    )
+
+# Process the data with filters
+df_inflation = mod.load_processed_inflation()
+revenue_data = mod.process_inflation_data(
+    movies,
+    df_inflation,
+    year_range=year_range,
+    selected_genres=selected_genres if selected_genres else None
+)
+
+# Display the plot
+fig = plot_app.plot_inflation_comparison(revenue_data, metric=metric)
+st.plotly_chart(fig, use_container_width=True)
+
+# Add explanatory text
 st.markdown("""
-We tried linear regression to predict profit using genres, plot structures, and budgets.
-Budget correlates strongly with profit, while plot structures and genres add limited predictive power.
+<div style="font-size:18px; text-align:justify;">
+The graphs above show how movie revenues have changed over time, both in original and 
+inflation-adjusted terms. This comparison helps us understand:
+
+- How the value of movie earnings has changed over time
+- The true financial impact of movies when accounting for inflation
+- Which eras were most successful in today's monetary terms
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("## 📊 Detailed Revenue Analysis")
+
+# Create tabs for different visualizations
+tab1, tab2, tab3, tab4 = st.tabs([
+    "Revenue Distribution", 
+    "Genre Trends", 
+    "Revenue Heatmap",
+    "Revenue Bubble Chart"
+])
+
+with tab1:
+    st.markdown("### Revenue Distribution by Decade")
+    use_adjusted = st.checkbox("Show Inflation Adjusted Values", value=True, key="dist_adjusted")
+    dist_fig = plot_app.plot_revenue_distribution(revenue_data, adjusted=use_adjusted)
+    st.plotly_chart(dist_fig, use_container_width=True)
+    
+    st.markdown("""
+    This visualization shows how movie revenues are distributed across decades, 
+    helping identify shifts in the industry's financial landscape.
+    """)
+
+with tab2:
+    st.markdown("### Revenue Trends by Genre")
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        selected_genres = st.multiselect(
+            "Select Genres to Compare",
+            options=all_genres,
+            default=all_genres[:5],
+            key="trend_genres"
+        )
+    
+    with col2:
+        use_adjusted = st.checkbox("Show Inflation Adjusted Values", value=True, key="trend_adjusted")
+    
+    if selected_genres:
+        revenue_data = mod.process_inflation_data(
+            movies,
+            df_inflation,
+            year_range=year_range,
+            selected_genres=selected_genres if selected_genres else None
+        )
+        trends_fig = plot_app.plot_genre_revenue_trends(
+            revenue_data, 
+            selected_genres, 
+            adjusted=use_adjusted
+        )
+        st.plotly_chart(trends_fig, use_container_width=True)
+    else:
+        st.warning("Please select at least one genre to display trends.")
+
+with tab3:
+    st.markdown("### Revenue Heatmap")
+    process_inflation_data = mod.process_inflation_data_genre(
+            movies,
+            df_inflation,
+            year_range=year_range,
+            selected_genres=None
+    )
+    use_adjusted = st.checkbox("Show Inflation Adjusted Values", value=True, key="heatmap_adjusted")
+    heatmap_fig = plot_app.plot_revenue_heatmap(process_inflation_data, adjusted=use_adjusted)
+    st.plotly_chart(heatmap_fig, use_container_width=True)
+    
+    st.markdown("""
+    The heatmap reveals patterns in revenue across different genres and years, 
+    with darker colors indicating higher revenues.
+    """)
+
+with tab4:
+    st.markdown("### Revenue Bubble Chart")
+    process_inflation_data = mod.process_inflation_data_genre(
+            movies,
+            df_inflation,
+            year_range=year_range,
+            selected_genres=None
+        )
+    use_adjusted = st.checkbox("Show Inflation Adjusted Values", value=True, key="bubble_adjusted")
+    bubble_fig = plot_app.plot_revenue_bubble(process_inflation_data, adjusted=use_adjusted)
+    st.plotly_chart(bubble_fig, use_container_width=True)
+    
+    st.markdown("""
+    This bubble chart combines multiple dimensions:
+    - Position shows year and revenue
+    - Size represents number of movies
+    - Color indicates average rating
+    - Hover over bubbles for detailed information
+    """)
+
+# Add overall insights
+st.markdown("""
+---
+### 🔍 Key Insights
+
+1. **Temporal Patterns**: The distribution analysis shows how revenue patterns have evolved over decades
+2. **Genre Performance**: Certain genres consistently outperform others when adjusted for inflation
+3. **Industry Growth**: The bubble chart reveals the relationship between movie volume and revenue
+4. **Rating Impact**: Higher-rated movies tend to generate more revenue across most genres
 """)
 
-# Additional Graph: Budget vs Profit (log scale)
-if 'budget' in classified.columns and 'profit' in classified.columns:
-    fig, ax = plt.subplots(figsize=(8,4))
-    ax.scatter(classified['budget'], classified['profit'], s=10, c='red')
-    ax.set_xscale('log')
-    ax.set_yscale('log')
-    ax.set_title('Budget vs Profit (Log-Log)')
-    ax.set_xlabel('Budget (log scale)')
-    ax.set_ylabel('Profit (log scale)')
-    plt.grid(True, linestyle='--', alpha=0.5)
-    st.pyplot(fig)
-else:
-    st.info("No budget or profit data available for visualization.")
+# In your commercial success analysis section
+st.markdown("## 💰 Commercial Success Analysis")
 
-st.markdown("""
-Notice how increasing budgets often lead to higher profits but may not guarantee a high ROI.
-""")
+# Process the data with inflation adjustment
+df_inflation = mod.load_processed_inflation()
+movies_with_profit = mod.calculate_profit_metrics(movies, df_inflation)
 
-st.markdown("## Conclusion")
-st.markdown("""
-- **Budget** remains a key factor in determining profit.
-- **Plot structures** and **genres**, while interesting thematically, provided limited predictive improvement.
-- Adjusting for **inflation** allows fairer comparisons across decades.
+# Create tabs for different analyses
+profit_tabs = st.tabs([
+    "Top Profitable Movies",
+    "Budget-Profit Relationship",
+    "ROI Analysis"
+])
 
-This analysis highlights the complexity of film profitability and the potential for more advanced methods or richer data (e.g., marketing spend, star power) to improve predictions.
-""")
+with profit_tabs[0]:
+    use_adjusted = True
+    col1, col2 = st.columns(2)
+    
+    profit_col = 'adjusted_profit' if use_adjusted else 'profit'
+    ratio_col = 'adjusted_profitability_ratio' if use_adjusted else 'profitability_ratio'
+    
+    with col1:
+        st.markdown("### Top Movies by Profit")
+        top_profit = mod.get_top_profitable_movies(movies_with_profit, by="profit")
+        fig_profit = plot_app.plot_top_profitable_movies(top_profit, "profit")
+        st.plotly_chart(fig_profit, use_container_width=True)
+    
+    with col2:
+        st.markdown("### Top Movies by ROI")
+        top_roi = mod.get_top_profitable_movies(movies_with_profit, by='profitability_ratio')
+        fig_roi = plot_app.plot_top_profitable_movies(top_roi, 'profitability_ratio')
+        st.plotly_chart(fig_roi, use_container_width=True)
 
-st.markdown("**Thank you for exploring Cinematic Moral Dilemmas with us!**")  
+with profit_tabs[1]:
+    st.markdown("### Budget vs Profit Relationship")
+    fig_budget = plot_app.plot_budget_profit_relationship(movies_with_profit)
+    st.plotly_chart(fig_budget, use_container_width=True)
+    
+    # Add correlation statistics
+    col1, col2 = st.columns(2)
+    with col1:
+        pearson = movies_with_profit['budget'].corr(movies_with_profit['profit'])
+        st.metric("Pearson Correlation", f"{pearson:.3f}")
+    with col2:
+        spearman = movies_with_profit['budget'].corr(
+            movies_with_profit['profit'], 
+            method='spearman'
+        )
+        st.metric("Spearman Correlation", f"{spearman:.3f}")
+
+with profit_tabs[2]:
+    st.markdown("### Return on Investment Analysis")
+    
+    # Create budget bins and calculate ROI statistics
+    movies_binned, roi_stats, bin_labels = mod.create_budget_bins(movies_with_profit)
+    
+    # Plot ROI by budget range
+    fig_roi = plot_app.plot_roi_by_budget(roi_stats)
+    st.plotly_chart(fig_roi, use_container_width=True)
+    
+    # Add statistical test results
+    with st.expander("Statistical Test Results"):
+        from scipy.stats import f_oneway, kruskal
+        
+        roi_groups = [
+            movies_binned[movies_binned['budget_bins'] == label]['profitability_ratio'] 
+            for label in bin_labels
+        ]
+        
+        anova = f_oneway(*roi_groups)
+        kruskal_test = kruskal(*roi_groups)
+        
+        st.write("ANOVA Test Results:")
+        st.write(f"- F-statistic: {anova.statistic:.2f}")
+        st.write(f"- p-value: {anova.pvalue:.2e}")
+        
+        st.write("\nKruskal-Wallis Test Results:")
+        st.write(f"- H-statistic: {kruskal_test.statistic:.2f}")
+        st.write(f"- p-value: {kruskal_test.pvalue:.2e}")
+ 
+ 
+
+
 
