@@ -1,326 +1,549 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import ast
-import plotly.express as px
+import os  
 
+import plot_app
+
+import plotly.express as px
+import plotly.graph_objects as go  
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics.pairwise import cosine_similarity
+import statsmodels.api as sm
+import sklearn.metrics as metrics
+
+# Set Streamlit page config
 st.set_page_config(
     page_title="Cinematic Moral Dilemmas",
     page_icon="🎬",
     layout="wide",
-)
+)  
 
-# Custom CSS for styling
-st.markdown(
-    """
-    <style>
-    .main, .reportview-container {
-        background: linear-gradient(135deg, #f0f0f0, #fafafa);
-        padding-left: 50px;
-        padding-right: 50px;
-    }
-    .sidebar .sidebar-content {
-        background: #f8f9fa;
-    }
-    h1, h2, h3, h4, h5, h6 {
-        font-family: "Helvetica Neue", sans-serif;
-        font-weight: 600;
-    }
-    p, li, div, input, select, label, button {
-        font-family: "Helvetica", sans-serif;
-        font-size: 16px;
-        color: #FFF
-    }
-    .reportview-container .markdown-text-container {
-        line-height: 1.6;
-    }
-    .stPlotlyChart {
-        margin-top: 30px;
-        margin-bottom: 30px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Set matplotlib and seaborn style for dark background and white text
+plt.style.use('dark_background')
+sns.set_style("dark")
+plt.rcParams['figure.facecolor'] = '#000000'
+plt.rcParams['axes.facecolor'] = '#000000'
+plt.rcParams['axes.labelcolor'] = 'white'
+plt.rcParams['xtick.color'] = 'white'
+plt.rcParams['ytick.color'] = 'white'
+plt.rcParams['text.color'] = 'white'
+plt.rcParams['axes.titlecolor'] = 'white'  
+
+
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv('data/processed/movies_with_classifications.csv')
-    return df
+    # Load main datasets after preprocessing and classification
+    movies = pd.read_csv('data/processed/movies_summary_BO.csv', sep=',')
+    classified = pd.read_csv('data/processed/movies_with_classifications.csv')
+    return movies, classified
 
-movies = load_data()
+movies, classified = load_data()
 
-def parse_list_column(df, col):
-    df[col] = df[col].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x)
-    return df
+def safe_literal_eval(val):
+    try:
+        return ast.literal_eval(val)
+    except (ValueError, SyntaxError):
+        return val
 
-for col in ['movie_genres', 'movie_countries', 'movie_languages']:
-    if col in movies.columns:
-        movies = parse_list_column(movies, col)
+if 'movie_countries' in movies.columns:
+    movies['movie_countries'] = movies['movie_countries'].apply(safe_literal_eval)
 
-if 'budget' in movies.columns:
-    movies['profit'] = movies['movie_box_office_revenue'] - movies['budget']
-
-# Plot functions
-def plot_yearly_revenue(df):
-    if df.empty:
-        return None
-    revenue_by_year = df.groupby('movie_release_date')['movie_box_office_revenue'].sum().reset_index()
-    fig = px.line(revenue_by_year, x='movie_release_date', y='movie_box_office_revenue', 
-                  title='Total Box Office Revenue by Year', markers=True,
-                  template='simple_white')
-    fig.update_traces(line_color='#D62728')
-    return fig
-
-def plot_genre_distribution(df, top_n=15):
-    if df.empty:
-        return None
-    exploded = df.explode('movie_genres')
-    top_genres = exploded['movie_genres'].value_counts().head(top_n)
-    if len(top_genres) == 0:
-        return None
-    fig = px.bar(
-        x=top_genres.index, 
-        y=top_genres.values, 
-        title='Top Genres Distribution',
-        labels={'x':'Genre', 'y':'Count'},
-        template='simple_white',
-        color=top_genres.index,
-        color_discrete_sequence=px.colors.qualitative.Vivid
-    )
-    fig.update_layout(xaxis_tickangle=45, showlegend=False)
-    return fig
-
-def plot_plot_structure_distribution(df):
-    if df.empty:
-        return None
-    ps_counts = df['plot_structure'].value_counts()
-    if ps_counts.empty:
-        return None
-    fig = px.bar(
-        ps_counts, 
-        x=ps_counts.index, 
-        y=ps_counts.values,
-        title='Plot Structure Distribution',
-        labels={'x':'Plot Structure', 'y':'Count'},
-        template='simple_white',
-        color=ps_counts.index,
-        color_discrete_sequence=px.colors.qualitative.Pastel
-    )
-    fig.update_layout(xaxis_tickangle=45, showlegend=False)
-    return fig
-
-def plot_revenue_by_plot_structure(df):
-    if df.empty:
-        return None
-    median_rev = df.groupby('plot_structure')['movie_box_office_revenue'].median().sort_values(ascending=False)
-    if median_rev.empty:
-        return None
-    fig = px.bar(
-        x=median_rev.index,
-        y=median_rev.values,
-        title='Median Box Office Revenue by Plot Structure',
-        labels={'x':'Plot Structure', 'y':'Median Revenue'},
-        template='simple_white',
-        color=median_rev.index,
-        color_discrete_sequence=px.colors.qualitative.Safe
-    )
-    fig.update_layout(xaxis_tickangle=45, showlegend=False)
-    return fig
-
-def plot_profit_by_genre(df):
-    if df.empty or 'profit' not in df.columns:
-        return None
-    exploded = df.explode('movie_genres')
-    exploded = exploded.dropna(subset=['movie_genres'])
-    if exploded.empty:
-        return None
-    median_profit = exploded.groupby('movie_genres')['profit'].median().sort_values(ascending=False).head(15)
-    if median_profit.empty:
-        return None
-    fig = px.bar(
-        x=median_profit.index, 
-        y=median_profit.values,
-        title='Median Profit by Genre (Top 15)',
-        labels={'x':'Genre', 'y':'Median Profit'},
-        template='simple_white',
-        color=median_profit.index,
-        color_discrete_sequence=px.colors.qualitative.Prism
-    )
-    fig.update_layout(xaxis_tickangle=45, showlegend=False)
-    return fig
-
-# Header Section with Image
-st.title("🎬 Cinematic Moral Dilemmas")
-st.subheader("A Data-Driven Exploration of Movie Narratives, Genres, and Success")
+if 'movie_genres' in movies.columns:
+    movies['movie_genres'] = movies['movie_genres'].apply(safe_literal_eval)
 
 st.markdown("""
-Welcome to our in-depth exploration of cinematic narratives. Adjust filters for each section to explore different aspects of the data independently.
+<div style="text-align:center; font-size:24px; font-family: 'Cursive', sans-serif;">
+    Adarable
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="text-align:center;">
+    <h1>🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success</h1>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+    <div style="text-align:center; font-size:24px; font-weight:bold;">
+        What makes a movie both unforgettable and successful?
+    </div>
+    <br>
+    Is it the incredible acting, the clever marketing, or the relatable themes that stick with us? 
+    While all of these play a part, history has shown that the real magic lies in the story—the way 
+    it draws us in, connects with us, and keeps us hooked. From the magical world of Harry Potter 
+    to the mind-bending twists of Inception, blockbuster movies all have something special in their 
+    plots that audiences can’t get enough of. But can we measure that? Is there a way to figure out 
+    what makes a story truly successful?
+</div>  
+<br><br>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="text-align:center; font-size:24px; font-family: 'Cursive', sans-serif;">
+    Let's analyze this, Action !
+</div>
+""", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.markdown("<br><br>", unsafe_allow_html=True)  # Add extra space
+    st.image("images_datastory/movie_clap.png", use_container_width=True, width=200)
+
+
+##### TABLE OF CONTENTS  #####
+
+st.markdown("## Our Story Timeline")
+st.markdown("""
+- **1. First Explorations**  
+- **2. Preprocessing**  
+- **3. Exploratory Data Analysis**  
+- **4. Genres, Revenues, and Commercial Success**  
+- **5. How genres are related to box offices revenues and commercial success**  
+- **6. Plot Structure Analysis with Clustering & LLM Classification**  
+- **7. Predictive Modeling**  
 """)
 
 st.markdown("---")
 
-# ===================== YEARLY REVENUE SECTION =====================
-st.header("Evolution of Box Office Revenue Over Time")
-st.markdown("Customize the filters below to explore revenue trends across different time periods.")
 
-with st.expander("Filters"):
-    all_years = sorted(movies['movie_release_date'].dropna().unique())
-    if all_years:
-        year_min, year_max = int(min(all_years)), int(max(all_years))
-    else:
-        year_min, year_max = (1900, 2020)
-    selected_year_range = st.slider("Select Year Range", min_value=year_min, max_value=year_max, value=(1980, 2000))
+# ===================== SECTION 2: FIRST EXPLORATIONS =====================
+st.markdown("""
+<div style="text-align:center;">
+    <h2>First Explorations</h2>
+</div>
+""", unsafe_allow_html=True)  
 
-yearly_filtered = movies[
-    (movies['movie_release_date'] >= selected_year_range[0]) &
-    (movies['movie_release_date'] <= selected_year_range[1])
-]
-
-fig_yearly = plot_yearly_revenue(yearly_filtered)
-if fig_yearly:
-    st.plotly_chart(fig_yearly, use_container_width=True)
-else:
-    st.info("No data available for the selected year range.")
-
-st.markdown("---")
-
-# ===================== GENRE ANALYSIS SECTION =====================
-st.header("Genre Landscape")
-st.markdown("Explore which genres dominate certain periods or filter by a specific set of genres.")
-
-with st.expander("Filters"):
-    # Filter by genres and year again for genre analysis
-    selected_genres = st.multiselect(
-        "Select Genres",
-        sorted(list({g for lst in movies['movie_genres'].dropna() for g in lst}))
-    )
-    # Also allow year filtering here for genre distribution
-    genre_year_range = st.slider("Select Year Range for Genre Analysis",
-                                 min_value=year_min, max_value=year_max, 
-                                 value=(1980, 2000))
-
-genre_filtered = movies[
-    (movies['movie_release_date'] >= genre_year_range[0]) &
-    (movies['movie_release_date'] <= genre_year_range[1])
-]
-
-if selected_genres:
-    genre_filtered = genre_filtered[genre_filtered['movie_genres'].apply(
-        lambda gs: any(g in gs for g in selected_genres) if isinstance(gs, list) else False
-    )]
-
-fig_genre = plot_genre_distribution(genre_filtered)
-if fig_genre:
-    st.plotly_chart(fig_genre, use_container_width=True)
-else:
-    st.info("No data available for the selected genres or year range.")
-
-st.markdown("---")
-
-# ===================== PLOT STRUCTURE ANALYSIS SECTION =====================
-st.header("Plot Structures & Narratives")
 
 st.markdown("""
-Beyond genres, narrative structures (Hero’s Journey, Quest for Vengeance, etc.) can shape audience reception.
-Filter by specific plot structures or time periods to explore their frequency and median revenue.
-""")
+<div style="font-size:18px; text-align:center;">
+    <div style="text-align:center; font-size:19px; font-weight:bold;">
+        Initially, we explored raw data from CMU Movie Corpus dataset.
+    </div>
+    <br>
+    In the latter, missing box office revenues were identified so there is a need for external data sources. Also, budget values are missing,
+    we need them if we want to compute profitability of these movies !  
+            <br><br>
+</div> 
+""", unsafe_allow_html=True)  
 
-with st.expander("Filters"):
-    available_structures = movies['plot_structure'].dropna().unique().tolist()
-    selected_structures = st.multiselect("Select Plot Structures", available_structures)
-    structure_year_range = st.slider("Select Year Range for Plot Structures",
-                                     min_value=year_min, max_value=year_max,
-                                     value=(1980, 2000))
-
-structure_filtered = movies[
-    (movies['movie_release_date'] >= structure_year_range[0]) &
-    (movies['movie_release_date'] <= structure_year_range[1])
-]
-
-if selected_structures:
-    structure_filtered = structure_filtered[structure_filtered['plot_structure'].isin(selected_structures)]
-
-fig_structure_dist = plot_plot_structure_distribution(structure_filtered)
-fig_structure_rev = plot_revenue_by_plot_structure(structure_filtered)
-
-if fig_structure_dist:
-    st.plotly_chart(fig_structure_dist, use_container_width=True)
-else:
-    st.info("No plot structure data available for the selected filters.")
-
-if fig_structure_rev:
-    st.plotly_chart(fig_structure_rev, use_container_width=True)
-else:
-    st.info("No revenue data available for the selected plot structures and year range.")
-
-st.markdown("---")
-
-# ===================== PROFIT ANALYSIS SECTION =====================
-st.header("Profitability: Does Genre or Story Pattern Influence Success?")
-
-with st.expander("Filters"):
-    # Filter by year and optionally by genre for the profit analysis
-    profit_year_range = st.slider("Select Year Range for Profit Analysis",
-                                  min_value=year_min, max_value=year_max,
-                                  value=(1980, 2000))
-    profit_selected_genres = st.multiselect(
-        "Filter Genres for Profit Analysis",
-        sorted(list({g for lst in movies['movie_genres'].dropna() for g in lst}))
-    )
-
-profit_filtered = movies[
-    (movies['movie_release_date'] >= profit_year_range[0]) &
-    (movies['movie_release_date'] <= profit_year_range[1])
-]
-
-if profit_selected_genres:
-    profit_filtered = profit_filtered[profit_filtered['movie_genres'].apply(
-        lambda gs: any(g in gs for g in profit_selected_genres) if isinstance(gs, list) else False
-    )]
-
-fig_profit = plot_profit_by_genre(profit_filtered)
-if fig_profit:
-    st.plotly_chart(fig_profit, use_container_width=True)
-else:
-    st.info("No profit data available for the selected filters.")
-
-st.markdown("---")
-
-# ===================== DATA SAMPLE SECTION =====================
-st.header("A Peek at the Data")
-
-with st.expander("Filters"):
-    # Let the user filter by a simple condition or search
-    sample_year_range = st.slider("Select Year Range for Data Sample",
-                                  min_value=year_min, max_value=year_max,
-                                  value=(1980, 2000))
-    search_genre = st.selectbox(
-        "Filter Data Sample by One Genre",
-        ["(None)"] + sorted(list({g for lst in movies['movie_genres'].dropna() for g in lst}))
-    )
-    search_plot_struct = st.selectbox(
-        "Filter Data Sample by Plot Structure",
-        ["(None)"] + sorted(movies['plot_structure'].dropna().unique().tolist())
-    )
-
-data_filtered = movies[
-    (movies['movie_release_date'] >= sample_year_range[0]) &
-    (movies['movie_release_date'] <= sample_year_range[1])
-]
-
-if search_genre != "(None)":
-    data_filtered = data_filtered[data_filtered['movie_genres'].apply(
-        lambda gs: search_genre in gs if isinstance(gs, list) else False
-    )]
-
-if search_plot_struct != "(None)":
-    data_filtered = data_filtered[data_filtered['plot_structure'] == search_plot_struct]
-
-st.write("Below is a sample of the filtered dataset:")
-st.dataframe(data_filtered.head(50))
-
-st.markdown("---")
+# Center the image using columns and make the container smaller
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("images_datastory/titanic_image.webp", caption="Titanic Movie", use_container_width=True)
 
 st.markdown("""
-**Note:** Each section above has its own independent filter controls, allowing you to explore the dataset from multiple angles without affecting the other sections.
+<div style="font-size:18px; text-align:center;">
+A movie like Titanic is a great example of a blockbuster that captivated audiences worldwide. It's interesting to study this, 
+is its success due to its genre, its plot structure, Jack Dawson itself or something else? We will explore this in the following sections. 
+<br><br>
+""", unsafe_allow_html=True)
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:justify;">
+Noticing here that there are almost 90% of movies that do not have 
+revenue in the CMU movie dataset, this is an issue for our project, 
+as we want to investigate how different plot structures and narrative 
+formulas affect a movie’s box office success. An other dataset will be 
+used to get this information. Further methods during preprocessing will 
+be used, such as merging with full IMDb dataset and web scraping on IMDb, 
+to complete these missing values. 
+<br><br>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ===================== SECTION 3: PREPROCESSING =====================  
+
+st.markdown("""
+<div style="text-align:center;">
+    <h2>Preprocessing</h2>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+We cleaned data, merged with IMDb dataset, and retained movies with both box office and plot summaries.
 """)
+
+st.markdown("""
+**Resulting dataset:** `movies_summary_BO.csv` with ~7,964 movies.
+""")
+
+#with st.expander("No Filters"):
+    #st.info("Preprocessing steps are explained; no filters apply.")
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Blablabla rapide sur le preprocessing, nettoyage des données, tout clean etc.   
+<br><br>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ===================== SECTION 4: EDA =====================
+st.markdown("""
+<div style="text-align:center;">
+<h2>Exploratory Data Analysis</h2>
+</div>
+""", unsafe_allow_html=True)
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Let's analyse the data and see what we can find out about the movies, now that we have more informations. Let's
+            first see what are the movie release years !
+<br><br>
+""", unsafe_allow_html=True)
+# Interactive Plot: Movie Release Years  
+
+fig1 = plot_app.plot_movie_release_years(movies)
+st.plotly_chart(fig1)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Before diving into what makes movies successful, we checked how the number of movies with box office data has changed over time. 
+In the early years, before the 1930s, there’s barely any data, it was just the start of the industry. 
+By the mid-1900s, things picked up as Hollywood grew. In the 2000s, movies exploded, thanks to global markets and big franchises 
+like Harry Potter. The dip after 2013 is probably just missing data for newer films. 
+Now that we’ve seen this growth, it’s time to figure out what actually makes a movie a hit—plot, genre, or something else?
+<br><br>
+""", unsafe_allow_html=True)
+
+
+# Interactive Plot: Total Box Office Revenue by Year  
+
+st.markdown("""
+<div style="text-align:center; font-size:21px;">
+    Now, what are the box office revenues by years?
+</div>
+""", unsafe_allow_html=True)  
+
+fig2 = plot_app.plot_box_office_revenue_by_year(movies)
+st.plotly_chart(fig2)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+After looking at how the number of movies changed, we now check how much money movies have made over the years. 
+Revenues stayed pretty low until the 1990s, but then they shot up, peaking in the 2010s.  
+This boom lines up with the rise of huge franchises like Harry Potter and The Avengers and the growth of global 
+audiences.
+The dip after 2019 is probably just missing data for newer movies. This trend makes us wonder—what’s really driving 
+this massive growth? Is it the story, the genre, or something else? Let’s keep digging.
+<br><br>
+""", unsafe_allow_html=True)
+
+
+# Interactive Plot : Movies countries  
+st.markdown("""
+<div style="text-align:center; font-size:21px;">
+    Now, what is the distribution of movies by countries ?
+</div>
+""", unsafe_allow_html=True)   
+
+fig3 = plot_app.plot_top_countries(movies)
+st.plotly_chart(fig3)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Next, we looked at where most movies come from, and it’s no surprise, the United States dominates 
+by a huge margin, producing more films than the next few countries combined. The UK, France, and 
+Germany follow, showing the influence of Europe on global cinema.
+It’s interesting to see countries like South Korea and Japan on the list, 
+highlighting the rise of Asian cinema, especially with the global success of Korean and Japanese 
+films in recent years. This gives us a sense of how different countries contribute to the movie industry 
+and sets the stage to explore how these contributions might relate to box office success.
+<br><br>
+""", unsafe_allow_html=True)
+
+
+# Interactive Plot: Language Distribution  
+st.markdown("""
+<div style="text-align:center; font-size:21px;">
+    Now, what is the language distribution in movies ?
+</div>
+""", unsafe_allow_html=True) 
+
+
+fig4 = plot_app.plot_language_distribution(movies)
+st.plotly_chart(fig4)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Movies started out mostly in English, but over time, other languages like French, Spanish, 
+and German started showing up more. Recently, languages like Korean and Japanese have grown a lot, 
+showing how global the movie industry has become.
+
+<br><br>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="text-align:center; font-size:21px;">
+    Let's explore the runtime and release year distributions!
+</div>
+""", unsafe_allow_html=True)
+
+
+col1, col2, col3 = st.columns([1, 3, 1])
+with col2:
+    fig5 = plot_app.plot_runtime_and_release_year_distributions(movies)
+    st.plotly_chart(fig5, use_container_width=True) 
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Most movies came out after 1980, which fits with what we saw earlier about box office growth. 
+On average, movies are about 1 hour and 40 minutes long, though there are a few really short ones 
+and some that go way over. Now, let's focus on how genres can be linked to commercial successes.
+<br><br>
+""", unsafe_allow_html=True)
+
+
+#with st.expander("Filters for EDA"):
+    #year_range_eda = st.slider("Select Year Range for EDA", 1900, 2020, (1980, 2000))
+
+#eda_filtered = movies[(movies['movie_release_date'] >= year_range_eda[0]) & (movies['movie_release_date'] <= year_range_eda[1])]
+
+# à voir si on garde
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+    <em>Before that, don't forget to grab some popcorn (sweet or salty ?)</em>
+</div> 
+""", unsafe_allow_html=True)  
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("images_datastory/popcorn_image.jpg", use_container_width=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+    <em>Did you know? The ideal temperature for creating popcorn is 180 degrees Celsius.</em>
+</div> 
+""", unsafe_allow_html=True)
+
+
+st.markdown("---")    
+
+
+# ===================== SECTION 5: Genres and Commercial Success =====================  
+
+st.markdown("""
+<div style="text-align:center;">
+    <h2>How genres are related to box offices revenues and commercial success  
+</h2>
+</div>
+""", unsafe_allow_html=True)
+
+with st.expander("Filters for Genre Analysis"):
+    genre_year_range = st.slider("Year Range for Genre Analysis", 1900, 2020, (1980, 2000))
+
+genre_filtered = movies[(movies['movie_release_date'] >= genre_year_range[0]) & (movies['movie_release_date'] <= genre_year_range[1])]
+genre_exploded = genre_filtered.explode('movie_genres')
+
+top_15_genres = genre_exploded['movie_genres'].value_counts().head(15)
+
+# Define a consistent color palette
+palette = sns.color_palette("husl", 15)
+color_dict = {genre: palette[i] for i, genre in enumerate(top_15_genres.index)}
+
+fig, ax = plt.subplots(figsize=(8, 2))
+sns.barplot(x=top_15_genres.index, y=top_15_genres.values, palette=[color_dict[genre] for genre in top_15_genres.index], ax=ax)
+ax.set_title('Top 15 Genres')
+ax.set_xlabel('Genre')
+ax.set_ylabel('Count')
+plt.xticks(rotation=45, fontsize=6)  # Adjust the x-tick labels font size
+plt.yticks(fontsize=6)  # Adjust the y-tick labels font size
+st.pyplot(fig)  
+
+
+fig6 = plot_app.plot_top_genres(movies)
+st.plotly_chart(fig6)
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+We notice here, in terms of frequency in percentage, Drama movies are the most distributed ones, 
+followed by comedy movies and thrillers. We display here only the 15 most distributed ones in the 
+processed dataset. We now have a question, which genres are generating the highest revenues ? 
+This may be an excellent question for a filmmakers, we want a movie to generate money, right ? 
+<br><br> 
+""", unsafe_allow_html=True) 
+
+
+st.markdown("""
+<div style="text-align:center; font-size:21px;">
+    Which genres generate the highest revenues ?
+</div>
+""", unsafe_allow_html=True)  
+
+fig7 = plot_app.plot_mean_revenues_by_genre(movies)
+st.plotly_chart(fig7)
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+We notice here that Fantasy, Adventure and Family Film movies are the one that have the highest mean 
+box office revenues. Drama movies are the most distributed ones, but do not generated high mean revenues !  
+<br><br>
+""", unsafe_allow_html=True)    
+
+st.markdown("""
+<div style="text-align:center; font-size:24px;">
+ There is one thing we forgot...To truly see which genres make the most money, we need to take into account inflation over the years ! 
+
+</div>
+<br><br>
+""", unsafe_allow_html=True)  
+
+
+st.markdown("""
+### Adjusting Movie Box Office Revenues for Inflation
+
+We want to make movie box office revenues comparable across different release years by adjusting them for inflation. We use the Consumer Price Index (CPI) data to account for inflation and bring all revenues to a common base year. This way, we can fairly compare the earnings of movies released in different years.
+
+### Steps
+
+- We start with CPI data indexed by date, which represents the inflation rate over time.
+- We choose a **base year** (2023) to normalize all other CPI values.
+
+- For each year in our CPI dataset, we calculate an **adjustment factor** by dividing the CPI value of the base year by the CPI of that specific year:
+""")
+
+st.latex(r'''
+\text{Adjustment Factor} = \frac{\text{CPI of Base Year}}{\text{CPI of Movie Year}}
+''')
+
+st.markdown("""
+- Using the adjustment factors calculated above, we adjust each movie’s box office revenue based on its release year.
+""")  
+
+
+# PLOT 
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+In the inflation-adjusted view, Family Films and Dramas rise to the top, showcasing their enduring appeal 
+and the lasting power of their stories. On the other hand, the non-adjusted view highlights the dominance of 
+blockbuster genres like Adventure, Action, and Fantasy, driven by modern budgets and global excitement. It’s like looking at two sides of the same coin: one celebrates the stories that last forever, and the 
+other shows off the thrill of today’s biggest hits.  
+<br><br>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Let's analyse evolution over time of revenues and profits, according to the 15 main genres. 
+For the rest of the analyses, we'll only use datasets where the inflation is used to adjust the revenues, 
+budget and profit values. It's important to compare the films on same values of revenue. 
+A dollar forty years ago worths much nowadays.  
+<br><br>
+""", unsafe_allow_html=True)   
+
+
+st.markdown("""
+### Commercial successes
+""")
+
+
+st.markdown("---")
+
+# ===================== SECTION 6: Plot Structure Analysis =====================
+st.markdown("""
+<div style="text-align:center;">
+    <h2>Plot Structure Analysis with Clustering & LLM Classification 
+</h2>
+</div>
+""", unsafe_allow_html=True) 
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Some explanation on what we done.    
+<br><br>
+""", unsafe_allow_html=True) 
+
+with st.expander("Filters for Plot Structure"):
+    ps_year_range = st.slider("Year Range for Plot Structure Analysis", 1900, 2020, (1980, 2000))
+
+ps_filtered = classified[(classified['movie_release_date'] >= ps_year_range[0]) & (classified['movie_release_date'] <= ps_year_range[1])]
+
+plot_counts = ps_filtered['plot_structure'].value_counts()
+fig, ax = plt.subplots(figsize=(8,4))
+plot_counts.plot(kind='bar', color='lime', ax=ax)
+ax.set_title('Distribution of Plot Structures')
+ax.set_xlabel('Plot Structure')
+ax.set_ylabel('Count')
+plt.xticks(rotation=90)
+st.pyplot(fig)
+
+st.markdown("Some plot structures correlate with higher revenues. For example, 'Quest for Vengeance or Justice' often correlates with higher median revenues.")
+
+# Additional Graph: Boxplot of Profit by Plot Structure (if data available)
+if 'profit' in ps_filtered.columns and 'plot_structure' in ps_filtered.columns:
+    fig, ax = plt.subplots(figsize=(8,4))
+    sns.boxplot(x='plot_structure', y='profit', data=ps_filtered, color='orange', ax=ax)
+    ax.set_title('Profit Distribution by Plot Structure')
+    plt.xticks(rotation=90)
+    st.pyplot(fig)
+else:
+    st.info("Profit or plot_structure not available in selected subset.")
+
+st.markdown("---")
+
+
+# ===================== SECTION 7: Predictive Modeling =====================
+st.markdown("""
+<div style="text-align:center;">
+    <h2>Predictive Modeling</h2>
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Some explanation on what we done.    
+<br><br>
+""", unsafe_allow_html=True) 
+
+st.markdown("""
+We tried linear regression to predict profit using genres, plot structures, and budgets.
+Budget correlates strongly with profit, while plot structures and genres add limited predictive power.
+""")
+
+# Additional Graph: Budget vs Profit (log scale)
+if 'budget' in classified.columns and 'profit' in classified.columns:
+    fig, ax = plt.subplots(figsize=(8,4))
+    ax.scatter(classified['budget'], classified['profit'], s=10, c='red')
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_title('Budget vs Profit (Log-Log)')
+    ax.set_xlabel('Budget (log scale)')
+    ax.set_ylabel('Profit (log scale)')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    st.pyplot(fig)
+else:
+    st.info("No budget or profit data available for visualization.")
+
+st.markdown("""
+Notice how increasing budgets often lead to higher profits but may not guarantee a high ROI.
+""")
+
+st.markdown("## Conclusion")
+st.markdown("""
+- **Budget** remains a key factor in determining profit.
+- **Plot structures** and **genres**, while interesting thematically, provided limited predictive improvement.
+- Adjusting for **inflation** allows fairer comparisons across decades.
+
+This analysis highlights the complexity of film profitability and the potential for more advanced methods or richer data (e.g., marketing spend, star power) to improve predictions.
+""")
+
+st.markdown("**Thank you for exploring Cinematic Moral Dilemmas with us!**")  
+
