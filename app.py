@@ -28,6 +28,28 @@ st.set_page_config(
     layout="wide",
 )  
 
+st.markdown("""
+    <style>
+    .centered-content {
+        max-width: 800px;
+        margin: auto;
+        padding: 200px;
+        border: 200px solid #ddd;
+        border-radius: 100px;
+        background-color: #f9f9f9;
+    }
+    .container {
+        padding-left: 5000px;
+        padding-right: 5000px;
+    }
+    </style>
+    <div class="container">
+""", unsafe_allow_html=True)
+
+# Your existing Streamlit code here
+
+st.markdown("</div>", unsafe_allow_html=True)
+
 # Set matplotlib and seaborn style for dark background and white text
 plt.style.use('dark_background')
 sns.set_style("dark")
@@ -38,8 +60,6 @@ plt.rcParams['xtick.color'] = 'white'
 plt.rcParams['ytick.color'] = 'white'
 plt.rcParams['text.color'] = 'white'
 plt.rcParams['axes.titlecolor'] = 'white'  
-
-
 
 @st.cache_data
 def load_data():
@@ -62,16 +82,18 @@ if 'movie_countries' in movies.columns:
 if 'movie_genres' in movies.columns:
     movies['movie_genres'] = movies['movie_genres'].apply(safe_literal_eval)
 
-st.markdown("""
-<div style="text-align:center; font-size:24px; font-family: 'Cursive', sans-serif;">
-    Adarable
-</div>
-""", unsafe_allow_html=True)  
 
 st.markdown("""
-<div style="text-align:center;">
-    <h1>🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success</h1>
-</div>
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    </style>
+    <div style="text-align:center;">
+        <h1 class="title-viridis-light">🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success</h1>
+    </div>
 """, unsafe_allow_html=True)
 
 st.markdown("""
@@ -102,41 +124,82 @@ with col2:
     st.image("images_datastory/movie_clap.png", use_container_width=True, width=200)
 
 
-##### TABLE OF CONTENTS  #####
+##### Section 1 : TABLE OF CONTENTS  #####  
 
-st.markdown("## Our Story Timeline")
 st.markdown("""
-- **1. First Explorations**  
-- **2. Preprocessing**  
-- **3. Exploratory Data Analysis**  
-- **4. Genres, Revenues, and Commercial Success**  
-- **5. How genres are related to box offices revenues and commercial success**  
-- **6. Plot Structure Analysis with Clustering & LLM Classification**  
-- **7. Predictive Modeling**  
-""")
+<div style="text-align:center; font-size:28px; font-family: 'Cursive', sans-serif;">
+    Our Story Timeline :
+</div>
+""", unsafe_allow_html=True)  
+
+# Create the non-clickable list with lighter viridis text, centered, and light boxes with beautiful borders
+st.markdown("""
+    <style>
+    .viridis-list {
+        list-style-type: none;
+        padding: 0;
+        text-align: center;
+        font-family: 'Arial', sans-serif;
+    }
+    .viridis-list li {
+        font-size: 16px; /* Smaller font size */
+        font-weight: bold; /* Bold text */
+        margin: 4px 0; /* Smaller margin */
+        padding: 8px; /* Smaller padding */
+        background: #f9f9f9; /* Light box background */
+        border-radius: 10px; /* Rounded corners */
+        border: 2px solid #2c3e50; /* Darker border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+        color: transparent;
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%); /* Lighter viridis gradient */
+        -webkit-background-clip: text;
+        display: block; /* Display each item on a new line */
+    }
+    </style>
+    <div style="text-align:center;">
+        <ul class="viridis-list">
+            <li>First Explorations</li>
+            <li>Preprocessing</li>
+            <li>Exploratory Data Analysis</li>
+            <li>How genres are related to box offices revenues and commercial success</li>  
+            <li>Plot Structure Analysis with Clustering & LLM Classification</li>
+            <li>Predictive Modeling</li>  
+            <li>Conclusion</li>
+        </ul>
+    </div>
+""", unsafe_allow_html=True)
+
 
 st.markdown("---")
 
 
 # ===================== SECTION 2: FIRST EXPLORATIONS =====================
 st.markdown("""
-<div style="text-align:center;">
-    <h2>First Explorations</h2>
-</div>
-""", unsafe_allow_html=True)  
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="first-explorations" class="title-viridis-light">First Explorations</h2>
+    </div>
+""", unsafe_allow_html=True)
 
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
     <div style="text-align:center; font-size:19px; font-weight:bold;">
-        Initially, we explored raw data from CMU Movie Corpus dataset.
+        Initially, we explored raw data from the <a href="https://www.cs.cmu.edu/~ark/personas/" target="_blank">CMU Movie Corpus dataset</a>.
     </div>
     <br>
     In the latter, missing box office revenues were identified so there is a need for external data sources. Also, budget values are missing,
-    we need them if we want to compute profitability of these movies !  
-            <br><br>
+    we need them if we want to compute profitability of these movies!  
+    <br><br>
 </div> 
-""", unsafe_allow_html=True)  
+""", unsafe_allow_html=True) 
 
 # Center the image using columns and make the container smaller
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -152,7 +215,7 @@ is its success due to its genre, its plot structure, Jack Dawson itself or somet
 
 
 st.markdown("""
-<div style="font-size:18px; text-align:justify;">
+<div style="font-size:18px; text-align:center;">
 Noticing here that there are almost 90% of movies that do not have 
 revenue in the CMU movie dataset, this is an issue for our project, 
 as we want to investigate how different plot structures and narrative 
@@ -168,9 +231,17 @@ st.markdown("---")
 # ===================== SECTION 3: PREPROCESSING =====================  
 
 st.markdown("""
-<div style="text-align:center;">
-    <h2>Preprocessing</h2>
-</div>
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="preprocessing" class="title-viridis-light">Preprocessing</h2>
+    </div>
 """, unsafe_allow_html=True)
 
 st.markdown("""
@@ -195,10 +266,21 @@ We keep only movies with an available box office revenue and plot summary in ord
 """, unsafe_allow_html=True)  
 
 st.markdown("""
-<div style="text-align:center; font-size:24px; font-family: 'Cursive', sans-serif;">
-    Did you think of Web scraping to get budget values ? 
-</div>
+    <style>
+    .text-viridis-light {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Adjust the font size as needed */
+        font-family: 'Cursive', sans-serif;
+    }
+    </style>
+    <div style="text-align:center;">
+        <span class="text-viridis-light">Did you think of Web scraping to get budget values?</span>
+    </div>
 """, unsafe_allow_html=True)  
+
+  
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
@@ -218,11 +300,24 @@ does a larger budget always result in higher box office earnings?
 
 st.markdown("---")
 
+
+
+
+
+
 # ===================== SECTION 4: EDA =====================
 st.markdown("""
-<div style="text-align:center;">
-<h2>Exploratory Data Analysis</h2>
-</div>
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="eda" class="title-viridis-light">Exploratory Data Analysis</h2>
+    </div>
 """, unsafe_allow_html=True)
 
 
@@ -249,12 +344,21 @@ Now that we’ve seen this growth, it’s time to figure out what actually makes
 
 
 # Interactive Plot: Total Box Office Revenue by Year  
-
 st.markdown("""
-<div style="text-align:center; font-size:21px;">
-    Now, what are the box office revenues by years?
-</div>
-""", unsafe_allow_html=True)  
+    <style>
+    .text-viridis-light {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Adjust the font size as needed */
+        font-family: 'Cursive', sans-serif;
+    }
+    </style>
+    <div style="text-align:center;">
+        <span class="text-viridis-light">Now, what are the box office revenues by years?</span>
+    </div>
+""", unsafe_allow_html=True)
+
 
 fig2 = plot_app.plot_box_office_revenue_by_year(movies)
 st.plotly_chart(fig2)  
@@ -273,10 +377,20 @@ this massive growth? Is it the story, the genre, or something else? Let’s keep
 
 # Interactive Plot : Movies countries  
 st.markdown("""
-<div style="text-align:center; font-size:21px;">
-    Now, what is the distribution of movies by countries ?
-</div>
-""", unsafe_allow_html=True)   
+    <style>
+    .text-viridis-light {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Adjust the font size as needed */
+        font-family: 'Cursive', sans-serif;
+    }
+    </style>
+    <div style="text-align:center;">
+        <span class="text-viridis-light">Now, what is the distribution of movies by countries ?</span>
+    </div>
+""", unsafe_allow_html=True)
+  
 
 fig3 = plot_app.plot_top_countries(movies)
 st.plotly_chart(fig3)  
@@ -295,11 +409,21 @@ and sets the stage to explore how these contributions might relate to box office
 
 
 # Interactive Plot: Language Distribution  
+
 st.markdown("""
-<div style="text-align:center; font-size:21px;">
-    Now, what is the language distribution in movies ?
-</div>
-""", unsafe_allow_html=True) 
+    <style>
+    .text-viridis-light {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Adjust the font size as needed */
+        font-family: 'Cursive', sans-serif;
+    }
+    </style>
+    <div style="text-align:center;">
+        <span class="text-viridis-light">Now, what is the language distribution in movies ?</span>
+    </div>
+""", unsafe_allow_html=True)  
 
 
 fig4 = plot_app.plot_language_distribution(movies)
@@ -315,10 +439,20 @@ showing how global the movie industry has become.
 """, unsafe_allow_html=True)  
 
 st.markdown("""
-<div style="text-align:center; font-size:21px;">
-    Let's explore the runtime and release year distributions!
-</div>
+    <style>
+    .text-viridis-light {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Adjust the font size as needed */
+        font-family: 'Cursive', sans-serif;
+    }
+    </style>
+    <div style="text-align:center;">
+        <span class="text-viridis-light">Let's explore the runtime and release year distributions!</span>
+    </div>
 """, unsafe_allow_html=True)
+
 
 
 col1, col2, col3 = st.columns([1, 3, 1])
@@ -333,14 +467,6 @@ On average, movies are about 1 hour and 40 minutes long, though there are a few 
 and some that go way over. Now, let's focus on how genres can be linked to commercial successes.
 <br><br>
 """, unsafe_allow_html=True)
-
-
-#with st.expander("Filters for EDA"):
-    #year_range_eda = st.slider("Select Year Range for EDA", 1900, 2020, (1980, 2000))
-
-#eda_filtered = movies[(movies['movie_release_date'] >= year_range_eda[0]) & (movies['movie_release_date'] <= year_range_eda[1])]
-
-# à voir si on garde
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
@@ -362,13 +488,27 @@ st.markdown("""
 st.markdown("---")    
 
 
-# ===================== SECTION 5: Genres and Commercial Success =====================  
+
+
+
+
+
+
+
+# ===================== SECTION 5: How genres are related to box offices revenues and commercial success =====================  
 
 st.markdown("""
-<div style="text-align:center;">
-    <h2>How genres are related to box offices revenues and commercial success  
-</h2>
-</div>
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="genres-revenues" class="title-viridis-light">How genres are related to box offices revenues and commercial success</h2>
+    </div>
 """, unsafe_allow_html=True)  
 
 st.markdown("""
@@ -408,43 +548,71 @@ any information about the budget, nor inflation !
 
 
 st.markdown("""
-<div style="text-align:center;">
-    <h3>💰 Adjusting Box Office Revenues for Inflation</h3>
-</div>
+    <style>
+    .title-viridis-light-small {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Keep the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h4 class="title-viridis-light-small">💰 Adjusting Box Office Revenues for Inflation</h4>
+    </div>
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<div style="font-size:18px; text-align:justify;">
-To make fair comparisons between movies released in different eras, we need to account for inflation. 
-A movie making $1 million in 1980 is very different from making $1 million today!
-
-Here's how we adjusted the revenues:
-
-1. **Base Year Selection**: We chose 2023 as our reference point
-2. **CPI Data**: Used Consumer Price Index data to track inflation over time
-3. **Adjustment Formula**: Applied this formula to normalize revenues:
-
-</div>
+    <style>
+    .centered-text {
+        font-size: 18px;
+        text-align: center;
+    }
+    .centered-list {
+        list-style-type: none;
+        padding: 0;
+        text-align: center;
+        font-size: 18px;
+    }
+    .centered-list li {
+        margin: 8px 0;
+    }
+    </style>
+    <div class="centered-text">
+        To make fair comparisons between movies released in different eras, we need to account for inflation. 
+        A movie making $1 million in 1980 is very different from making $1 million today! So we adjusted the revenues : we chose 2023 as our reference point, 
+            used Consumer Price Index (CPI) data to track inflation over time, and applied a formula to normalize revenues.
+    </div>
 """, unsafe_allow_html=True)
 
 st.latex(r"\text{Adjusted Revenue} = \text{Original Revenue} \times \frac{\text{CPI}_{2023}}{\text{CPI}_{\text{Movie Year}}}")
 
 st.markdown("""
-<div style="font-size:18px; text-align:justify;">
-This adjustment helps us:
-- Compare movies across different decades fairly
-- Understand true financial impact in today's terms
-- Make more accurate assessments of commercial success
+<div style="font-size:18px; text-align:center;">
+This adjustment helps us to compare movies across different decades fairly, 
+understand true financial impact in today's terms and make more accurate assessments of commercial success
 </div>
 <br>
 """, unsafe_allow_html=True)  
 
  
 st.markdown("""
-<div style="text-align:center;">
-    <h2>💰 Inflation-Adjusted Revenue Analysis  
-</h2>
-</div>
+    <style>
+    .title-viridis-light-small {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Keep the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h4 class="title-viridis-light-small">💰 Inflation-Adjusted Revenue Analysis</h4>
+    </div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+You can select here a year range and genres to see how the revenues are evolving across the years.
+ <br><br>
 """, unsafe_allow_html=True)
 
 
@@ -491,34 +659,52 @@ fig = plot_app.plot_inflation_comparison(revenue_data, metric=metric)
 st.plotly_chart(fig, use_container_width=True)  
 
 st.markdown("""
-<div style="font-size:18px; text-align:center;">
-What really makes a movie successful, big numbers overall or a few standout hits? The total revenue from the 1990s and 2000s looks huge, but that’s mostly because so many movies were made during those years. More movies mean higher totals, but does that really show success?
-
-To get a better picture, we look at **mean** and **max revenue**:
-- **Mean Revenue** gives us the average, showing how movies performed overall each year without being overwhelmed by how many were released.
-- **Max Revenue** focuses on the biggest hits—the movies that smashed records and left their mark.
-
-If we stick with total revenue, we miss the real stars and trends. By focusing on **averages and standouts**, we can better figure out what makes a movie truly successful.
-
-</div>
-<br>
+    <style>
+    .centered-text {
+        font-size: 18px;
+        text-align: center;
+    }
+    .centered-list {
+        list-style-type: none;
+        padding: 0;
+        text-align: center;
+        font-size: 18px;
+    }
+    .centered-list li {
+        margin: 8px 0;
+    }
+    </style>
+    <div class="centered-text">
+        What really makes a movie successful, big numbers overall or a few standout hits? The total revenue from the 1990s and 2000s looks huge, but that’s mostly because so many movies were made during those years. 
+        More movies mean higher totals, but does that really show success?
+        <br><br>
+        To get a better picture, we look at <strong>mean</strong> and <strong>max revenue</strong>:
+    </div>
+    <ul class="centered-list">
+        <li><strong>Mean Revenue</strong> gives us the average, showing how movies performed overall each year without being overwhelmed by how many were released.</li>
+        <li><strong>Max Revenue</strong> focuses on the biggest hits—the movies that smashed records and left their mark.</li>
+    </ul>
+    <div class="centered-text">
+        If we stick with total revenue, we miss the real stars and trends. By focusing on <strong>averages and standouts</strong>, we can better figure out what makes a movie truly successful.
+        The graphs above show how movie revenues have changed over time, both in original and inflation-adjusted terms. This comparison helps us to understand how the value of movie earnings has changed over time and the true financial impact of movies when accounting for inflation. Which eras were most successful in today's monetary terms.  
+        <br><br>
+    </div>
 """, unsafe_allow_html=True)
 
-# Add explanatory text
 st.markdown("""
-<div style="font-size:18px; text-align:center;">
-The graphs above show how movie revenues have changed over time, both in original and 
-inflation-adjusted terms. This comparison helps us to understand, how the value of movie earnings has changed over time.
-The true financial impact of movies when accounting for inflation. Which eras were most successful in today's monetary terms
-</div>
-""", unsafe_allow_html=True)  
-
-st.markdown("""
-<div style="text-align:center;">
-    <h2>📊 Detailed Revenue Analysis with Genres 
-</h2>
-</div>
+    <style>
+    .title-viridis-light-small {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Keep the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h4 class="title-viridis-light-small">📊 Revenue Analysis with Genres</h4>
+    </div>
 """, unsafe_allow_html=True)
+
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
@@ -528,12 +714,23 @@ revenue heatmap and bubble chart.
 """, unsafe_allow_html=True)
 
 # Create tabs for different visualizations
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2 = st.tabs([
     "Revenue Distribution", 
-    "Genre Trends", 
-    "Revenue Heatmap",
-    "Revenue Bubble Chart"
+    "Genre Trends"
 ])
+
+# Add custom CSS to center the tabs and make them bigger
+st.markdown("""
+    <style>
+    .stTabs [role="tablist"] {
+        justify-content: center;
+    }
+    .stTabs [role="tab"] {
+        font-size: 24px; /* Increase font size */
+        padding: 15px 30px; /* Increase padding */
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 with tab1:
     st.markdown("### Revenue Distribution by Decade")
@@ -579,51 +776,20 @@ with tab2:
         st.plotly_chart(trends_fig, use_container_width=True)
     else:
         st.warning("Please select at least one genre to display trends.")
-
-with tab3:
-    st.markdown("### Revenue Heatmap")
-    process_inflation_data = mod.process_inflation_data_genre(
-            movies,
-            df_inflation,
-            year_range=year_range,
-            selected_genres=None
-    )
-    use_adjusted = st.checkbox("Show Inflation Adjusted Values", value=True, key="heatmap_adjusted")
-    heatmap_fig = plot_app.plot_revenue_heatmap(process_inflation_data, adjusted=use_adjusted)
-    st.plotly_chart(heatmap_fig, use_container_width=True)
-    
-    st.markdown("""
-    The heatmap reveals patterns in revenue across different genres and years, 
-    with darker colors indicating higher revenues.
-    """)
-
-with tab4:
-    st.markdown("### Revenue Bubble Chart")
-    process_inflation_data = mod.process_inflation_data_genre(
-            movies,
-            df_inflation,
-            year_range=year_range,
-            selected_genres=None
-        )
-    use_adjusted = st.checkbox("Show Inflation Adjusted Values", value=True, key="bubble_adjusted")
-    bubble_fig = plot_app.plot_revenue_bubble(process_inflation_data, adjusted=use_adjusted)
-    st.plotly_chart(bubble_fig, use_container_width=True)
-    
-    st.markdown("""
-    This bubble chart combines multiple dimensions:
-    - Position shows year and revenue
-    - Size represents number of movies
-    - Color indicates average rating
-    - Hover over bubbles for detailed information
-    """)
-
 # Add overall insights  
 
 st.markdown("""
-<div style="text-align:center;">
-    <h2>🔍 Key Insights 
-</h2>
-</div>
+    <style>
+    .title-viridis-light-small {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Keep the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h4 class="title-viridis-light-small">🔍 Key Insights</h4>
+    </div>
 """, unsafe_allow_html=True)   
 
 st.markdown("""
@@ -638,18 +804,143 @@ of blockbuster genres like Adventure, Action, and Fantasy, driven by modern budg
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-There are also Genre Performance, certain genres consistently outperform others when adjusted for inflation. 
-In the Industry Growth**, The bubble chart reveals the relationship between movie volume and revenue
+There are also Genre Performance, certain genres consistently outperform others when adjusted for inflation, such as Family Films.  
+<br><br> 
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">What about the mean and median box office revenues?</h3>
+    </div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Same pattern is observed if one considers inflation or not, only the scale for revenues in USD 
+is changing here. But the mean is really sensible to outliers, some successful movies such as Avatar 
+or Titanic may do have a strong impact on the mean. We need an other tool to do this analysis, something more robust than the mean : the median !
+</div>
+""", unsafe_allow_html=True)  
 
 
-st.markdown("##Plot Structure Analysis")
-st.write("""
-This section analyzes the underlying plot structures of movies using two approaches:
-1. Unsupervised clustering to discover emergent patterns
-2. LLM-based classification into predefined categories
-""")
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Analyzing the median, Family Film genre is the one producing the highest median revenues, 
+followed by Fantasy and Adventure movies. The previous order is similar to the mean revenues in that case. 
+The median gives much more consistent result for Mystery movies, as the latter were negative with mean profits, due to outliers.
+<br><br>  
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">Commercial success</h3>
+    </div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Let's define a value that wil be useful. the profitability ratio, defined as the ratio of the profit to the budget.  
+<br><br>  
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Let's take an example: <span style="color:blue;">Avatar</span>.
+</div>
+""", unsafe_allow_html=True)  
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("images_datastory/avatar.jpeg", caption="Avatar Movie", use_container_width=True, width=50)
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+The movie Avatar has a budget of 237 million USD and a revenue of 2.8 billion USD.  
+<br><br> 
+</div>  
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+On the other hand, in terms of profitability ratio, Paranormal Activity has a profitability ratio of 12'889 ! As an example 
+also, As an example, the movie <a href="https://en.wikipedia.org/wiki/The_Last_Broadcast_(film)">The Last Broadcast</a> is interesting, it only costed 900 dollars to be produced 
+and it generated 4 millions of dollars as worldwide revenue. The film was made on a budget of 900 dollars, 
+and edited on a desktop computer using Adobe Premiere 4.2. 600 dollars were allocated for 
+production, while 240 dollars were utilized for digital video stock, and twenty hours of tape for 
+12 dollars each. 
+</div>
+""", unsafe_allow_html=True)  
+
+
+st.markdown("---")  
+
+
+
+
+
+
+
+
+
+
+# ===================== SECTION 6: Plot Structure Analysis with Clustering & LLM Classification =====================
+
+
+st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="plot-structure" class="title-viridis-light">Plot Structure Analysis with Clustering & LLM Classification</h2>
+    </div>
+""", unsafe_allow_html=True) 
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+This section analyzes the underlying plot structures of movies using two approaches: Unsupervised clustering to discover emergent patterns and LLM-based classification into predefined categories.  
+Firstly, let's have a look to Clustering analysis :  
+<br><br>
+</div>
+""", unsafe_allow_html=True) 
+
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">Clustering</h3>
+    </div>
+""", unsafe_allow_html=True)  
 
 # Load both dataframes
 movies_bo = pd.read_csv('data/processed/movies_summary_BO.csv')
@@ -661,88 +952,293 @@ movies = pd.merge(
     movies_classified[['wikipedia_movie_id', 'plot_structure', 'plot_structure_20']],
     on='wikipedia_movie_id',
     how='left'
-)
+)  
 
-# Create tabs for different analyses
-plot_structure_tabs = st.tabs([
-    "Clustering Analysis",
-    "LLM Classification"
-])
+# Perform clustering
+with st.spinner("Performing text clustering..."):
+    clustering_results = mod.perform_text_clustering(movies['plot_summary'])
 
-with plot_structure_tabs[0]:
-    st.markdown("### 6.1 Clustering Analysis")
-    
-    # Perform clustering
-    with st.spinner("Performing text clustering..."):
-        clustering_results = mod.perform_text_clustering(movies['plot_summary'])
-    
-    # Calculate silhouette scores
-    with st.spinner("Calculating silhouette scores..."):
-        silhouette_scores = mod.calculate_silhouette_scores(
-            clustering_results['matrix']
-        )
-    
-    # Plot silhouette analysis
-    st.subheader("Silhouette Analysis")
-    fig_silhouette = plot_app.plot_silhouette_analysis(silhouette_scores)
-    st.plotly_chart(fig_silhouette, use_container_width=True)
-    
-    # Show clustering visualizations
-    st.subheader("Clustering Visualizations")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write("T-SNE Visualization")
-        fig_tsne = plot_app.plot_clustering_visualization(
-            clustering_results['matrix'],
-            clustering_results['labels'],
-            'tsne'
-        )
-        st.plotly_chart(fig_tsne)
-    
-    with col2:
-        st.write("PCA Visualization")
-        fig_pca = plot_app.plot_clustering_visualization(
-            clustering_results['matrix'],
-            clustering_results['labels'],
-            'pca'
-        )
-        st.plotly_chart(fig_pca)
-    
-    # Show top terms per cluster
-    st.subheader("Top Terms per Cluster")
-    cols = st.columns(3)
-    for i, terms in enumerate(clustering_results['top_terms']):
-        col_idx = i % 3
-        with cols[col_idx]:
-            st.write(f"**Cluster {i+1}:**")
-            st.write(", ".join(terms))
+# Calculate silhouette scores
+with st.spinner("Calculating silhouette scores..."):
+    silhouette_scores = mod.calculate_silhouette_scores(
+        clustering_results['matrix']
+    )
 
-with plot_structure_tabs[1]:
-    st.markdown("### 6.2 LLM Classification")
-    st.write("""
-    We used a zero-shot classification approach with a pre-trained LLM to categorize
-    plot summaries into predefined plot structure categories.
-    """)
-    
-    # Show distribution of plot structures (now using merged data)
-    distribution_data = mod.analyze_plot_structure_distribution(movies)
-    fig_distribution = plot_app.plot_plot_structure_distribution(distribution_data)
-    st.plotly_chart(fig_distribution)
-    
-    # Show performance metrics
-    st.markdown("#### Performance by Plot Structure")
-    performance_metrics = mod.analyze_plot_structure_performance(movies)
-    st.plotly_chart(plot_app.plot_structure_performance(performance_metrics))
-    
-    # Show profit analysis
-    st.markdown("#### Profit Analysis by Plot Structure")
-    profit_metrics = mod.analyze_plot_structure_profit(movies)
-    st.plotly_chart(plot_app.plot_structure_profit(profit_metrics))
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Plot summaries are transformed into a numerical format for clustering by applying TF-IDF (Term Frequency-Inverse Document Frequency) 
+vectorization. TF-IDF highlights important words in each summary by reducing the weight 
+of common terms and increasing the importance of unique terms.
+<br><br>
+</div>
+""", unsafe_allow_html=True)
 
 
+
+# Plot silhouette analysis  
+
+st.markdown("""
+    <style>
+    .title-viridis-light-small {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 24px; /* Keep the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h4 class="title-viridis-light-small">💰 Silhouette Analysis</h4>
+    </div>
+""", unsafe_allow_html=True)
+
+fig_silhouette = plot_app.plot_silhouette_analysis(silhouette_scores)
+st.plotly_chart(fig_silhouette, use_container_width=True)
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center; line-height:1.6;">
+<strong>KMeans Clustering</strong> is employed to group plot summaries based on their TF-IDF representations. This technique helps us uncover distinct plot structure patterns by clustering similar summaries together.
+
+<ul style="text-align:left;">
+    <li>The clustering labels are then added to the dataset, enabling a deeper analysis of plot structure patterns within each identified cluster.</li>
+    <li>To determine the optimal number of clusters, we plotted the silhouette score for cluster values ranging from 5 to 20.</li>
+    <li>Ideally, the optimal number of clusters is indicated by a <strong>peak in the silhouette score</strong>. However, in our plot, the silhouette score continually increases as the number of clusters increases.</li>
+    <li>Given these results, we have chosen to proceed with <strong>15 clusters</strong>. This number strikes a balance between interpretability and granularity, allowing us to capture a diverse range of plot structures without creating an excessive number of small, indistinct clusters.</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)  
+
+# Show clustering visualizations
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">Clustering Visualizations</h3>
+    </div>
+""", unsafe_allow_html=True)  
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.write("T-SNE Visualization")
+    fig_tsne = plot_app.plot_clustering_visualization(
+        clustering_results['matrix'],
+        clustering_results['labels'],
+        'tsne'
+    )
+    st.plotly_chart(fig_tsne)
+
+with col2:
+    st.write("PCA Visualization")
+    fig_pca = plot_app.plot_clustering_visualization(
+        clustering_results['matrix'],
+        clustering_results['labels'],
+        'pca'
+    )
+    st.plotly_chart(fig_pca)
+
+# Show top terms per cluster
+st.subheader("Top Terms per Cluster")
+cols = st.columns(3)
+for i, terms in enumerate(clustering_results['top_terms']):
+    col_idx = i % 3
+    with cols[col_idx]:
+        st.write(f"**Cluster {i+1}:**")
+        st.write(", ".join(terms))
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Each cluster reveals distinct themes and settings. While this analysis helps to identify common elements within each group, we are not fully satisfied with this approach** as it appears to capture genre and themes more than specific plot structures.
+Since our goal is to identify different types of plot structures, clustering based solely on keywords may lack the depth needed to capture narrative progression and plot dynamics. Consequently, we explore alternative methods, such as leveraging large 
+language models or deeper natural language processing techniques, to classify plot structures more accurately.
+<br><br>
+</div>
+""", unsafe_allow_html=True) 
+
+
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">LLM Classification</h3>
+    </div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+To generate the summarized version of the plot summaries, we are using a pre-trained transformer model (`facebook/bart-large-cnn`). Here's an overview of what this script achieves:
+
+<ul style="text-align:left;">
+    <li><strong>Text Preprocessing</strong>:
+        <ul>
+            <li>Cleans and normalizes plot summaries by removing unnecessary characters and whitespace.</li>
+            <li>Splits long texts into manageable chunks at sentence boundaries to fit the model's input token limit (1024 tokens).</li>
+        </ul>
+    </li>
+    <li><strong>Summarization</strong>:
+        <ul>
+            <li>Processes each chunk of text through the model to generate intermediate summaries.</li>
+            <li>Combines these intermediate summaries and processes the result to create a final, concise summary for each plot.</li>
+            <li>When the summary is short enough, we keep it as it is without using the LLM.</li>
+        </ul>
+    </li>
+    <li><strong>Batch Processing</strong>:
+        <ul>
+            <li>Summarizes plot summaries in batches.</li>
+        </ul>
+    </li>
+</ul>
+</div>
+""", unsafe_allow_html=True)  
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+After having our summarized plot summaries, we create our pipeline for classification, and classify our summarized plot summaries into plot structure categories. We use the pre-trained transformer model (`facebook/bart-large-mnli`) for zero-shot classification of movie plot summaries, since the model fits perfectly our task.
+
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+To create the list of plot structure categories, we synthesized from several narrative frameworks:
+<ul style="text-align:left;">
+    <li><em>The Seven Basic Plots</em> by Christopher Booker: <a href="https://www.campfirewriting.com/learn/narrative-structure" target="_blank">campfirewriting.com</a></li>
+    <li><em>The Hero's Journey</em> by Joseph Campbell: <a href="https://www.campfirewriting.com/learn/narrative-structure" target="_blank">campfirewriting.com</a></li>
+    <li><em>Freytag's Pyramid</em>: <a href="https://blog.reedsy.com/guide/story-structure/" target="_blank">blog.reedsy.com</a></li>
+</ul> 
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Additionally, since we use zero-shot classification, we adapted the categories to be distinct and descriptive enough for the model to differentiate between them.  
+It gives use 15 candidate categories. Finally, we tried the same zero-shot classification with different candidate categories.
+The goal is to capture a broader range of narrative structures. We tried with 23 different categories,  
+but as the results were not satisfying, we decided to keep the 15 categories for this part.   
+<br><br>
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">Classification and movie revenues and profit based on plot structures</h3>
+    </div>
+""", unsafe_allow_html=True)   
+
+# Show distribution of plot structures (now using merged data)
+distribution_data = mod.analyze_plot_structure_distribution(movies)
+fig_distribution = plot_app.plot_plot_structure_distribution(distribution_data)
+st.plotly_chart(fig_distribution)
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+
+The plot structures "Conflict with Supernatural or Unknown Forces", "Comedy of Errors or Misadventure" 
+and "Hero's Journey and "Transformation" are the most represented ones. Drama Comedy and Action are the most represented genres, 
+as here, 887 Drama movies are categorized in "Hero's Journey and Transformation". 
+</div>
+""", unsafe_allow_html=True)  
+ 
+
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">Mean Box Office Revenue by Plot Structure</h3>
+    </div>
+""", unsafe_allow_html=True)  
+
+
+performance_metrics = mod.analyze_plot_structure_performance(movies)
+st.plotly_chart(plot_app.plot_structure_performance(performance_metrics))
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+The plot structure "Quest for Vengeance or Justice" has the highest mean box office revenues.  
+</div>
+""", unsafe_allow_html=True)
+
+# Show profit analysis  
+
+st.markdown("""
+    <style>
+    .title-viridis-light-medium {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 28px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h3 class="title-viridis-light-medium">Profit Analysis by Plot Structure</h3>
+    </div>
+""", unsafe_allow_html=True)  
+profit_metrics = mod.analyze_plot_structure_profit(movies)
+st.plotly_chart(plot_app.plot_structure_profit(profit_metrics))
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+The plot structure "Quest for Vengeance or Justice" has the highest median box office profits ! 
+</div>
+""", unsafe_allow_html=True)
+
+
+
+st.markdown("---")
+
+
+# SECTION 7 : Predictive Modelling and Commercial Success Analysis
 # In your commercial success analysis section
-st.markdown("## 💰 Commercial Success Analysis")
+st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="predictive-modeling" class="title-viridis-light">💰 Commercial Success Analysis and Predictive Modelling</h2>
+    </div>
+""", unsafe_allow_html=True) 
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+
+To conclude with the data we have from now, we want to know if we can predict that a movie will be 
+profitable based on its plot structure. Two predictions are done, one using only base features and 
+an other by adding also the plot structure that we classified, to check if it enhances the probability 
+of having a profitable movie !
+</div>
+""", unsafe_allow_html=True)  
 
 # Process the data with inflation adjustment
 df_inflation = mod.load_processed_inflation()
@@ -822,8 +1318,165 @@ with profit_tabs[2]:
         st.write(f"- p-value: {kruskal_test.pvalue:.2e}")
  
  
- 
- 
+ ### Using movie plots and genres as predictors for financial success
+st.markdown("""
+<div style="font-size:14px; text-align:center; line-height:1.6;">
+<h2 style="color:#2E86C1;">Observations:</h2>
+<ul style="list-style-type:disc; text-align:left; display:inline-block;">
+    <li>Significant drop in R-squared value from training to testing data indicates poor generalization.</li>
+    <li>Plot structures only model has the lowest training R-squared (0.218) but slightly better predictive performance (0.1908).</li>
+    <li>Adding plot clusters provides the highest training fit (0.384) and marginally improves predictive R-squared (0.1803).</li>
+</ul>
+
+<h2 style="color:#2E86C1;">P-values Analysis:</h2>
+<ul style="list-style-type:disc; text-align:left; display:inline-block;">
+    <li><strong>Plot structures:</strong> None of the 15 plot structures have significant p-values (&lt;0.05), indicating they do not significantly explain the variance in adjusted_profit.</li>
+    <li><strong>Movie genres:</strong> Some significant p-values (&lt;0.05) are observed, likely due to chance given the large number of genres.</li>
+    <li><strong>Plot clusters:</strong> 2 significant p-values (&lt;0.05) suggest certain plot clusters capture meaningful patterns related to financial success, aligning with the slightly better training R-squared value.</li>
+</ul>
+</div>   
+""", unsafe_allow_html=True)  
+
+
+
+### Budget as a more straightforward predictor for financial success
+st.markdown("""
+<div style="font-size:14px; text-align:center;">
+
+Given that the plot structures obtained and movie genres individually act as a poor predictors
+for a movie's financial success, we decide to look at budget (p-value = 0.000 in all models) 
+as a more straightforward and potentially significant predictor. We apply a feature augmentation 
+technique to improve the budget's predictive significance.
+
+</div>
+""", unsafe_allow_html=True)  
+
+
+
+
+st.markdown("---")
+
+#######
+
+# SECTION 8 : Conclusion  
+
+st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="conclusion" class="title-viridis-light">Conclusion</h2>
+    </div>
+""", unsafe_allow_html=True) 
+
+st.markdown("""
+    <style>
+    .text-viridis-light {
+        background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 18px;
+        text-align: center;
+        line-height: 1.6;
+    }
+    .text-white {
+        color: white;
+        font-size: 18px;
+        text-align: center;
+        line-height: 1.6;
+    }
+    .text-viridis-light h2 {
+        font-size: 24px;
+        color: #2E86C1;
+    }
+    .text-viridis-light ul {
+        list-style-type: disc;
+        text-align: left;
+        display: inline-block;
+        margin: 0 auto;
+    }
+    </style>
+    <div class="text-white">
+        In this project, we are decoding the blueprint of a blockbuster by analyzing plot structures and their impact on box office success. We have done analysis involving data scraping, preprocessing, exploratory data analysis, natural language processing, and predictive modeling.
+    </div>
+    <div class="text-viridis-light">
+        <br><br>
+        <h2>What we found</h2>
+        <ul>
+            <li><strong>Impact of Plot Structures on Box Office Revenue</strong>: Our analysis revealed that certain plot structures, such as the hero's journey, tend to be more successful at the box office. We can suppose such plot structures to resonate well with audiences and people, leading logically to more entries to the cinemas and therefore higher revenues.</li>
+            <li><strong>Genre and Plot Structure Correlation</strong>: We found that specific genres are more likely to feature certain plot structures. For example, drama movies often follow hero's journey.</li>
+            <li><strong>Temporal Trends in Plot Structures</strong>: The popularity of different plot structures has evolved over time. While classic structures like the hero's journey remain popular, newer structures are emerging and gaining traction in recent years.</li>
+            <li><strong>Inflation Adjustment</strong>: Adjusting revenue and budget data for inflation provided a more accurate comparison across different time periods. This adjustment was crucial for understanding the true financial success of movies released in different eras, while giving the money a similar weight for every year, in order to make consistent comparisons between movies budgets, revenues and profits.</li>
+            <li><strong>Factors Contributing to Commercial Success</strong>: Besides plot structures, other factors such as budget, release timing, and marketing efforts play a significant role in a movie's commercial success. Our predictive models showed that incorporating plot structure information does not significantly enhance the accuracy of predicting a movie's profitability. In fact, other variables may have an impact, such as the actors, the director, a certain period of time where some movies are more successful, following trends for examples. This might be very interesting to study further, while taking historical events and everyday life, in order to see if these events may also have an impact on a movie profitability.</li>
+        </ul>
+    </div>
+""", unsafe_allow_html=True) 
+
+
+st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="finally" class="title-viridis-light">Finally</h2>
+    </div>
+""", unsafe_allow_html=True)
+
+## Conclusion
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+
+Our findings highlight the importance of storytelling and plot structures in the film industry. While various factors contribute to a movie's success, the plot structure remains a very important element that can significantly influence audience engagement and box office performance. This project showed that even by leveraging natural language processing and machine learning techniques, it's still a bit difficult to quantify and analyze the impact of plot structures on commercial success. It gives overview of which genres and plot structure are in general the most profitable ones, but it's complicated to really have kind of a "secret recipe" to make a movie really successful in terms of profitability.    
+
+This project provides valuable insights for filmmakers, producers, and marketers, helping them make informed decisions about the types of stories that are likely to resonate with audiences and achieve financial success. Future research could further explore the role of other narrative elements, such as character development and dialogue, actors, directors, historical events influence etc. 
+
+Overall, the project underscores the timeless appeal of well-crafted stories and plot structure and their enduring power to captivate audiences and drive box office revenues (and profits).
+</div>
+""", unsafe_allow_html=True)  
+
+
+
+st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    </style>
+    <div style="text-align:center;">
+        <h2 id="authors" class="title-viridis-light">Authors</h2>
+    </div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Sven, Anders, Adam, Malak, Arthur. 
+</div>
+""", unsafe_allow_html=True)
+
+
+
+
+st.markdown("""21""", unsafe_allow_html=True)
+
+
+
+
+
+
 
 
 
