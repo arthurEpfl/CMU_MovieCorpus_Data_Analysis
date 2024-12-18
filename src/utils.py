@@ -55,3 +55,22 @@ def add_scraped_features(scraped_data, filtered_movies_summaries_BO):
     movies_scraped_data = movies_scraped_data.drop_duplicates(subset=['wikipedia_movie_id'])
 
     return movies_scraped_data
+
+exchange_rates = {
+    '$': 1.0,
+    '€': 1.0970,  # Example rate: 1 EUR = 1.1 USD
+    '£': 1.2770,
+    'CA$' : 0.7569,
+    'A$' : 0.6842,
+    '¥' : 0.0071,
+    '₩' : 0.0078,
+    '₹' : 0.0120,
+    'HK$' : 0.1280   # Example rate: 1 GBP = 1.3 USD
+}
+
+def convert_currency_to_dollar(df, exchange_rates):
+    """
+    Convert the budget currency to dollars using the exchange rates provided.
+    """
+    df['currency_budget_dollar'] = df['budget']*df['currency_budget'].map(exchange_rates)
+    return df
