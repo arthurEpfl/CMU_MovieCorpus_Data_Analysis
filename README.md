@@ -34,6 +34,9 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
    - **Purpose**: Used to gather additional metrics like IMDb ratings, producers, opening weekend earnings, and missing revenue or budget data.  
    - **Why**: Some key information, such as audience ratings and financial details, was unavailable in the existing datasets. Scraping ensured that our analysis included these critical features.  
 
+4. **Currency Conversion for Movie Budgets**
+   - **Purpose**: To standardize movie budgets across different currencies into US Dollars.
+   - **Why**: The dataset created from the web scraping contained budgets in various currencies. By converting all budgets into US Dollars, we ensured consistency in our analysis. We used OANDA's currency converter to check exchange rates for all currencies and decided to use the rates from Friday, December 29, 2023, to ensure consistency by aligning with the end of the year.
 
 ## Methods
 1. **First exploration of the data**
