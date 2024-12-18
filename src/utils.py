@@ -1,5 +1,7 @@
 import ast
 import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def extract_dict_to_list(entry):
     """
@@ -74,3 +76,80 @@ def convert_currency_to_dollar(df, exchange_rates):
     """
     df['currency_budget_dollar'] = df['budget']*df['currency_budget'].map(exchange_rates)
     return df
+
+def create_graph(data, source_col, target_col, weight_col, source_type='source', target_type='target'):
+    """
+    Creates a NetworkX graph from a DataFrame.
+
+    Parameters:
+        data (DataFrame): Input data containing nodes and edges.
+        source_col (str): Column name for source nodes.
+        target_col (str): Column name for target nodes.
+        weight_col (str): Column name for edge weights.
+        source_type (str): Type label for source nodes.
+        target_type (str): Type label for target nodes.
+
+    Returns:
+        G (nx.Graph): A NetworkX graph.
+    """
+    G = nx.Graph()
+    for index, row in data.iterrows():
+        source = row[source_col]
+        target = row[target_col]
+        weight = row[weight_col]
+
+        # Add source and target nodes with type and weight attributes
+        G.add_node(source, type=source_type, weight=weight)
+        G.add_node(target, type=target_type, weight=weight)
+        G.add_edge(source, target, weight=weight)
+    return G
+
+
+def assign_node_attributes(G, size_factor=3e6, offset=1e3, color_mapping=None):
+    """
+    Assigns node sizes and colors based on attributes.
+
+    Parameters:
+        G (nx.Graph): Input graph.
+        size_factor (float): Scaling factor for node size.
+        offset (float): Offset for node size visibility.
+        color_mapping (dict): Mapping of node types to colors.
+
+    Returns:
+        node_colors (list): List of colors for nodes.
+        node_sizes (list): List of sizes for nodes.
+    """
+    if color_mapping is None:
+        color_mapping = {'director': '#72A0C1', 'plot': '#90EE90'}
+
+    node_colors = [color_mapping.get(G.nodes[node]['type'], '#D3D3D3') for node in G.nodes]
+    node_sizes = [G.nodes[node]['weight'] * 3 / size_factor + offset for node in G.nodes]
+    return node_colors, node_sizes
+
+
+def draw_graph(G, title="Graph Visualization", k=0.5, seed=42, iterations=100):
+    """
+    Draws a NetworkX graph with attributes.
+
+    Parameters:
+        G (nx.Graph): Input graph.
+        title (str): Title of the graph.
+        k (float): Optimal distance between nodes in spring layout.
+        seed (int): Seed for consistent layout.
+        iterations (int): Number of iterations for spring layout.
+    """
+    plt.figure(figsize=(14, 10))
+    pos = nx.spring_layout(G, k=k, seed=seed, iterations=iterations)
+
+    # Assign node attributes
+    node_colors, node_sizes = assign_node_attributes(G)
+
+    # Draw nodes, edges, and labels
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=node_sizes, alpha=0.4, edgecolors='k')
+    nx.draw_networkx_edges(G, pos, width=1, alpha=0.5, edge_color="gray")
+    nx.draw_networkx_labels(G, pos, font_size=8, font_family='sans-serif', font_color='black')
+
+    plt.title(title, fontsize=14, fontweight='bold')
+    plt.axis('off')
+    plt.tight_layout()
+    plt.show()

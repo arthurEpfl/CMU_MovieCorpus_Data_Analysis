@@ -11,3 +11,4 @@ joblib
 numpy
 streamlit
 statsmodels
+networkx
