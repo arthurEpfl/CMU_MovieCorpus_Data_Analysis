@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import ast
 import os  
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 
 def load_processed_inflation():
@@ -170,4 +173,188 @@ def get_roi_statistics(movies_df):
     }).round(2)
     
     return roi_stats
+
+def process_plot_structure_data(movies_df, df_inflation):
+    """Process data for plot structure analysis"""
+    df = movies_df.copy()
+    
+    # Calculate adjusted values
+    df['adjusted_revenue'] = df.apply(
+        lambda x: x['movie_box_office_revenue'] * df_inflation.get(x['movie_release_date'], 1), 
+        axis=1
+    )
+    df['adjusted_budget'] = df.apply(
+        lambda x: x['budget'] * df_inflation.get(x['movie_release_date'], 1) 
+        if pd.notna(x['budget']) else np.nan,
+        axis=1
+    )
+    df['adjusted_profit'] = df['adjusted_revenue'] - df['adjusted_budget']
+    return df
+
+def analyze_plot_structure_metrics(df):
+    """Calculate various metrics for plot structure analysis"""
+    # Revenue metrics by plot structure
+    revenue_metrics = df.groupby('plot_summary').agg({
+        'adjusted_revenue': ['mean', 'median', 'count'],
+        'adjusted_profit': ['mean', 'median'],
+        'adjusted_budget': ['mean', 'median']
+    }).round(2)
+    
+    # Success rate (percentage of profitable movies)
+    success_rate = df.groupby('plot_structure').apply(
+        lambda x: (x['adjusted_profit'] > 0).mean() * 100
+    ).round(2)
+    
+    # Time trends
+    yearly_trends = df.groupby(['movie_release_date', 'plot_structure']).size().unstack(fill_value=0)
+    
+    return revenue_metrics, success_rate, yearly_trends
+
+def get_plot_structure_correlations(df):
+    """Analyze correlations between plot structures and other features"""
+    # Create dummy variables for plot structures
+    plot_dummies = pd.get_dummies(df['plot_structure'])
+    
+    # Calculate correlations with numerical features
+    correlations = pd.DataFrame()
+    for col in ['adjusted_revenue', 'adjusted_profit', 'adjusted_budget', 'rating_score']:
+        if col in df.columns:
+            correlations[col] = plot_dummies.corrwith(df[col])
+    
+    return correlations
+
+def analyze_genre_plot_combinations(df):
+    """Analyze genre and plot structure combinations"""
+    # Explode genres if they're in a list
+    df_exploded = df.explode('movie_genres')
+    
+    # Create cross-tabulation
+    genre_plot_matrix = pd.crosstab(
+        df_exploded['movie_genres'],
+        df_exploded['plot_structure']
+    )
+    
+    # Calculate success metrics for each combination
+    genre_plot_success = df_exploded.groupby(
+        ['movie_genres', 'plot_structure']
+    )['adjusted_profit'].agg(['mean', 'median', 'count']).round(2)
+    
+    return genre_plot_matrix, genre_plot_success
+
+def perform_text_clustering(plot_summaries, n_clusters=3):
+    """Perform clustering on movie plot summaries"""
+    # Clean and prepare text
+    plot_summaries = plot_summaries.fillna('')
+    
+    # Create TF-IDF vectors
+    vectorizer = TfidfVectorizer(
+        max_features=1000,
+        stop_words='english',
+        min_df=2
+    )
+    
+    tfidf_matrix = vectorizer.fit_transform(plot_summaries)
+    
+    # Perform clustering
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    cluster_labels = kmeans.fit_predict(tfidf_matrix)
+    
+    # Get top terms per cluster
+    top_terms = []
+    feature_names = vectorizer.get_feature_names_out()
+    
+    for i in range(n_clusters):
+        center = kmeans.cluster_centers_[i]
+        top_indices = center.argsort()[-10:][::-1]  # Get indices of top 10 terms
+        top_terms.append([feature_names[idx] for idx in top_indices])
+    
+    return {
+        'matrix': tfidf_matrix,
+        'labels': cluster_labels,
+        'top_terms': top_terms
+    }
+
+def calculate_silhouette_scores(tfidf_matrix, max_clusters=6):
+    """Calculate silhouette scores for different numbers of clusters"""
+    scores = []
+    for k in range(2, max_clusters + 1):
+        kmeans = KMeans(n_clusters=k, random_state=42)
+        labels = kmeans.fit_predict(tfidf_matrix)
+        score = silhouette_score(tfidf_matrix, labels)
+        scores.append(score)
+    return scores
+
+def analyze_plot_structure_distribution(df):
+    """Analyze the distribution of plot structures"""
+    # Handle potential missing values
+    df['plot_structure'] = df['plot_structure'].str.split(':').str[0]
+    df['plot_structure_20'] = df['plot_structure_20'].str.split(':').str[0]
+    df['plot_structure'] = df['plot_structure'].fillna('Unclassified')
+    
+    # Get the counts
+    plot_counts = df['plot_structure'].value_counts()
+    
+    # Convert to percentage
+    total = len(df)
+    plot_percentages = (plot_counts / total * 100).round(1)
+    df['plot_structure_20'] = df['plot_structure_20'].fillna('Unclassified')
+    plot_counts_20 = df['plot_structure_20'].value_counts()
+    plot_percentages_20 = (plot_counts_20 / total * 100).round(1)
+    return {
+        'structures': plot_counts.index.tolist(),
+        'plot_counts': plot_counts.values.tolist(),
+        'percentages': plot_percentages.values.tolist(),
+        'structures_20': plot_counts_20.index.tolist(),
+        'plot_counts_20': plot_counts_20.values.tolist(),
+        'percentages_20': plot_percentages_20.values.tolist()
+    }
+
+def analyze_plot_structure_performance(df):
+    """Analyze performance metrics for different plot structures"""
+    # Ensure numeric columns are properly formatted
+    df['movie_box_office_revenue'] = pd.to_numeric(df['movie_box_office_revenue'], errors='coerce')
+    df['budget'] = pd.to_numeric(df['budget'], errors='coerce')
+    df['rating_score'] = pd.to_numeric(df['rating_score'], errors='coerce')
+    
+    # Calculate profit
+    df['profit'] = df['movie_box_office_revenue'] - df['budget']
+    
+    # Group by plot structure and calculate metrics
+    metrics = df.groupby('plot_structure').agg({
+        'movie_box_office_revenue': ['mean', 'count'],
+        'budget': ['mean'],
+        'profit': ['mean'],
+        'rating_score': ['mean']
+    }).round(2)
+    
+    # Filter out groups with too few movies (optional)
+    metrics = metrics[metrics[('movie_box_office_revenue', 'count')] >= 5]
+    
+    # Sort by average revenue
+    metrics = metrics.sort_values(('movie_box_office_revenue', 'mean'), ascending=False)
+    
+    return metrics
+
+def analyze_plot_structure_profit(df):
+    """Analyze profit metrics for different plot structures"""
+    # Ensure numeric columns are properly formatted
+    df['movie_box_office_revenue'] = pd.to_numeric(df['movie_box_office_revenue'], errors='coerce')
+    df['budget'] = pd.to_numeric(df['budget'], errors='coerce')
+    
+    # Calculate profit
+    df['profit'] = df['movie_box_office_revenue'] - df['budget']
+    
+    # Group by plot structure and calculate metrics
+    metrics = df.groupby('plot_structure').agg({
+        'profit': ['median', 'mean', 'count'],
+        'rating_score': ['mean']
+    }).round(2)
+    
+    # Filter out groups with too few movies
+    metrics = metrics[metrics[('profit', 'count')] >= 5]
+    
+    # Sort by median profit
+    metrics = metrics.sort_values(('profit', 'median'), ascending=False)
+    
+    return metrics
 

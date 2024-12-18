@@ -643,6 +643,104 @@ In the Industry Growth**, The bubble chart reveals the relationship between movi
 </div>
 """, unsafe_allow_html=True)
 
+
+st.markdown("##Plot Structure Analysis")
+st.write("""
+This section analyzes the underlying plot structures of movies using two approaches:
+1. Unsupervised clustering to discover emergent patterns
+2. LLM-based classification into predefined categories
+""")
+
+# Load both dataframes
+movies_bo = pd.read_csv('data/processed/movies_summary_BO.csv')
+movies_classified = pd.read_csv('data/processed/movies_with_classifications.csv')
+
+# Merge the dataframes on common identifiers
+movies = pd.merge(
+    movies_bo,
+    movies_classified[['wikipedia_movie_id', 'plot_structure', 'plot_structure_20']],
+    on='wikipedia_movie_id',
+    how='left'
+)
+
+# Create tabs for different analyses
+plot_structure_tabs = st.tabs([
+    "Clustering Analysis",
+    "LLM Classification"
+])
+
+with plot_structure_tabs[0]:
+    st.markdown("### 6.1 Clustering Analysis")
+    
+    # Perform clustering
+    with st.spinner("Performing text clustering..."):
+        clustering_results = mod.perform_text_clustering(movies['plot_summary'])
+    
+    # Calculate silhouette scores
+    with st.spinner("Calculating silhouette scores..."):
+        silhouette_scores = mod.calculate_silhouette_scores(
+            clustering_results['matrix']
+        )
+    
+    # Plot silhouette analysis
+    st.subheader("Silhouette Analysis")
+    fig_silhouette = plot_app.plot_silhouette_analysis(silhouette_scores)
+    st.plotly_chart(fig_silhouette, use_container_width=True)
+    
+    # Show clustering visualizations
+    st.subheader("Clustering Visualizations")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("T-SNE Visualization")
+        fig_tsne = plot_app.plot_clustering_visualization(
+            clustering_results['matrix'],
+            clustering_results['labels'],
+            'tsne'
+        )
+        st.plotly_chart(fig_tsne)
+    
+    with col2:
+        st.write("PCA Visualization")
+        fig_pca = plot_app.plot_clustering_visualization(
+            clustering_results['matrix'],
+            clustering_results['labels'],
+            'pca'
+        )
+        st.plotly_chart(fig_pca)
+    
+    # Show top terms per cluster
+    st.subheader("Top Terms per Cluster")
+    cols = st.columns(3)
+    for i, terms in enumerate(clustering_results['top_terms']):
+        col_idx = i % 3
+        with cols[col_idx]:
+            st.write(f"**Cluster {i+1}:**")
+            st.write(", ".join(terms))
+
+with plot_structure_tabs[1]:
+    st.markdown("### 6.2 LLM Classification")
+    st.write("""
+    We used a zero-shot classification approach with a pre-trained LLM to categorize
+    plot summaries into predefined plot structure categories.
+    """)
+    
+    # Show distribution of plot structures (now using merged data)
+    distribution_data = mod.analyze_plot_structure_distribution(movies)
+    fig_distribution = plot_app.plot_plot_structure_distribution(distribution_data)
+    st.plotly_chart(fig_distribution)
+    
+    # Show performance metrics
+    st.markdown("#### Performance by Plot Structure")
+    performance_metrics = mod.analyze_plot_structure_performance(movies)
+    st.plotly_chart(plot_app.plot_structure_performance(performance_metrics))
+    
+    # Show profit analysis
+    st.markdown("#### Profit Analysis by Plot Structure")
+    profit_metrics = mod.analyze_plot_structure_profit(movies)
+    st.plotly_chart(plot_app.plot_structure_profit(profit_metrics))
+
+
 # In your commercial success analysis section
 st.markdown("## 💰 Commercial Success Analysis")
 
@@ -722,6 +820,8 @@ with profit_tabs[2]:
         st.write("\nKruskal-Wallis Test Results:")
         st.write(f"- H-statistic: {kruskal_test.statistic:.2f}")
         st.write(f"- p-value: {kruskal_test.pvalue:.2e}")
+ 
+ 
  
  
 

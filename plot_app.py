@@ -3,6 +3,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import ast
+from sklearn.manifold import TSNE
+from sklearn.decomposition import TruncatedSVD
+import numpy as np
 
 # Helper functions
 def safe_literal_eval(val):
@@ -10,6 +13,9 @@ def safe_literal_eval(val):
         return ast.literal_eval(val)
     except (ValueError, SyntaxError):
         return val
+
+# Get Viridis colors
+viridis_colors = px.colors.sequential.Viridis
 
 # Plot functions
 def plot_movie_release_years(movies):
@@ -89,7 +95,7 @@ def plot_genre_distribution(genre_exploded):
         go.Bar(
             x=top_10_genres.index,
             y=top_10_genres.values,
-            marker_color=px.colors.qualitative.Set3,  # Using Plotly's built-in color sequence
+            marker_color=viridis_colors,  
             hovertemplate="Genre: %{x}<br>Count: %{y}<extra></extra>"
         )
     ])
@@ -233,7 +239,6 @@ def plot_revenue_heatmap(data, adjusted=True):
     column = 'Adjusted Mean' if adjusted else 'Original Mean'
     
     # Pivot data for heatmap
-    print(data.columns)
     heatmap_data = data.pivot(
         index='Genre',
         columns='Year',
@@ -363,11 +368,13 @@ def plot_silhouette_scores(k_range, scores):
 
 def plot_top_profitable_movies(data, metric='profit'):
     """Plot top profitable movies by profit or profitability ratio"""
+    colors = [px.colors.sequential.Viridis[i] for i in 
+              np.linspace(0, len(px.colors.sequential.Viridis)-1, len(data[metric])).astype(int)]
     fig = go.Figure(go.Bar(
         x=data[metric],
         y=data['movie_name'],
         orientation='h',
-        marker_color=px.colors.sequential.Viridis[3]  # Use a specific color from the Viridis sequence
+        marker_color=colors # Use a specific color from the Viridis sequence
     ))
     
     title_text = "Top 10 Movies by " + metric.replace("_", " ").title()
@@ -427,13 +434,15 @@ def plot_budget_profit_relationship(data, adjusted=True):
 def plot_roi_by_budget(roi_data):
     """Plot ROI statistics by budget range"""
     fig = go.Figure()
+    colors = [px.colors.sequential.Viridis[i] for i in 
+              np.linspace(0, len(px.colors.sequential.Viridis)-1, len(roi_data['budget_bins'])).astype(int)]
     
     # Add mean ROI bars
     fig.add_trace(go.Bar(
         name='Mean ROI',
         x=roi_data['budget_bins'],
         y=roi_data['mean'],
-        marker_color='skyblue'
+        marker_color=colors
     ))
     
     # Add median ROI bars
@@ -454,6 +463,265 @@ def plot_roi_by_budget(roi_data):
         showlegend=True
     )
     
+    return fig
+
+def plot_structure_distribution(df):
+    """Plot distribution of plot structures"""
+    plot_counts = df['plot_structure'].value_counts()
+    
+    fig = go.Figure(data=[
+        go.Bar(
+            x=plot_counts.index,
+            y=plot_counts.values,
+            marker_color=px.colors.sequential.Viridis[3]
+        )
+    ])
+    
+    fig.update_layout(
+        title='Distribution of Plot Structures',
+        xaxis_title='Plot Structure',
+        yaxis_title='Count',
+        template='plotly_dark',
+        xaxis_tickangle=45,
+        height=500
+    )
+    
+    return fig
+
+def plot_structure_performance(metrics):
+    """Plot performance metrics for different plot structures"""
+    # Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    colors = [px.colors.sequential.Viridis[i] for i in 
+              np.linspace(0, len(px.colors.sequential.Viridis)-1, len(metrics.index)).astype(int)]
+    # Add revenue bars
+    fig.add_trace(
+        go.Bar(
+            name='Box Office Revenue',
+            x=metrics.index,
+            y=metrics[('movie_box_office_revenue', 'mean')],
+            marker_color=colors
+        ),
+        secondary_y=False,
+    )
+    
+    # Add rating line
+    fig.add_trace(
+        go.Scatter(
+            name='Rating Score',
+            x=metrics.index,
+            y=metrics[('rating_score', 'mean')],
+            mode='lines+markers',
+            marker_color=viridis_colors[7]
+        ),
+        secondary_y=True,
+    )
+
+    
+    # Update layout
+    fig.update_layout(
+        title='Plot Structure Performance Metrics',
+        xaxis=dict(
+            tickangle=45,
+            title='Plot Structure',
+            tickfont=dict(size=10)
+        ),
+        yaxis=dict(
+            title='Average Box Office Revenue ($)',
+            titlefont=dict(color='rgb(55, 83, 109)'),
+            tickfont=dict(color='rgb(55, 83, 109)')
+        ),
+        yaxis2=dict(
+            title='Average Rating Score',
+            titlefont=dict(color='rgb(26, 118, 255)'),
+            tickfont=dict(color='rgb(26, 118, 255)')
+        ),
+        showlegend=True,
+        height=600,
+        margin=dict(l=50, r=50, t=50, b=200)
+    )
+    
+    return fig
+
+def plot_genre_plot_heatmap(genre_plot_matrix):
+    """Create heatmap of genre-plot structure relationships"""
+    fig = go.Figure(data=go.Heatmap(
+        z=genre_plot_matrix.values,
+        x=genre_plot_matrix.columns,
+        y=genre_plot_matrix.index,
+        colorscale='Viridis'
+    ))
+    
+    fig.update_layout(
+        title='Genre-Plot Structure Relationship Heatmap',
+        xaxis_title='Plot Structure',
+        yaxis_title='Genre',
+        template='plotly_dark',
+        height=600,
+        xaxis_tickangle=45
+    )
+    
+    return fig
+
+def plot_structure_trends(yearly_trends):
+    """Plot trends in plot structure usage over time"""
+    fig = go.Figure()
+    
+    for structure in yearly_trends.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=yearly_trends.index,
+                y=yearly_trends[structure],
+                name=structure,
+                mode='lines+markers'
+            )
+        )
+    
+    fig.update_layout(
+        title='Plot Structure Trends Over Time',
+        xaxis_title='Year',
+        yaxis_title='Number of Movies',
+        template='plotly_dark',
+        height=500,
+        showlegend=True
+    )
+    
+    return fig
+
+def plot_silhouette_analysis(scores):
+    """Plot silhouette scores for different numbers of clusters"""
+    fig = go.Figure(data=[
+        go.Scatter(
+            x=list(range(2, len(scores) + 2)),
+            y=scores,
+            mode='lines+markers',
+            marker=dict(color=viridis_colors[3]),
+            line=dict(color=viridis_colors[3])
+        )
+    ])
+    
+    fig.update_layout(
+        title='Silhouette Score vs Number of Clusters',
+        xaxis_title='Number of Clusters',
+        yaxis_title='Silhouette Score',
+        template='plotly_dark'
+    )
+    return fig
+
+def plot_clustering_visualization(matrix, labels, method='tsne'):
+    """Plot clustering results using dimensionality reduction"""
+    if hasattr(matrix, 'toarray'):
+        matrix = matrix.toarray()
+    
+    if method == 'tsne':
+        X_reduced = TSNE(n_components=2, random_state=42, init='random', learning_rate='auto').fit_transform(matrix)
+    else:
+        X_reduced = TruncatedSVD(n_components=2, random_state=42).fit_transform(matrix)
+    
+    fig = go.Figure(data=go.Scatter(
+        x=X_reduced[:, 0],
+        y=X_reduced[:, 1],
+        mode='markers',
+        marker=dict(
+            color=labels,
+            colorscale=viridis_colors,
+            showscale=True,
+            size=8
+        ),
+        text=[f'Cluster {l}' for l in labels]
+    ))
+    
+    method_name = 'T-SNE' if method == 'tsne' else 'SVD'
+    fig.update_layout(
+        title=f'Clustering Visualization using {method_name}',
+        template='plotly_dark',
+        height=500,
+        width=600
+    )
+    return fig
+
+def plot_plot_structure_distribution(data):
+    """Plot distribution of plot structures"""
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    
+    sorted_indices = sorted(range(len(data['percentages'])), 
+                          key=lambda k: data['percentages'][k],
+                          reverse=True)
+    
+    sorted_structures = [data['structures'][i] for i in sorted_indices]
+    sorted_counts = [data['plot_counts'][i] for i in sorted_indices]
+    sorted_percentages = [data['percentages'][i] for i in sorted_indices]
+    
+    # Generate colors from Viridis palette
+    n_structures = len(sorted_structures)
+    colors = [px.colors.sequential.Viridis[i] for i in 
+              np.linspace(0, len(px.colors.sequential.Viridis)-1, n_structures).astype(int)]
+    
+    fig.add_trace(
+        go.Bar(
+            x=sorted_structures,
+            y=sorted_counts,
+            name="Count",
+            marker_color=colors
+        ),
+        secondary_y=False,
+    )
+    
+    fig.add_trace(
+        go.Scatter(
+            x=sorted_structures,
+            y=sorted_percentages,
+            name="Percentage",
+            marker_color=viridis_colors[7],
+            mode='lines+markers'
+        ),
+        secondary_y=True,
+    )
+    
+    fig.update_layout(
+        title='Distribution of Plot Structures',
+        template='plotly_dark',
+        height=600,
+        margin=dict(l=50, r=50, t=50, b=200)
+    )
+    return fig
+
+def plot_structure_profit(metrics):
+    """Plot profit metrics for different plot structures"""
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    
+    # Generate colors from Viridis palette
+    n_structures = len(metrics.index)
+    colors = [px.colors.sequential.Viridis[i] for i in 
+              np.linspace(0, len(px.colors.sequential.Viridis)-1, n_structures).astype(int)]
+    
+    fig.add_trace(
+        go.Bar(
+            name='Median Profit',
+            x=metrics.index,
+            y=metrics[('profit', 'median')],
+            marker_color=colors
+        ),
+        secondary_y=False,
+    )
+    
+    fig.add_trace(
+        go.Scatter(
+            name='Mean Profit',
+            x=metrics.index,
+            y=metrics[('profit', 'mean')],
+            mode='lines+markers',
+            marker_color=viridis_colors[7]
+        ),
+        secondary_y=False,
+    )
+    
+    fig.update_layout(
+        title='Plot Structure Profit Analysis',
+        template='plotly_dark',
+        height=600,
+        margin=dict(l=50, r=50, t=50, b=200)
+    )
     return fig
 
 
