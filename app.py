@@ -174,20 +174,46 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("""
-We cleaned data, merged with IMDb dataset, and retained movies with both box office and plot summaries.
-""")
+<div style="font-size:18px; text-align:center;">
+We made a part of preprocessing in order to get a cleaned dataset and to fill in missing box office revenues. First 
+we merged the CMU Movie Corpus dataset with the IMDb dataset to get more information about the movies.  
+<br><br>
+""", unsafe_allow_html=True)
 
-st.markdown("""
-**Resulting dataset:** `movies_summary_BO.csv` with ~7,964 movies.
-""")
-
-#with st.expander("No Filters"):
-    #st.info("Preprocessing steps are explained; no filters apply.")
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-Blablabla rapide sur le preprocessing, nettoyage des données, tout clean etc.   
+Kaggle IMDb dataset may be found following this link : <a href="https://www.kaggle.com/datasets/carolzhangdc/imdb-5000-movie-dataset" target="_blank">IMDb Dataset</a>   
 <br><br>
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+We keep only movies with an available box office revenue and plot summary in order to make consistent analyses.  
+<br><br>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="text-align:center; font-size:24px; font-family: 'Cursive', sans-serif;">
+    Did you think of Web scraping to get budget values ? 
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+The web scraping is useful to complete our dataset with additional features that can be useful for further analysis, notably film budget.
+We use Web Scraping with Selenium that simulates a browser to access IMDb pages dynamically.
+We extract structured details like box office revenue, budget, and ratings directly from the website. Wikipedia API helps fetches data 
+programmatically without loading full web pages. <br><br>
+""", unsafe_allow_html=True)  
+
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+This also helps answer the following key questions about movie success, 
+does a larger budget always result in higher box office earnings?
+ <br><br>
 """, unsafe_allow_html=True)
 
 st.markdown("---")
@@ -343,6 +369,12 @@ st.markdown("""
     <h2>How genres are related to box offices revenues and commercial success  
 </h2>
 </div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+You can select here a year range to see what are the top genres across the years :   
+ <br><br>
 """, unsafe_allow_html=True)
 
 with st.expander("Filters for Genre Analysis"):
@@ -365,7 +397,14 @@ This may be an excellent question for a filmmakers, we want a movie to generate 
 
 #Use same filter
 fig7 = plot_app.plot_genre_revenue(mean_revenues)
-st.plotly_chart(fig7, use_container_width=True)
+st.plotly_chart(fig7, use_container_width=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+In terms of mean revenues, Movies About Gladiators and Humor are the ones generating the highest revenues ! But here, we don't have 
+any information about the budget, nor inflation !  
+<br><br> 
+""", unsafe_allow_html=True) 
 
 
 st.markdown("""
@@ -398,9 +437,16 @@ This adjustment helps us:
 - Make more accurate assessments of commercial success
 </div>
 <br>
+""", unsafe_allow_html=True)  
+
+ 
+st.markdown("""
+<div style="text-align:center;">
+    <h2>💰 Inflation-Adjusted Revenue Analysis  
+</h2>
+</div>
 """, unsafe_allow_html=True)
 
-st.markdown("## 💰 Inflation-Adjusted Revenue Analysis")
 
 # Add filters in an expander
 with st.expander("Adjust Analysis Parameters"):
@@ -442,21 +488,44 @@ revenue_data = mod.process_inflation_data(
 
 # Display the plot
 fig = plot_app.plot_inflation_comparison(revenue_data, metric=metric)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+What really makes a movie successful, big numbers overall or a few standout hits? The total revenue from the 1990s and 2000s looks huge, but that’s mostly because so many movies were made during those years. More movies mean higher totals, but does that really show success?
+
+To get a better picture, we look at **mean** and **max revenue**:
+- **Mean Revenue** gives us the average, showing how movies performed overall each year without being overwhelmed by how many were released.
+- **Max Revenue** focuses on the biggest hits—the movies that smashed records and left their mark.
+
+If we stick with total revenue, we miss the real stars and trends. By focusing on **averages and standouts**, we can better figure out what makes a movie truly successful.
+
+</div>
+<br>
+""", unsafe_allow_html=True)
 
 # Add explanatory text
 st.markdown("""
-<div style="font-size:18px; text-align:justify;">
+<div style="font-size:18px; text-align:center;">
 The graphs above show how movie revenues have changed over time, both in original and 
-inflation-adjusted terms. This comparison helps us understand:
+inflation-adjusted terms. This comparison helps us to understand, how the value of movie earnings has changed over time.
+The true financial impact of movies when accounting for inflation. Which eras were most successful in today's monetary terms
+</div>
+""", unsafe_allow_html=True)  
 
-- How the value of movie earnings has changed over time
-- The true financial impact of movies when accounting for inflation
-- Which eras were most successful in today's monetary terms
+st.markdown("""
+<div style="text-align:center;">
+    <h2>📊 Detailed Revenue Analysis with Genres 
+</h2>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("## 📊 Detailed Revenue Analysis")
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+Let's analyse how genres are related to box office revenues. You can select genre distribution influence, genre trends,  
+revenue heatmap and bubble chart. 
+</div>
+""", unsafe_allow_html=True)
 
 # Create tabs for different visualizations
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -470,12 +539,15 @@ with tab1:
     st.markdown("### Revenue Distribution by Decade")
     use_adjusted = st.checkbox("Show Inflation Adjusted Values", value=True, key="dist_adjusted")
     dist_fig = plot_app.plot_revenue_distribution(revenue_data, adjusted=use_adjusted)
-    st.plotly_chart(dist_fig, use_container_width=True)
-    
+    st.plotly_chart(dist_fig, use_container_width=True)  
+
     st.markdown("""
-    This visualization shows how movie revenues are distributed across decades, 
+<div style="font-size:18px; text-align:center;">
+This visualization shows how movie revenues are distributed across decades, 
     helping identify shifts in the industry's financial landscape.
-    """)
+</div>
+""", unsafe_allow_html=True)
+
 
 with tab2:
     st.markdown("### Revenue Trends by Genre")
@@ -545,16 +617,31 @@ with tab4:
     - Hover over bubbles for detailed information
     """)
 
-# Add overall insights
-st.markdown("""
----
-### 🔍 Key Insights
+# Add overall insights  
 
-1. **Temporal Patterns**: The distribution analysis shows how revenue patterns have evolved over decades
-2. **Genre Performance**: Certain genres consistently outperform others when adjusted for inflation
-3. **Industry Growth**: The bubble chart reveals the relationship between movie volume and revenue
-4. **Rating Impact**: Higher-rated movies tend to generate more revenue across most genres
-""")
+st.markdown("""
+<div style="text-align:center;">
+    <h2>🔍 Key Insights 
+</h2>
+</div>
+""", unsafe_allow_html=True)   
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+There are Temporal Patterns, the distribution analysis shows how revenue patterns have evolved over decades. 
+In the inflation-adjusted view, Family Films, Fantasy and Dramas rise to the top, showcasing their enduring 
+appeal and the lasting power of their stories. On the other hand, the non-adjusted view highlights the dominance 
+of blockbuster genres like Adventure, Action, and Fantasy, driven by modern budgets and global excitement.
+<br><br>
+</div>
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+<div style="font-size:18px; text-align:center;">
+There are also Genre Performance, certain genres consistently outperform others when adjusted for inflation. 
+In the Industry Growth**, The bubble chart reveals the relationship between movie volume and revenue
+</div>
+""", unsafe_allow_html=True)
 
 # In your commercial success analysis section
 st.markdown("## 💰 Commercial Success Analysis")
