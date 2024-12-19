@@ -14,6 +14,16 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.preprocessing import PolynomialFeatures
 
 def enhance_features(X_train, X_test):
+    """
+    Enhance the features of the training and test datasets by adding polynomial features 
+    for numerical variables and creating a genre count feature.
+    Parameters:
+    X_train (pd.DataFrame): The training dataset containing the features.
+    X_test (pd.DataFrame): The test dataset containing the features.
+    Returns:
+    pd.DataFrame: The enhanced training dataset with additional features.
+    pd.DataFrame: The enhanced test dataset with additional features.
+    """
     # Extract numerical columns
     numerical_cols = ['movie_release_date', 'budget', 'movie_runtime']
     # 1. Create polynomial features for numerical variables
@@ -37,6 +47,19 @@ def enhance_features(X_train, X_test):
     return X_train, X_test
 
 def enhance_features_inflated(X_train, X_test):
+    """
+    Enhance features by adding polynomial features and genre count.
+    Parameters:
+    X_train (pd.DataFrame): Training data containing features.
+    X_test (pd.DataFrame): Test data containing features.
+    Returns:
+    pd.DataFrame: Enhanced training data with additional features.
+    pd.DataFrame: Enhanced test data with additional features.
+    The function performs the following steps:
+    1. Creates polynomial features for numerical variables: 'movie_release_date', 'adjusted_budget', and 'movie_runtime'.
+    2. Adds the polynomial features back to the original dataframes.
+    3. Creates a genre count feature by summing up the genre columns that start with 'movie_genres_'.
+    """
     # Extract numerical columns
     numerical_cols = ['movie_release_date', 'adjusted_budget', 'movie_runtime']
     # 1. Create polynomial features for numerical variables
@@ -60,6 +83,15 @@ def enhance_features_inflated(X_train, X_test):
     return X_train, X_test
 
 def add_plot_structure_cluster(col):
+    """
+    Perform text vectorization using TF-IDF and cluster the resulting vectors using KMeans.
+
+    Parameters:
+    col (iterable): An iterable containing text data to be vectorized and clustered.
+
+    Returns:
+    numpy.ndarray: An array of cluster labels assigned to each input text.
+    """
     # Text Vectorization with TF-IDF
     tfidf_vectorizer = TfidfVectorizer(max_features=3000, stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(col)
@@ -72,6 +104,16 @@ def add_plot_structure_cluster(col):
     return kmeans.fit_predict(combined_matrix)
 
 def list_to_1_hot(df, column_name):
+    """
+    Converts a column of lists in a DataFrame to one-hot encoded columns.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame containing the column to be one-hot encoded.
+    column_name (str): The name of the column in the DataFrame that contains lists to be one-hot encoded.
+
+    Returns:
+    pd.DataFrame: The DataFrame with the specified column replaced by one-hot encoded columns.
+    """
     mlb = MultiLabelBinarizer()
     one_hot_df = pd.DataFrame(mlb.fit_transform(df[column_name]), columns=mlb.classes_, index=df.index)
     df = pd.concat([df, one_hot_df], axis=1)
@@ -79,15 +121,55 @@ def list_to_1_hot(df, column_name):
     return df
 
 def split_x_y(df, y_column, x_columns_to_drop):
+    """
+    Splits a DataFrame into features (X) and target (Y) based on specified columns.
+
+    Parameters:
+    df (pandas.DataFrame): The input DataFrame.
+    y_column (str): The name of the column to be used as the target variable (Y).
+    x_columns_to_drop (list of str): A list of column names to be dropped from the DataFrame to form the features (X).
+
+    Returns:
+    tuple: A tuple containing two elements:
+        - x (pandas.DataFrame): The DataFrame containing the features.
+        - y (pandas.Series): The Series containing the target variable.
+    """
     y = df[y_column]
     x = df.drop(columns=x_columns_to_drop)
     return x, y
 
 def split_train_test(x, y, test_size=0.2):
+    """
+    Splits the input data into training and testing sets.
+
+    Parameters:
+    x (array-like): Features dataset.
+    y (array-like): Target dataset.
+    test_size (float, optional): Proportion of the dataset to include in the test split. Default is 0.2.
+
+    Returns:
+    tuple: A tuple containing four elements:
+        - x_train (array-like): Training features.
+        - x_test (array-like): Testing features.
+        - y_train (array-like): Training targets.
+        - y_test (array-like): Testing targets.
+    """
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, random_state=42)
     return x_train, x_test, y_train, y_test
 
 def scale_data(x_train, x_test):
+    """
+    Scales the training and testing data using StandardScaler.
+
+    Parameters:
+    x_train (pd.DataFrame): The training data to be scaled.
+    x_test (pd.DataFrame): The testing data to be scaled.
+
+    Returns:
+    tuple: A tuple containing two pandas DataFrames:
+        - x_train_df (pd.DataFrame): The scaled training data.
+        - x_test_df (pd.DataFrame): The scaled testing data.
+    """
     scaler = sklearn.preprocessing.StandardScaler()
     train = scaler.fit_transform(x_train)
     test = scaler.transform(x_test)
@@ -96,6 +178,28 @@ def scale_data(x_train, x_test):
     return x_train_df, x_test_df
 
 def preprocess4linreg(df, y_column, x_columns_to_drop, test_size=0.2):
+    """
+    Preprocesses the input DataFrame for linear regression by performing the following steps:
+    1. Converts categorical variables 'plot_structure' and 'plot_structure_cluster' to dummy variables if they are not in x_columns_to_drop.
+    2. Converts 'movie_genres' and 'movie_countries' columns to one-hot encoded format.
+    3. Splits the DataFrame into features (X) and target (y) based on y_column and x_columns_to_drop.
+    4. Splits the data into training and testing sets.
+    5. Scales the training and testing feature sets.
+    6. Adds a constant term to the feature sets for regression.
+    7. Fills any missing values in the feature sets with the mean of the training set.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame containing the data.
+    y_column (str): The name of the target column.
+    x_columns_to_drop (list): List of column names to drop from the features.
+    test_size (float): The proportion of the dataset to include in the test split.
+    Returns:
+    tuple: A tuple containing the following elements:
+        - X_train_scaled_df (pd.DataFrame): The preprocessed and scaled training feature set with a constant term.
+        - X_test_scaled_df (pd.DataFrame): The preprocessed and scaled testing feature set with a constant term.
+        - y_train_no_index (pd.Series): The training target set with reset index.
+        - y_test_no_index (pd.Series): The testing target set with reset index.
+    """
     if 'plot_structure' not in x_columns_to_drop :
         df = pd.get_dummies(df, columns=['plot_structure'], drop_first=True, dtype=int)
     
