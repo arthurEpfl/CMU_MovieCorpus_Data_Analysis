@@ -64,9 +64,15 @@ def plot_top_countries(movies):
     movies['movie_countries'] = movies['movie_countries'].apply(safe_literal_eval)
     movies_countries_exploded = movies[movies['movie_countries'].map(len) > 0].explode('movie_countries')
     top_countries = movies_countries_exploded['movie_countries'].value_counts().head(10)
+    
+    # Ensure United States of America appears first
+    if 'United States of America' in top_countries.index:
+        top_countries = top_countries.reindex(['United States of America'] + [country for country in top_countries.index if country != 'United States of America'])
+    
     fig = px.bar(top_countries, x=top_countries.values, y=top_countries.index, orientation='h',
                  title='Top 10 Countries by Number of Movies Produced',
-                 labels={'x': 'Number of Movies', 'y': 'Countries'})
+                 labels={'x': 'Number of Movies', 'y': 'Countries'},
+                 color=top_countries.index, color_continuous_scale='coolwarm')
     fig.update_layout(xaxis_title='Number of Movies', yaxis_title='Countries')
     return fig
 

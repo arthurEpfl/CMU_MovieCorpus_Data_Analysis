@@ -388,7 +388,7 @@ st.markdown("""
     }
     </style>
     <div style="text-align:center;">
-        <span class="text-viridis-light">Now, what is the distribution of movies by countries ?</span>
+        <span class="text-viridis-light">Now, what is the distribution of movies by countries in the dataset ?</span>
     </div>
 """, unsafe_allow_html=True)
   
