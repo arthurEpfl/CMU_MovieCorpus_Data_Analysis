@@ -358,3 +358,23 @@ def analyze_plot_structure_profit(df):
     
     return metrics
 
+def analyze_genre_profit(df):
+    """Analyze profit metrics for different genres"""
+    # Ensure numeric columns are properly formatted
+    df['movie_box_office_revenue'] = pd.to_numeric(df['movie_box_office_revenue'], errors='coerce')
+    df['budget'] = pd.to_numeric(df['budget'], errors='coerce')
+    
+    df['profit'] = df['movie_box_office_revenue'] - df['budget']
+    
+    df['movie_genres'] = df['movie_genres'].apply(ast.literal_eval)
+    df_exploded = df.explode('movie_genres')
+    
+    metrics = df_exploded.groupby('movie_genres').agg({
+        'profit': ['median', 'mean', 'count']
+    }).round(2)
+    
+    metrics = metrics[metrics[('profit', 'count')] >= 10]
+    metrics = metrics.sort_values(('profit', 'median'), ascending=False)
+    
+    return metrics
+

@@ -218,11 +218,10 @@ is its success due to its genre, its plot structure, Jack Dawson itself, Rose De
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
 Noticing here that there are almost 90% of movies that do not have 
-revenue in the CMU movie dataset, this is an issue for our project, 
+revenue in the CMU movie dataset, posing an issue, 
 as we want to investigate how different plot structures and narrative 
-formulas affect a movie’s box office success. An other dataset will be 
-used to get this information. Further methods during preprocessing will 
-be used, such as merging with full IMDb dataset and web scraping on IMDb, 
+formulas affect a movie’s box office success. Further methods during preprocessing will 
+be used, such as merging with an additional full IMDb dataset and web scraping on IMDb, 
 to complete these missing values. 
 <br><br>
 """, unsafe_allow_html=True)
@@ -247,7 +246,7 @@ st.markdown("""
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-We made a part of preprocessing in order to get a cleaned dataset and to fill in missing box office revenues. First 
+Preprocessing steps were implemented in order to get a clean dataset and to fill in missing box office revenues. First 
 we merged the CMU Movie Corpus dataset with the IMDb dataset to get more information about the movies.  
 <br><br>
 """, unsafe_allow_html=True)
@@ -262,7 +261,7 @@ Kaggle IMDb dataset may be found following this link : <a href="https://www.kagg
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-We keep only movies with an available box office revenue and plot summary in order to make consistent analyses.  
+We only keep movies with an available box office revenue and plot summary in order to make consistent analyses.  
 <br><br>
 """, unsafe_allow_html=True)  
 
@@ -285,9 +284,9 @@ st.markdown("""
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-The web scraping is useful to complete our dataset with additional features that can be useful for further analysis, notably film budget.
+The web scraping was implemented to complete our dataset with additional features that are essential for further analysis, notably film budget.
 We use Web Scraping with Selenium that simulates a browser to access IMDb pages dynamically.
-We extract structured details like box office revenue, budget, and ratings directly from the website. Wikipedia API helps fetches data 
+We extract structured details like box office revenue, budget, and ratings directly from the website. Wikipedia API helped fetch data 
 programmatically without loading full web pages. <br><br>
 """, unsafe_allow_html=True)  
 
@@ -324,8 +323,8 @@ st.markdown("""
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-Let's analyse the data and see what we can find out about the movies, now that we have more informations. Let's
-            first see what are the movie release years !
+Let's analyse the data and see what we can find out about the movies, now that we have more information. Let's
+            first look at the distribution of movie release years !
 <br><br>
 """, unsafe_allow_html=True)
 # Interactive Plot: Movie Release Years  
@@ -336,10 +335,10 @@ st.plotly_chart(fig1)
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
 Before diving into what makes movies successful, we checked how the number of movies with box office data has changed over time. 
-In the early years, before the 1930s, there’s barely any data, it was just the start of the industry. 
+For the earlier years, before the 1930s, there’s barely any data, it was just the start of the industry. 
 By the mid-1900s, things picked up as Hollywood grew. In the 2000s, movies exploded, thanks to global markets and big franchises 
 like Harry Potter. The dip after 2013 is probably just missing data for newer films. 
-Now that we’ve seen this growth, it’s time to figure out what actually makes a movie a hit—plot, genre, or something else?
+Now that we’ve seen this growth, it’s time to figure out what actually makes a movie a hit? Plot, genre, or something else?
 <br><br>
 """, unsafe_allow_html=True)
 
@@ -356,7 +355,7 @@ st.markdown("""
     }
     </style>
     <div style="text-align:center;">
-        <span class="text-viridis-light">Now, what are the box office revenues by years?</span>
+        <span class="text-viridis-light">Now, how is the total box office revenue for all movies distributed?</span>
     </div>
 """, unsafe_allow_html=True)
 
@@ -366,8 +365,8 @@ st.plotly_chart(fig2)
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-After looking at how the number of movies changed, we now check how much money movies have made over the years. 
-Revenues stayed pretty low until the 1990s, but then they shot up, peaking in the 2010s.  
+We now look at how much money movies have made over the years. 
+We can observe revenues stayed pretty low until the 1990s, but then they shot up, peaking in the 2010s.  
 This boom lines up with the rise of huge franchises like Harry Potter and The Avengers and the growth of global 
 audiences.
 The dip after 2019 is probably just missing data for newer movies. This trend makes us wonder—what’s really driving 
@@ -388,10 +387,10 @@ st.markdown("""
     }
     </style>
     <div style="text-align:center;">
-        <span class="text-viridis-light">Now, what is the distribution of movies by countries in the dataset ?</span>
+        <span class="text-viridis-light">Now, where are the movies produced ?</span>
     </div>
-""", unsafe_allow_html=True)
-  
+""", unsafe_allow_html=True)  
+
 
 fig3 = plot_app.plot_top_countries(movies)
 st.plotly_chart(fig3)  
@@ -422,7 +421,7 @@ st.markdown("""
     }
     </style>
     <div style="text-align:center;">
-        <span class="text-viridis-light">Now, what is the language distribution in movies ?</span>
+        <span class="text-viridis-light">Now, what is the language distribution over time in movies ?</span>
     </div>
 """, unsafe_allow_html=True)  
 
@@ -514,7 +513,7 @@ st.markdown("""
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-You can select here a year range to see what are the top genres across the years :   
+Here, you can select a year range to explore the top genres within that period. :   
  <br><br>
 """, unsafe_allow_html=True)
 
@@ -528,13 +527,17 @@ st.plotly_chart(fig6, use_container_width=True)
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-We notice here, in terms of frequency in percentage, Drama movies are the most distributed ones, 
-followed by comedy movies and thrillers. We display here only the 10 most distributed ones in the 
-processed dataset. We now have a question, which genres are generating the highest revenues ? 
-This may be an excellent question for a filmmakers, we want a movie to generate money, right ? 
+We observe that drama movies dominate in terms of frequency, followed by comedy and thriller movies. 
+Here, we display only the top 10 most frequent genres in the processed dataset.
+This raises the question, which genres generate the highest revenues? 
+For filmmakers, this is a critical question, after all, the goal is to create a movie that generates money, right?
 <br><br> 
 """, unsafe_allow_html=True) 
 
+with st.expander("Filters for Genre Analysis"):
+    genre_year_range = st.slider("Year Range for Mean Revenue By Genre Analysis", 1900, 2020, (1980, 2000))
+
+genre_exploded, mean_revenues = mod.return_processed_genre_df(movies, genre_year_range)
 
 #Use same filter
 fig7 = plot_app.plot_genre_revenue(mean_revenues)
@@ -542,10 +545,28 @@ st.plotly_chart(fig7, use_container_width=True)
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-In terms of mean revenues, Movies About Gladiators and Humor are the ones generating the highest revenues ! But here, we don't have 
+In terms of mean revenues, Movies About Gladiators and Humor are the ones generating the highest revenues ! But this doesn't take into account
 any information about the budget, nor inflation !  
 <br><br> 
 """, unsafe_allow_html=True) 
+
+
+movies_bo_1 = pd.read_csv('data/processed/movies_summary_BO.csv')
+movies_classified_1 = pd.read_csv('data/processed/movies_with_classifications.csv')
+
+# Merge the dataframes on common identifiers
+movies = pd.merge(
+    movies_bo_1,
+    movies_classified_1[['wikipedia_movie_id', 'plot_structure', 'plot_structure_20']],
+    on='wikipedia_movie_id',
+    how='left'
+)  
+
+with st.expander("Filters for Genre Analysis"):
+    genre_year_range = st.slider("Year Range for Mean Profit By Genre Analysis", 1900, 2020, (1980, 2000))
+
+genre_profit_metrics = mod.analyze_genre_profit(movies)
+st.plotly_chart(plot_app.plot_genre_profit(genre_profit_metrics))
 
 
 st.markdown("""
@@ -755,7 +776,7 @@ with tab2:
         selected_genres = st.multiselect(
             "Select Genres to Compare",
             options=all_genres,
-            default=all_genres[:5],
+            default=all_genres[:15],
             key="trend_genres"
         )
     
@@ -828,7 +849,7 @@ st.markdown("""
 <div style="font-size:18px; text-align:center;">
 Same pattern is observed if one considers inflation or not, only the scale for revenues in USD 
 is changing here. But the mean is really sensible to outliers, some successful movies such as Avatar 
-or Titanic may do have a strong impact on the mean. We need an other tool to do this analysis, something more robust than the mean : the median !
+or Titanic may have a strong impact on the mean. We need another tool to do this analysis, something more robust than the mean : the median !
 </div>
 """, unsafe_allow_html=True)  
 
@@ -858,7 +879,7 @@ st.markdown("""
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-Let's define a value that wil be useful. the profitability ratio, defined as the ratio of the profit to the budget.  
+Let's define a value that wil be useful. the profitability ratio, defined as the ratio between the profit and the budget.  
 <br><br>  
 </div>
 """, unsafe_allow_html=True)  
@@ -876,17 +897,17 @@ with col2:
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-The movie Avatar has a budget of 237 million USD and a revenue of 2.8 billion USD.  
+The movie Avatar has a budget of 237 million USD and a revenue of 2.8 billion USD, 
+resulting in a profitability ratio of 10.81. 
 <br><br> 
 </div>  
 """, unsafe_allow_html=True)  
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-On the other hand, in terms of profitability ratio, Paranormal Activity has a profitability ratio of 12'889 ! As an example 
-also, As an example, the movie <a href="https://en.wikipedia.org/wiki/The_Last_Broadcast_(film)">The Last Broadcast</a> is interesting, it only costed 900 dollars to be produced 
-and it generated 4 millions of dollars as worldwide revenue. The film was made on a budget of 900 dollars, 
-and edited on a desktop computer using Adobe Premiere 4.2. 600 dollars were allocated for 
+On the other hand, in terms of profitability ratio, Paranormal Activity is more profitable with a profitability ratio of 12'889 ! As another example, the movie <a href="https://en.wikipedia.org/wiki/The_Last_Broadcast_(film)">The Last Broadcast</a> is interesting, it only costed 900 dollars to be produced 
+and it generated over 4 millions of dollars of worldwide revenue. The film was made with a budget of 900 dollars, 
+and edited on a desktop computer using Adobe Premiere 4.2, 600 dollars were allocated for 
 production, while 240 dollars were utilized for digital video stock, and twenty hours of tape for 
 12 dollars each. 
 </div>
@@ -923,8 +944,7 @@ st.markdown("""
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-This section analyzes the underlying plot structures of movies using two approaches: Unsupervised clustering to discover emergent patterns and LLM-based classification into predefined categories.  
-Firstly, let's have a look to Clustering analysis :  
+This section analyzes the underlying plot structures of movies using two approaches: Unsupervised clustering to discover emergent patterns and LLM-based classification into predefined categories.   
 <br><br>
 </div>
 """, unsafe_allow_html=True) 
@@ -1107,7 +1127,7 @@ To generate the summarized version of the plot summaries, we are using a pre-tra
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-After having our summarized plot summaries, we create our pipeline for classification, and classify our summarized plot summaries into plot structure categories. We use the pre-trained transformer model (`facebook/bart-large-mnli`) for zero-shot classification of movie plot summaries, since the model fits perfectly our task.
+After having our summarized plot summaries, we create our pipeline for classification, and classify our summarized plot summaries into plot structure categories. We use the pre-trained transformer model (`facebook/bart-large-mnli`) for zero-shot classification of movie plot summaries.
 
 </div>
 """, unsafe_allow_html=True)  
@@ -1127,8 +1147,8 @@ st.markdown("""
 <div style="font-size:18px; text-align:center;">
 Additionally, since we use zero-shot classification, we adapted the categories to be distinct and descriptive enough for the model to differentiate between them.  
 It gives use 15 candidate categories. Finally, we tried the same zero-shot classification with different candidate categories.
-The goal is to capture a broader range of narrative structures. We tried with 23 different categories,  
-but as the results were not satisfying, we decided to keep the 15 categories for this part.   
+The goal was to capture a broader range of narrative structures. We tried with 23 different categories,  
+but as the results were not satisfying, we decided to keep 15 categories for this part.   
 <br><br>
 </div>
 """, unsafe_allow_html=True)  
@@ -1156,8 +1176,7 @@ st.markdown("""
 <div style="font-size:18px; text-align:center;">
 
 The plot structures "Conflict with Supernatural or Unknown Forces", "Comedy of Errors or Misadventure" 
-and "Hero's Journey and "Transformation" are the most represented ones. Drama Comedy and Action are the most represented genres, 
-as here, 887 Drama movies are categorized in "Hero's Journey and Transformation". 
+and "Hero's Journey and "Transformation" are the most represented ones. Drama Comedy and Action are the most represented genres.
 </div>
 """, unsafe_allow_html=True)  
  
@@ -1182,7 +1201,7 @@ st.plotly_chart(plot_app.plot_structure_performance(performance_metrics))
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-The plot structure "Quest for Vengeance or Justice" has the highest mean box office revenues. What about profits ?  
+The plot structure "Quest for Vengeance or Justice" has the highest mean box office revenue. How about profit ?  
 <br><br>    
 </div>
 """, unsafe_allow_html=True)  
@@ -1298,21 +1317,8 @@ with profit_tabs[0]:
         st.plotly_chart(fig_roi, use_container_width=True)
 
 with profit_tabs[1]:
-    st.markdown("### Budget vs Profit Relationship")
-    fig_budget = plot_app.plot_budget_profit_relationship(movies_with_profit)
-    st.plotly_chart(fig_budget, use_container_width=True)
-    
-    # Add correlation statistics
-    col1, col2 = st.columns(2)
-    with col1:
-        pearson = movies_with_profit['budget'].corr(movies_with_profit['profit'])
-        st.metric("Pearson Correlation", f"{pearson:.3f}")
-    with col2:
-        spearman = movies_with_profit['budget'].corr(
-            movies_with_profit['profit'], 
-            method='spearman'
-        )
-        st.metric("Spearman Correlation", f"{spearman:.3f}")
+    st.markdown("#### Budget vs Profit Relationship")
+    st.plotly_chart(plot_app.plot_budget_profit_relationship(movies))
 
 with profit_tabs[2]:
     st.markdown("### Return on Investment Analysis")
@@ -1496,8 +1502,8 @@ Sven, Anders, Adam, Malak, Arthur.
 
 
 
-
 st.markdown("""21""", unsafe_allow_html=True)
+
 
 
 
