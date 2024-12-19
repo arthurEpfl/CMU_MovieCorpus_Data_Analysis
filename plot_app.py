@@ -127,6 +127,7 @@ def plot_genre_distribution(genre_exploded):
 
 def plot_genre_revenue(mean_revenues):
     # Create interactive bar plot with Plotly
+    mean_revenues = mean_revenues.sort_values(by='movie_box_office_revenue', ascending=False).head(15)
     fig = px.bar(mean_revenues,
                  x='movie_genres',
                  y='movie_box_office_revenue',
@@ -398,41 +399,86 @@ def plot_top_profitable_movies(data, metric='profit'):
     
     return fig
 
-def plot_budget_profit_relationship(data, adjusted=True):
-    """Plot budget vs profit relationship with inflation adjustment option"""
-    budget_col = 'adjusted_budget' if adjusted else 'budget'
-    profit_col = 'adjusted_profit' if adjusted else 'profit'
+def plot_budget_profit_relationship(data):
+    """Plot budget vs profit relationship"""
+    # Ensure numeric columns
+    data['budget'] = pd.to_numeric(data['budget'], errors='coerce')
+    data['profit'] = pd.to_numeric(data['movie_box_office_revenue'], errors='coerce') - data['budget']
+    data['rating_score'] = pd.to_numeric(data['rating_score'], errors='coerce')
     
-    fig = make_subplots(rows=1, cols=2, 
+    # Remove rows with missing values
+    data = data.dropna(subset=['budget', 'profit', 'rating_score'])
+    
+    # Create figure with secondary y-axis
+    fig = make_subplots(rows=1, cols=2,
                        subplot_titles=(
-                           f'Budget vs Profit ({["Original", "Adjusted"][adjusted]})',
-                           f'Budget vs Profit Log Scale ({["Original", "Adjusted"][adjusted]})'
+                           'Budget vs Profit (Linear Scale)',
+                           'Budget vs Profit (Log Scale)'
                        ))
     
     # Linear scale plot
     fig.add_trace(
         go.Scatter(
-            x=data[budget_col],
-            y=data[profit_col],
+            x=data['budget'],
+            y=data['profit'],
             mode='markers',
             marker=dict(
                 size=5,
                 color=data['rating_score'],
                 colorscale='Viridis',
-                showscale=True
+                showscale=True,
+                colorbar=dict(title='Rating Score')
             ),
             name='Movies'
         ),
         row=1, col=1
     )
     
-    fig.update_xaxes(type='log', row=1, col=2)
-    fig.update_yaxes(type='log', row=1, col=2)
+    # Log scale plot
+    fig.add_trace(
+        go.Scatter(
+            x=data['budget'],
+            y=data['profit'],
+            mode='markers',
+            marker=dict(
+                size=5,
+                color=data['rating_score'],
+                colorscale='Viridis',
+                showscale=False
+            ),
+            name='Movies'
+        ),
+        row=1, col=2
+    )
     
+    # Update axes for log scale
+    fig.update_xaxes(type='log', title='Budget ($)', row=1, col=2)
+    fig.update_yaxes(type='log', title='Profit ($)', row=1, col=2)
+    
+    # Update axes for linear scale
+    fig.update_xaxes(title='Budget ($)', row=1, col=1)
+    fig.update_yaxes(title='Profit ($)', row=1, col=1)
+    
+    # Update layout
     fig.update_layout(
-        height=500,
+        title='Budget vs Profit Relationship',
         template='plotly_dark',
-        showlegend=False
+        height=500,
+        showlegend=False,
+        hoverlabel=dict(
+            bgcolor="black",
+            font_color="white",
+            bordercolor="white"
+        ),
+        margin=dict(t=50, l=50, r=50, b=50)
+    )
+    
+    # Update hover template
+    fig.update_traces(
+        hovertemplate="<b>Budget:</b> $%{x:,.0f}<br>" +
+                      "<b>Profit:</b> $%{y:,.0f}<br>" +
+                      "<b>Rating:</b> %{marker.color:.1f}<br>" +
+                      "<extra></extra>"
     )
     
     return fig
@@ -728,6 +774,81 @@ def plot_structure_profit(metrics):
         height=600,
         margin=dict(l=50, r=50, t=50, b=200)
     )
+    return fig
+
+def plot_genre_profit(metrics):
+    """Plot profit metrics for different genres"""
+    # Prepare data for plotting
+    metrics_df = metrics.head(15)  # Take top 15 genres
+    
+    # Create figure
+    fig = go.Figure()
+    
+    # Add bars for median profit with color gradient
+    fig.add_trace(
+        go.Bar(
+            name='Median Profit',
+            x=metrics_df.index,
+            y=metrics_df[('profit', 'median')],
+            marker=dict(
+                color=metrics_df[('profit', 'median')],
+                colorscale='Viridis',
+                line=dict(color='white', width=1)
+            ),
+            hovertemplate="<b>%{x}</b><br>" +
+                         "Median Profit: $%{y:,.0f}<br>" +
+                         "<extra></extra>"
+        )
+    )
+    
+    # Add line for mean profit
+    fig.add_trace(
+        go.Scatter(
+            name='Mean Profit',
+            x=metrics_df.index,
+            y=metrics_df[('profit', 'mean')],
+            mode='lines+markers',
+            line=dict(color=viridis_colors[7], width=2),
+            marker=dict(size=8),
+            hovertemplate="<b>%{x}</b><br>" +
+                         "Mean Profit: $%{y:,.0f}<br>" +
+                         "<extra></extra>"
+        )
+    )
+    
+    # Update layout
+    fig.update_layout(
+        title='Profit Analysis by Top 15 Movie Genres',
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font=dict(color='white'),
+        xaxis_tickangle=-45,
+        template="plotly_dark",
+        height=600,
+        showlegend=True,
+        hoverlabel=dict(
+            bgcolor="black",
+            font_color="white",
+            bordercolor="white"
+        ),
+        hovermode='x unified',
+        margin=dict(t=50, l=50, r=50, b=100),
+        title_font=dict(color='white'),
+        xaxis=dict(
+            title='Movie Genres',
+            gridcolor='rgba(128,128,128,0.2)',
+            tickfont=dict(color='white'),
+            title_font=dict(color='white')
+        ),
+        yaxis=dict(
+            title='Profit ($)',
+            gridcolor='rgba(128,128,128,0.2)',
+            tickfont=dict(color='white'),
+            title_font=dict(color='white'),
+            tickformat="$,.0f"
+        )
+    )
+    
     return fig
 
 

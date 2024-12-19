@@ -389,8 +389,8 @@ st.markdown("""
     <div style="text-align:center;">
         <span class="text-viridis-light">Now, where are the movies produced ?</span>
     </div>
-""", unsafe_allow_html=True)
-  
+""", unsafe_allow_html=True)  
+
 
 fig3 = plot_app.plot_top_countries(movies)
 st.plotly_chart(fig3)  
@@ -534,6 +534,10 @@ For filmmakers, this is a critical question, after all, the goal is to create a 
 <br><br> 
 """, unsafe_allow_html=True) 
 
+with st.expander("Filters for Genre Analysis"):
+    genre_year_range = st.slider("Year Range for Mean Revenue By Genre Analysis", 1900, 2020, (1980, 2000))
+
+genre_exploded, mean_revenues = mod.return_processed_genre_df(movies, genre_year_range)
 
 #Use same filter
 fig7 = plot_app.plot_genre_revenue(mean_revenues)
@@ -545,6 +549,24 @@ In terms of mean revenues, Movies About Gladiators and Humor are the ones genera
 any information about the budget, nor inflation !  
 <br><br> 
 """, unsafe_allow_html=True) 
+
+
+movies_bo_1 = pd.read_csv('data/processed/movies_summary_BO.csv')
+movies_classified_1 = pd.read_csv('data/processed/movies_with_classifications.csv')
+
+# Merge the dataframes on common identifiers
+movies = pd.merge(
+    movies_bo_1,
+    movies_classified_1[['wikipedia_movie_id', 'plot_structure', 'plot_structure_20']],
+    on='wikipedia_movie_id',
+    how='left'
+)  
+
+with st.expander("Filters for Genre Analysis"):
+    genre_year_range = st.slider("Year Range for Mean Profit By Genre Analysis", 1900, 2020, (1980, 2000))
+
+genre_profit_metrics = mod.analyze_genre_profit(movies)
+st.plotly_chart(plot_app.plot_genre_profit(genre_profit_metrics))
 
 
 st.markdown("""
@@ -754,7 +776,7 @@ with tab2:
         selected_genres = st.multiselect(
             "Select Genres to Compare",
             options=all_genres,
-            default=all_genres[:5],
+            default=all_genres[:15],
             key="trend_genres"
         )
     
@@ -1295,21 +1317,8 @@ with profit_tabs[0]:
         st.plotly_chart(fig_roi, use_container_width=True)
 
 with profit_tabs[1]:
-    st.markdown("### Budget vs Profit Relationship")
-    fig_budget = plot_app.plot_budget_profit_relationship(movies_with_profit)
-    st.plotly_chart(fig_budget, use_container_width=True)
-    
-    # Add correlation statistics
-    col1, col2 = st.columns(2)
-    with col1:
-        pearson = movies_with_profit['budget'].corr(movies_with_profit['profit'])
-        st.metric("Pearson Correlation", f"{pearson:.3f}")
-    with col2:
-        spearman = movies_with_profit['budget'].corr(
-            movies_with_profit['profit'], 
-            method='spearman'
-        )
-        st.metric("Spearman Correlation", f"{spearman:.3f}")
+    st.markdown("#### Budget vs Profit Relationship")
+    st.plotly_chart(plot_app.plot_budget_profit_relationship(movies))
 
 with profit_tabs[2]:
     st.markdown("### Return on Investment Analysis")
@@ -1493,8 +1502,8 @@ Sven, Anders, Adam, Malak, Arthur.
 
 
 
-
 st.markdown("""21""", unsafe_allow_html=True)
+
 
 
 
