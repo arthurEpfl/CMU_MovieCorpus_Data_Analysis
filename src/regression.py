@@ -36,6 +36,28 @@ def enhance_features(X_train, X_test):
     
     return X_train, X_test
 
+def enhance_features_inflated(X_train, X_test):
+    # Extract numerical columns
+    numerical_cols = ['movie_release_date', 'adjusted_budget', 'movie_runtime']
+    # 1. Create polynomial features for numerical variables
+    poly = PolynomialFeatures(degree=2, include_bias=False)
+    numerical_train = poly.fit_transform(X_train[numerical_cols])
+    numerical_test = poly.transform(X_test[numerical_cols])
+    
+    # Add polynomial features back to the dataframe
+    poly_features = poly.get_feature_names_out(numerical_cols)
+    X_train_poly = pd.DataFrame(numerical_train, columns=poly_features, index=X_train.index)
+    X_test_poly = pd.DataFrame(numerical_test, columns=poly_features, index=X_test.index)
+    X_train = pd.concat([X_train, X_train_poly], axis=1)
+    X_test = pd.concat([X_test, X_test_poly], axis=1)
+    
+    # 3. Create genre count feature
+    genre_cols = [col for col in X_train.columns if col.startswith('movie_genres_')]
+    X_train['genre_count'] = X_train[genre_cols].sum(axis=1)
+    X_test['genre_count'] = X_test[genre_cols].sum(axis=1)
+    
+    
+    return X_train, X_test
 
 def add_plot_structure_cluster(col):
     # Text Vectorization with TF-IDF
