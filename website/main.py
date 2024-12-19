@@ -133,8 +133,8 @@ def run():
         st.title("Movie genres: an important factor for financial success ?")
 
         # call functions from genre.py
-                    
-        texts.format_text("call functions from genre.py")
+        genre.intro_text()
+        genre.plot_genre_distribution(movies)
     
     #### PART 2 - Plot Structures ####       
     with st.container():
