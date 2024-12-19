@@ -274,7 +274,7 @@ def perform_text_clustering(plot_summaries, n_clusters=3):
         'top_terms': top_terms
     }
 
-def calculate_silhouette_scores(tfidf_matrix, max_clusters=6):
+def calculate_silhouette_scores(tfidf_matrix, max_clusters=20):
     """Calculate silhouette scores for different numbers of clusters"""
     scores = []
     for k in range(2, max_clusters + 1):

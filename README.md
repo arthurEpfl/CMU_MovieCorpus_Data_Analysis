@@ -105,10 +105,17 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
     - Analyze how the popularity of different plot structures and narrative formulas has evolved over different time periods and across genres.
     - Use time series analysis techniques to identify trends and patterns.
     - Visualize the temporal changes using line plots or heatmaps.  
-  
+
 9.  **Predictive modelling**  
-   -predict if a movie will be profitable based on its plot structure. 
-   -Two predictions are done, one using only base features and an other by adding also the plot structure that we classified, in order to check if it enhances the probability of having a profitable movie !
+    - Predict if a movie will be profitable based on its plot structure. 
+    - Two predictions are done, one using only base features and an other by adding also the plot structure that we classified, in order to check if it enhances the probability of having a profitable movie !  
+  
+10.  **Website for datastory**  
+     - The results and the main plots to be displayed in the datastory have been made interactive, using streamlit in particular.   
+     - The main functions have been modularized in .py files so that they can simply be called from the main file containing the `app.py` site code.  
+     - As the local site loads the clustering part again, there's a slight delay in loading.  
+     - The web site has been deployed.  
+
 
 ## Timeline
 - **Week 1 (16.11.2024-22.11.2024)**:   
@@ -130,14 +137,14 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
    
 - **Week 5 (14.12.2024-20.12.2024)**       
   - Finalize the project structure, overall comments, interpretation and design.  
-  - Web page and datastory has been finalized and deployed.  
+  - Web page and datastory have been finalized and deployed.  
 
 ## Organization withing the team
 - **Adam**: Preprocessing, Clustering, Zero-shot Classification, Analyses, Predictive modelling, Presenting results.  
 - **Arthur**: Web scraping, Preprocessing, Predictive modelling, Presenting results.  
 - **Malak**: Web scraping, Preprocessing, Inflation, Analyses, Presenting results.  
 - **Anders**: Preprocessing, Zero-shot Classification, Presenting results, Interactive plots for Datastory.  
-- **Sven**: Preprocessing, Inflation, Analyses, Presenting results, Structure of `results.ipynb`, Datastory.
+- **Sven**: Datastory, Preprocessing, Inflation, Analyses, Presenting results, Structure of `results.ipynb`.
   
 
 

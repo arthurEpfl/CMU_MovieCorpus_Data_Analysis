@@ -1,4 +1,5 @@
-import streamlit as st
+import streamlit as st  
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -209,7 +210,7 @@ with col2:
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
 A movie like Titanic is a great example of a blockbuster that captivated audiences worldwide. It's interesting to study this, 
-is its success due to its genre, its plot structure, Jack Dawson itself or something else? We will explore this in the following sections. 
+is its success due to its genre, its plot structure, Jack Dawson itself, Rose DeWitt or something else? We will explore this in the following sections. 
 <br><br>
 """, unsafe_allow_html=True)
 
@@ -1181,9 +1182,35 @@ st.plotly_chart(plot_app.plot_structure_performance(performance_metrics))
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
-The plot structure "Quest for Vengeance or Justice" has the highest mean box office revenues.  
+The plot structure "Quest for Vengeance or Justice" has the highest mean box office revenues. What about profits ?  
+<br><br>    
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)  
+
+st.markdown("""
+    <style>
+    .citation {
+        font-style: italic;
+        text-align: center;
+        font-size: 18px;
+        margin-top: 20px;
+    }
+    </style>
+    <div class="citation">
+        Homer Simpson is rolling in money, a director wants the same things with a movie!
+    </div>
+""", unsafe_allow_html=True)  
+
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    components.html("""
+        <div class="tenor-gif-embed" data-postid="3555030" data-share-method="host" data-aspect-ratio="1.38889" data-width="100%">
+            <a href="https://tenor.com/view/money-rich-cash-rolling-in-the-dough-the-s-impsons-gif-3555030">Money GIF</a> from 
+            <a href="https://tenor.com/search/money-gifs">Money GIFs</a>
+        </div> 
+        <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+    """, height=300)
+
 
 # Show profit analysis  
 
@@ -1320,7 +1347,7 @@ with profit_tabs[2]:
  
  ### Using movie plots and genres as predictors for financial success
 st.markdown("""
-<div style="font-size:14px; text-align:center; line-height:1.6;">
+<div style="font-size:11px; text-align:center; line-height:1.6;">
 <h2 style="color:#2E86C1;">Observations:</h2>
 <ul style="list-style-type:disc; text-align:left; display:inline-block;">
     <li>Significant drop in R-squared value from training to testing data indicates poor generalization.</li>
@@ -1424,7 +1451,7 @@ st.markdown("""
         background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-size: 44px; /* Adjust the font size as needed */
+        font-size: 30px; /* Adjust the font size as needed */
     }
     </style>
     <div style="text-align:center;">
