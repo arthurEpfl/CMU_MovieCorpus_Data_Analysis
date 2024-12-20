@@ -12,3 +12,4 @@ numpy
 streamlit
 statsmodels
 networkx
+pyvis
