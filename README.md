@@ -8,7 +8,7 @@ The data story for this project may be found on this link: [https://project-adar
 ## Abstract
 The project investigates how different genres and plot structures affect a movie’s box office success and their evolution over time and genres. By applying NLP techniques to classify plot summaries into narrative archetypes, it analyzes trends and examines the financial success of certain structures.
 
-The project involves scraping and merging IMDb data with the original dataset, preprocessing it to handle missing values and convert data types. It explores extracting plot structures from the plot summaries like the hero's journey, love triangles, and rags-to-riches stories, investigating their relation with box office success.
+The project involves scraping and merging IMDb data with the original dataset, preprocessing it to handle missing values and convert data types. It explores extracting plot structures from the plot summaries like the hero's journey, love triangles, and rags-to-riches stories, investigating their relation with box office success.  
 
 Using plot summaries and metadata, the project applies NLP to identify narrative structures and tracks their popularity shifts over time and genres. The goal is to understand audience responses to these structures and their appeal across demographic segments, offering insights into societal preferences and the impact of narrative structures on a film’s commercial success.
 
@@ -112,9 +112,10 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
   
 10.  **Website for datastory**  
      - The results and the main plots to be displayed in the datastory have been made interactive, using streamlit in particular.   
-     - The main functions have been modularized in .py files so that they can simply be called from the main file containing the `app.py` site code.  
-     - As the local site loads the clustering part again, there's a slight delay in loading.  
-     - The web site has been deployed.  
+     - The main functions have been modularized in .py files so that they can simply be called from the main file containing the `app.py` site code. 
+     - The main code of the website has been done in folder `website`of the present repo. The website is adapting to dark or white mode of the device you use.  
+  
+     - The web site has been deployed using streamlit.  
 
 
 ## Timeline
