@@ -110,11 +110,9 @@ def run():
         col1, col2 = st.columns(2)
         with col1:
             # call intro.py
-
-            #replace this
-            texts.format_text("Here goes the text for the intro.")
+            texts.intro()
         with col2:
-            texts.format_text("Here goes some sexy image or animation.")
+            texts.format_text("Here goes somimage or animation.")
 
         
 
@@ -234,16 +232,18 @@ def run():
             # call intro.py
 
             #replace this
-            texts.int()
             texts.regression_interpretation()
         with col2:
             reg.plot_reg_coeffs(movies_for_reg)
     with st.container():
+        st.subheader("Budget as a significant feature")
+        texts.budget_interpretation1()
         reg.plot_budget_profit(movies_for_reg)
+        texts.budget_interpretation2()
 
         reg.ROI_plot(movies_for_reg)
-
-        texts.format_text("call functions from reg.py")
+        texts.ROI_interpretation()
+        texts.key_concl()
 
     #### PART 4 - Conclusion ####
     with st.container():
