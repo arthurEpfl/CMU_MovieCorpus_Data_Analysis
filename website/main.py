@@ -22,8 +22,8 @@ def set_css():
         <style>
             /* Main page layout */
             .main .block-container {
-                padding-right: 12rem;   
-                padding-left: 12rem;    
+                padding-right: 18rem;   
+                padding-left: 18rem;    
             }
             .justified-text {
                 text-align: justify;
@@ -94,7 +94,10 @@ movies_budget = movies.dropna(subset=['budget'])
 
 # --- MAIN --- #
 def run():
-    st.set_page_config(page_title="ADARABLE", page_icon="🎬", layout="wide", initial_sidebar_state="collapsed")
+    # set layout = "wide" for a wider layout
+    layout = "centered"
+    st.set_page_config(page_title="ADARABLE", page_icon="🎬", layout=layout, initial_sidebar_state="expanded")
+    animation = load_animation("https://lottie.host/1f41fbe8-6838-4269-9598-b453fe1ad3a2/g7NLuLiVLN.json")
 
     # if needed
     def upload_css(file_name):
@@ -116,11 +119,12 @@ def run():
         Could aspiring screenwriters use data-driven insights to craft the next big hit?""")
         with col2:
         # Add an extra layer of columns for centering
-            col2_1, col2_2, col2_3 = st.columns([1, 4, 1])  # Adjust proportions as needed
-            with col2_2:
-                st.image("../images_datastory/movie_clap.png", use_container_width=False, width=600)
-            col1, col2, col3 = st.columns([1, 2, 1])
-
+            # col2_1, col2_2, col2_3 = st.columns([1, 4, 1])  # Adjust proportions as needed
+            # with col2_2:
+            #     st.image("../images_datastory/movie_clap.png", use_container_width=False, width=600)
+            # col1, col2, col3 = st.columns([1, 2, 1])
+            st.image("../images_datastory/movie_clap.png", use_container_width=False, width=600)
+            st_lottie(animation, speed=1, key="coding")
     # --- SIDEBAR --- #
     with st.container():
         with st.sidebar:
@@ -235,14 +239,16 @@ def run():
         apply_gradient_color("Overall, what makes a movie financially successful ?")
         st.markdown('<a id="overall-what-makes-a-movie-financially-successful"></a>', unsafe_allow_html=True)
         apply_gradient_color_small("Fitting a linear regresion model")
-        col1, col2 = st.columns(2)
-        with col1:
-            # call intro.py
-
-            #replace this
+        if layout == "centered":
             texts.regression_interpretation()
-        with col2:
             reg.plot_reg_coeffs(movies_for_reg)
+        else:
+            col1, col2 = st.columns(2)
+            with col1:
+                texts.regression_interpretation()
+            with col2:
+                reg.plot_reg_coeffs(movies_for_reg)
+    
     with st.container():
         apply_gradient_color_small("Budget as a significant feature")
         texts.budget_interpretation1()
