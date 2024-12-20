@@ -181,14 +181,10 @@ def plot_distribution_revenue_by_decade(revenue_by_year):
                        TikTok, or video games competing for attention. Blockbusters like Jaws and Star Wars drew crowds like popcorn to butter, 
                       and with no home video options, theaters were the only place to catch these cultural phenomena. Plus, post-WWII baby boomers 
                       were prime movie-goers, and urbanization made cinemas the perfect weekend escape. 
-                      Hypothetically, this era also saw studios pouring money into epic productions and massive marketing campaigns that practically screamed, "You HAVE to see this in theaters!"
-                      """)
-    texts.format_text("""
-    <div style="text-align:center;">
-        This is why we need to adjust for inflation to truly understand the financial success of a movie.
-        Now, let's see the impact of inflation on our mean revenue by genre!
-    </div>
-""")
+                      Hypothetically, this era also saw studios pouring money into epic productions and massive marketing campaigns that practically screamed, "You HAVE to see this in theaters!".
+                      This is why we need to adjust for inflation to truly understand the financial success of a movie.
+        Now, let's see the impact of inflation on our mean revenue by genre!""")
+    
     
 def plot_comparison_genre_mean_revenue(filtered_df, classified_summaries_inflation_BO, color_dict):
     # Calculate the mean revenues and sort them in descending order for the first dataset
@@ -261,7 +257,7 @@ def text_transition_to_distribution():
     apply_gradient_color_small('Now, let\'s see go back to the distribution of revenues by genre!')
     texts.format_text("""
     <div style="text-align:center;">
-        Consider that you are in a mystery movie, we want to find the outliers, the easter eggs that may explain some revenues distributions!
+        Consider that you are in a mystery movie, we want to find the outliers that may add insight revenue distributions!
     </div>
 """)
     
@@ -473,22 +469,18 @@ def plot_genre_profit_evolution(classified_summaries_inflation_BO, top_genre, co
 
 def text_conclusion_time_series():
     texts.format_text("""
-    <div style="text-align:center;">
         It's noticeable here, that in general, and for all movie genres, 
         same tendency is observed in terms of median profit with inflation adjustment, 
         they are overall all most profitable between the 60s and 80s. This is really interesting,
         It's during this period that lots of masterpieces came out in cinemas, such as the Godfather or Star Wars and many more!
-    </div>
     """)  
 
     texts.format_text("""
-    <div style="text-align:center;">
         Now that we have analyzed genres and their related revenues and profits, we ask ourselves, what really makes a movie profitable? 
         Is there another criterion or recipe that we may have missed? 
         Could it be the star power of the actors, the director's vision, or perhaps the marketing strategy? 
         Or is there something more intrinsic to the movie itself, like its plot structure, that holds the key to financial success? 
         Let's dive deeper and analyze the plot structures of movies to uncover the secrets behind their success!
-    </div>
 """)  
 
 

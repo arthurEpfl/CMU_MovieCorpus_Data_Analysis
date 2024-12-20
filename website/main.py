@@ -112,19 +112,14 @@ def run():
         with col1:
             # call intro.py
             texts.intro()
-        with col2:
-            st.image("../images_datastory/movie_clap.png", use_container_width=True, width=200)  
-
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.image("../images_datastory/titanic_image.webp", caption="Titanic Movie", use_container_width=True)
-        texts.format_text("""
-A movie like Titanic is a great example of a blockbuster that captivated audiences worldwide. It's interesting to study this, 
-is its success due to its genre, its plot structure, Jack Dawson itself, Rose DeWitt or something else? We will explore this in the following sections.
-""")
-
-        texts.format_text("""But here, this isn’t just about understanding stories; it’s about what we can do with that knowledge. How can filmmakers optimize their scripts to increase box office success? Can studios predict a movie's profitability based on its plot structure? 
+            texts.format_text("""How can filmmakers optimize their scripts to increase box office success? Can studios predict a movie's profitability based on its plot structure? 
         Could aspiring screenwriters use data-driven insights to craft the next big hit?""")
+        with col2:
+        # Add an extra layer of columns for centering
+            col2_1, col2_2, col2_3 = st.columns([1, 4, 1])  # Adjust proportions as needed
+            with col2_2:
+                st.image("../images_datastory/movie_clap.png", use_container_width=False, width=600)
+            col1, col2, col3 = st.columns([1, 2, 1])
 
     # --- SIDEBAR --- #
     with st.container():

@@ -33,10 +33,9 @@ def conclusion():
     in the film industry. While various factors contribute to a movie's success, 
     the plot structure remains a very important element that can significantly influence audience
     engagement and box office performance. This project showed that even by leveraging natural 
-    language processing and machine learning techniques, it's still a bit difficult to quantify 
-    and analyze the impact of plot structures on commercial success. It gives overview of which 
-    genres and plot structure are in general the most profitable ones, but it's complicated to 
-    really have kind of a "secret recipe" to make a movie really successful in terms of profitability.</span>
+    language processing and machine learning techniques, it is difficult to quantify 
+    and analyze the impact of plot structures on commercial success. It gives an overview of which 
+    genres and plot structure are generally the most profitable ones, but no "secrete recipe" was found to make a movie profitable.</span>
     <br><br>
     <span class="viridis-light">This project provides valuable insights for filmmakers, producers, and marketers, helping them make informed decisions about the types of stories that are likely to resonate with audiences and achieve financial success. Future research could further explore the role of other narrative elements, such as character development and dialogue, actors, directors, historical events influence etc.</span>
     <span class="viridis-light">Overall, the project underscores the timeless appeal of well-crafted stories and plot structure and their enduring power to captivate audiences and drive box office revenues (and profits).</span>

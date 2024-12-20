@@ -28,10 +28,10 @@ def text_intro():
                       or "The Love Triangle" that really gives a movie its pizzazz. We'll explain the different approaches 
                       we used to do this and why it could be a game-changer for understanding financial success. Ready to dive into the plot twists? Let's go!
                     """)
-    st.markdown(f"""<div class='justified-text' style='text-align: center; font-size: 18px; margin-bottom: 16px;'>
+    st.markdown(f"""<div class='justified-text' style='text-align: left; font-size: 18px; margin-bottom: 16px;'>
                 To achieve this, we experimented with <b>two different approaches</b>:<br>
-                1. <b>Clustering</b>: We used unsupervised clustering (KMeans) on plot summaries to explore any emergent plot structure patterns.<br>
-                2. <b>Large Language Model (LLM) Classification</b>: Using a predefined set of 15 plot structure categories, we use a LLM to classify each summary. This classification approach uses zero-shot prompting to assign each summary to a category.
+                <li> <b>Clustering</b>: We used unsupervised clustering (KMeans) on plot summaries to explore any emergent plot structure patterns.<br></li>
+                <li> <b>Large Language Model (LLM) Classification</b>: Using a predefined set of 15 plot structure categories, we use a LLM to classify each summary. This classification approach uses zero-shot prompting to assign each summary to a category.</li>
                 </div>""", unsafe_allow_html=True)
     
 def text_clustering():
@@ -125,7 +125,7 @@ def text_cluster_distribution():
                       """)
     
     texts.format_text("""
-    <div style="text-align:center;">
+    <div style="text-align:left;">
         Let's visualize the top terms per clusters!
     </div>
     """)
@@ -200,13 +200,8 @@ def text_cluster_interpretion():
 
 
     texts.format_text("""
-    <div style="text-align:center;">
-        Each cluster reveals distinct themes and settings. While this analysis helps to identify common elements within each group, <strong>we are not fully satisfied with this approach</strong> as it appears to capture <strong>genre and themes more than specific plot structures</strong>.
-    </div>
-    """)
-
-    texts.format_text("""
-    <div style="text-align:center;">
+    <div style="text-align:left;">
+        Each cluster reveals distinct themes and settings. While this analysis helps to identify common elements within each group, <strong>we are not fully satisfied with this approach</strong> as it appears to capture <strong>genre and themes more than specific plot structures</strong>. 
         Since our goal is to identify different types of plot structures, clustering based solely on keywords may lack the depth needed to capture narrative progression and plot dynamics. Consequently, we explore alternative methods, such as leveraging large language models or deeper natural language processing techniques, to classify plot structures more accurately.
     </div>
     """)
@@ -220,11 +215,7 @@ def text_llm_classification():
     text0= """
     To tackle this, we employed <strong>large language models (LLMs)</strong> for classifying plot summaries into specific plot structure categories. Here's a streamlined view of our process:
     """
-    texts.format_text("""
-    <div style="text-align:center;">
-        As seen before clustering was not enough to extract a plot structure!
-    </div>
-""")
+    
     texts.format_text(text0)
 
     text2 = """
@@ -293,7 +284,7 @@ def text_llm_classification():
         </div> 
         <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
     """, height=300)  
-    texts.format_text("""<div style="text-align: center;"><em>As Homer Simpson here, a director want its plot structure to be profitable right?</em></div>""")  
+    texts.format_text("""<div style="text-align: center;"><em>As Homer Simpson here, a director want his movie to be profitable right?</em></div>""")  
     
 def text_median_profit_intro():
     apply_gradient_color_small("Plot-tential Earnings: Which Stories Strike Gold?")
@@ -379,7 +370,7 @@ def text_conclusion_median_profit():
                       """)  
 
     texts.format_text("""
-    <div style="text-align:center;">
+    <div style="text-align:left;">
         Now that we analyzed the profits according to plot structures, it may be interesting to study
         if plot structures and the genres of the movies are related in a certain way. Let's dive into it, shall we?
     </div>
@@ -700,14 +691,11 @@ def text_network_conclusion():
         color: #31708f;
     }
     </style>
-    <div style="text-align:center; font-size:18px; margin:20px;">
+    <div style="text-align:left; font-size:18px; margin:20px;">
         The real magic of cinema starts with a powerful story. Directors like Lucas, 
         Spielberg, and Columbus proved that the right plot structure, combined with strong execution, 
         can create unforgettable experiences that audiences love—and box offices celebrate. 
         But now, is it possible to have a model that will predict the profitability of a movie based on its plot structure or genre ? 
-        Can we find this so awaited Holy Grail of making a profitable movie ?
-        <p style="font-weight:bold; color:#31708f; font-size:24px; margin-top:20px;">
-            So, what’s the next story that will captivate the world, and can we predict its profitability ? ✨
-        </p>
+        Can we find this so awaited Holy Grail to making a profitable movie ?
     </div>
     """, unsafe_allow_html=True)
