@@ -3,15 +3,15 @@ from streamlit.logger import get_logger
 from streamlit_lottie import st_lottie
 import requests
 import pandas as pd
-import ast
+import ast  
 
 import intro
 import genre
 import plot
 import regression as reg
 import conclusion as conc
-import format_text as texts
-
+import format_text as texts  
+from format_text import apply_gradient_color, apply_gradient_color_small
 
 # --- CONFIG --- #
 
@@ -39,6 +39,7 @@ def load_animation(url: str):
         if r.status_code != 200:
             return None
         return r.json()
+
 
 
 # @st.cache_data
@@ -104,19 +105,21 @@ def run():
 
     # --- INTRODUCTION --- #
     with st.container():
-        st.title("🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success :sparkles:")
-        st.subheader("Introduction")
+        apply_gradient_color("🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success")
+        apply_gradient_color_small("Introduction")
         st.markdown('<a id="intro"></a>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             # call intro.py
-
-            #replace this
-            texts.format_text("Here goes the text for the intro.")
+            texts.intro()
+            texts.format_text("""How can filmmakers optimize their scripts to increase box office success? Can studios predict a movie's profitability based on its plot structure? 
+        Could aspiring screenwriters use data-driven insights to craft the next big hit?""")
         with col2:
-            texts.format_text("Here goes some sexy image or animation.")
-
-        
+        # Add an extra layer of columns for centering
+            col2_1, col2_2, col2_3 = st.columns([1, 4, 1])  # Adjust proportions as needed
+            with col2_2:
+                st.image("../images_datastory/movie_clap.png", use_container_width=False, width=600)
+            col1, col2, col3 = st.columns([1, 2, 1])
 
     # --- SIDEBAR --- #
     with st.container():
@@ -131,15 +134,17 @@ def run():
                 <li><a href="#movie-genres-an-important-factor-for-financial-success">Movie genres: an important factor for financial success?</a></li>
                 <li><a href="#beyond-genre-unlocking-the-secrets-of-plot-structures">Beyond Genre: Unlocking the Secrets of Plot Structures</a></li>
                 <li><a href="#overall-what-makes-a-movie-financially-successful">Overall, what makes a movie financially successful?</a></li>
+                <li><a href="#conclusion">Conclusion</a></li>
             </ol>
             """, unsafe_allow_html=True)
 
     
     # --- DATA STORY --- #
-            
-    #### PART 1 - Genres ####
+          
+    #### PART 1 - Genres ####  
+
     with st.container():
-        st.title("Movie genres: an important factor for financial success ?")
+        apply_gradient_color("Movie genres: an important factor for financial success ?")
         st.markdown('<a id="movie-genres-an-important-factor-for-financial-success"></a>', unsafe_allow_html=True)
 
         # INTRO
@@ -186,10 +191,11 @@ def run():
         genre.text_intro_time_series()
         genre.plot_genre_profit_evolution(filtered_df_inflation, top_genre, color_dict)
         genre.text_conclusion_time_series()
+    
+    #### PART 2 - Plot Structures ####  
 
-    #### PART 2 - Plot Structures ####       
     with st.container():
-        st.title("Beyond Genre: Unlocking the Secrets of Plot Structures")
+        apply_gradient_color("Beyond Genres: Unlocking the Secrets of Plot Structures")
         st.markdown('<a id="beyond-genre-unlocking-the-secrets-of-plot-structures"></a>', unsafe_allow_html=True)
 
         plot.text_intro()
@@ -218,37 +224,42 @@ def run():
         # HEAT MAP
         plot.plot_genre_plot_structure_heatmap(movies_for_reg, top_genre)
         plot.text_conclusion()
+        
+        # DIRECTORS NETWORK
+        plot.text_network_intro()
+        plot.plot_network(movies_for_reg)
+        plot.text_network_conclusion()
       
     #### PART 3 - Linear regression ####   
     with st.container():
-        st.title("Overall, what makes a movie financially successful ?")
+        apply_gradient_color("Overall, what makes a movie financially successful ?")
         st.markdown('<a id="overall-what-makes-a-movie-financially-successful"></a>', unsafe_allow_html=True)
-        st.subheader("Fitting a linear regresion model")
+        apply_gradient_color_small("Fitting a linear regresion model")
         col1, col2 = st.columns(2)
         with col1:
             # call intro.py
 
             #replace this
-            texts.int()
             texts.regression_interpretation()
         with col2:
             reg.plot_reg_coeffs(movies_for_reg)
     with st.container():
+        apply_gradient_color_small("Budget as a significant feature")
+        texts.budget_interpretation1()
         reg.plot_budget_profit(movies_for_reg)
+        texts.budget_interpretation2()
 
         reg.ROI_plot(movies_for_reg)
-
-        texts.format_text("call functions from reg.py")
+        texts.ROI_interpretation()
+        texts.key_concl()
 
     #### PART 4 - Conclusion ####
     with st.container():
-        st.title("Conclusion")
+        apply_gradient_color("Conclusion")
+        conc.conclusion()  
 
-        texts.format_text("call functions from conclusion.py")
+
         
-        
-        
-     
         
 if __name__ == "__main__":
     run()

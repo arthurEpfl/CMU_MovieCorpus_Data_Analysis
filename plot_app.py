@@ -6,6 +6,9 @@ import ast
 from sklearn.manifold import TSNE
 from sklearn.decomposition import TruncatedSVD
 import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+from pyvis.network import Network
 
 # Helper functions
 def safe_literal_eval(val):
@@ -852,4 +855,53 @@ def plot_genre_profit(metrics):
     return fig
 
 
+def create_graph(data):
+    """
+    Creates a NetworkX graph from a DataFrame, ensuring node attributes such as 'size' aggregate properly.
+    """
+    G = nx.Graph() 
+    node_attributes = {}
+    
+    size_factor = 1e40
+    offset = 5
+    for _, row in data.iterrows():
+        source = row['producer']
+        target = row['plot_structure']
+        weight = row['adjusted_profit'] / size_factor + offset
 
+        if source not in node_attributes:
+            node_attributes[source] = {'weight': weight, 'type': 'director'}
+        else:
+            node_attributes[source]['weight'] += weight
+
+        # Initialize or update target node attributes
+        if target not in node_attributes:
+            node_attributes[target] = {'weight': weight, 'type': 'plot'}
+        else:
+            node_attributes[target]['weight'] += weight
+
+
+    # Add nodes with aggregated attributes
+    for node, attrs in node_attributes.items():
+        color = '#72A0C1' if attrs['type'] == 'director' else '#90EE90'
+        G.add_node(node, type=attrs['type'], size=attrs['weight'], color=color)
+
+    # Add edges between nodes
+    for _, row in data.iterrows():
+        G.add_edge(row['producer'], row['plot_structure'], weight=6)
+
+    return G
+
+def create_network(data, selected_directors):
+    # Create network graph based on selected directors
+    df_select = data[data['producer'].isin(selected_directors)]
+    G = create_graph(df_select)
+
+    plot_net = Network(height='600px', width='100%', bgcolor='#222222', font_color='white')
+    plot_net.from_nx(G)
+    for node in G.nodes(data=True):
+        plot_net.get_node(node[0])['color'] = node[1]['color']
+        plot_net.get_node(node[0])['size'] = node[1]['size']
+        
+    plot_net.repulsion(node_distance=800, central_gravity=0.8, spring_length=180, spring_strength=0.10, damping=0.92)   
+    return plot_net

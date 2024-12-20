@@ -1,31 +1,16 @@
 import streamlit as st
-from streamlit.logger import get_logger
-from streamlit_lottie import st_lottie
-import requests
 import pandas as pd
-import ast
-
 import plotly.express as px
 import plotly.graph_objects as go
 import statsmodels.api as sm
-import intro
-import genre
-import plot
-import conclusion as conc
-import format_text as texts
 import matplotlib.pyplot as plt
-import seaborn as sns
-import sys
-import os
 import sklearn
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.preprocessing import PolynomialFeatures
+import numpy as np
 
 def enhance_features(X_train, X_test):
     """
@@ -240,66 +225,6 @@ def preprocess4linreg(df, y_column, x_columns_to_drop, test_size=0.2):
     
     return X_train_scaled_df, X_test_scaled_df, y_train_no_index, y_test_no_index
 
-import streamlit as st
-import plotly.graph_objects as go
-import statsmodels.api as sm
-import numpy as np
-import matplotlib.pyplot as plt  # For using the Viridis color map
-
-import streamlit as st
-import plotly.graph_objects as go
-import statsmodels.api as sm
-import numpy as np
-import matplotlib.pyplot as plt  # For using the Viridis color map
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import plotly.graph_objects as go
-import pandas as pd
-import statsmodels.api as sm
-import numpy as np
-import streamlit as st
-
 def plot_reg_coeffs(movies_plot):
     # Preprocess data for regression
     movies_plot['plot_structure_cluster'] = add_plot_structure_cluster(movies_plot['plot_summary'])
@@ -320,8 +245,8 @@ def plot_reg_coeffs(movies_plot):
 
     # Extract significant coefficients and their confidence intervals
     significant_features = results.pvalues[results.pvalues < 0.05].index
-    significant_coefficients = results.params[significant_features]
-    conf = results.conf_int().loc[significant_features]
+    significant_coefficients = results.params[significant_features] / 10
+    conf = results.conf_int().loc[significant_features] / 10
     conf['coef'] = significant_coefficients
 
     # Sort coefficients by absolute value, but keep track of signs as well
@@ -329,8 +254,14 @@ def plot_reg_coeffs(movies_plot):
         abs_coef=np.abs(conf['coef'])
     ).sort_values(by='abs_coef', ascending=False)
 
-    # Compute the maximum absolute coefficient across the entire dataset for consistent color scale
-    max_color = np.max(np.abs(sorted_conf['coef']))
+    # Compute the global min and max for x-axis range and color scale
+    global_min = sorted_conf['coef'].min()
+    global_max = sorted_conf['coef'].max()
+
+    # Add padding to x-axis limits
+    padding = 0.1 * (global_max - global_min)  # Add 5% of the range as padding
+    adjusted_min = global_min - padding
+    adjusted_max = global_max + padding
 
     # Separate the coefficients into two halves: largest positive and the rest
     half_index = len(sorted_conf) // 2
@@ -343,17 +274,13 @@ def plot_reg_coeffs(movies_plot):
     # Dropdown menu to toggle between top and bottom half
     half_choice = st.selectbox(
         'Select Half of the Plot to Display:',
-        ['Top Half (Biggest Positive Norms)', 'Bottom Half (Negative Coefficients)']
+        ['Positive coefficients', 'Negative Coefficients']
     )
 
-    if half_choice == 'Top Half (Biggest Positive Norms)':
+    if half_choice == 'Positive coefficients':
         features_to_show = positive_half
     else:
         features_to_show = negative_half
-
-    # Normalize the colors based on the global max absolute coefficient (used for both halves)
-    colors = np.abs(features_to_show['coef'])  # Use absolute values for color scaling
-    color_scale = np.array([plt.cm.viridis(c / max_color) for c in colors])  # Normalize using the global max
 
     # Add bar chart for the selected half of the coefficients
     fig.add_trace(go.Bar(
@@ -361,7 +288,13 @@ def plot_reg_coeffs(movies_plot):
         y=features_to_show.index,
         orientation='h',
         name='Coefficients',
-        marker=dict(color=colors, colorscale='Viridis', showscale=True),
+        marker=dict(
+            color=features_to_show['coef'],
+            colorscale='Viridis',  # Fixed color scale
+            cmin=-(global_max),  # Global minimum for the color scale
+            cmax=global_max,  # Global maximum for the color scale
+            showscale=True  # Show the color scale bar
+        ),
         width=0.7,  # Reduce bar width to avoid overlap
     ))
 
@@ -377,53 +310,29 @@ def plot_reg_coeffs(movies_plot):
         ))
 
     # Dynamically adjust height based on the number of coefficients in the top half
-    # This height will be used for both halves to maintain a consistent layout
-    height = max(600, len(positive_half) * 40)  # Use the height from the top half
+    height = max(600, len(positive_half) * 40)
 
     fig.update_layout(
         title={
             'text': "Significant Coefficients with Confidence Intervals",
-            'x': 0.5,  # Center the title
-            'xanchor': 'center',  # Ensure the title is centered
-            'font': {'size': 20}  # Increase the font size
+            'x': 0.5,
+            'xanchor': 'center',
+            'font': {'size': 20}
         },
         xaxis_title="Coefficient Value",
         yaxis_title="Features",
+        xaxis=dict(range=[adjusted_min, adjusted_max]),  # Set fixed x-axis range
         yaxis=dict(categoryorder='total ascending'),
         template='plotly_white',
-        height=height,  # Set fixed height
-        margin=dict(l=200, r=50, t=50, b=50),  # Ensure labels don't get cut off
-        barmode='group',  # Ensure bars do not overlap
-        autosize=True,  # Make the plot responsive
+        height=height,
+        margin=dict(l=200, r=50, t=50, b=50),
+        barmode='group',
+        autosize=True,
     )
 
     # Display interactive plot in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-
-import streamlit as st
-import plotly.graph_objects as go
-import statsmodels.api as sm
-import numpy as np
-
-
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-import statsmodels.api as sm
-import streamlit as st
-
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-import statsmodels.api as sm
-import streamlit as st
-
-import streamlit as st
-import plotly.graph_objects as go
-import plotly.express as px
-import numpy as np
-import statsmodels.api as sm
 
 def plot_budget_profit(movies_plot):
 
@@ -431,8 +340,6 @@ def plot_budget_profit(movies_plot):
     tab1, tab2 = st.tabs(["Budget vs Profit", "Budget vs Profit (Log-Log Scale)"])
 
     with tab1:
-        #st.write("### Budget vs Profit")
-
         # Interactive scatter plot
         fig1 = px.scatter(
             movies_plot,
@@ -447,7 +354,8 @@ def plot_budget_profit(movies_plot):
         fig1.update_layout(
             title=dict(
                 text='Budget vs Profit',
-                x=0.5,  # Center title
+                x=0.5,  # Center title,
+                xanchor='center',
                 font=dict(size=20),  # Increase title font size
             ),
             template='plotly_white'
@@ -455,22 +363,6 @@ def plot_budget_profit(movies_plot):
         st.plotly_chart(fig1, use_container_width=True)
 
     with tab2:
-        #st.write("### Budget vs Profit (Log-Log Scale)")
-
-        # Log-transform the data
-        log_budget = np.log(movies_plot['adjusted_budget'])
-        log_profit = np.log(movies_plot['adjusted_profit'])
-
-        # Prepare the data for regression (including a constant for the intercept)
-        X = sm.add_constant(log_budget)  # Add constant for intercept
-        y = log_profit
-
-        # Perform linear regression
-        model = sm.OLS(y, X).fit()
-
-        # Get regression line data (predicted y values)
-        y_pred = model.predict(X)
-
         # Create the scatter plot in log-log scale
         fig2 = px.scatter(
             movies_plot,
@@ -483,21 +375,12 @@ def plot_budget_profit(movies_plot):
         )
         fig2.update_traces(marker=dict(size=5))
 
-        # Add the regression line in red (log-log regression line)
-        # We use np.exp to convert back to the original scale
-        fig2.add_trace(go.Scatter(
-            x=movies_plot['adjusted_budget'],
-            y=np.exp(y_pred),  # Convert predicted values back to original scale
-            mode='lines',
-            line=dict(color='red', width=2),
-            name='Regression Line',
-        ))
-
         # Make title slightly bigger and centered
         fig2.update_layout(
             title=dict(
                 text='Budget vs Profit (Log-Log Scale)',
                 x=0.5,  # Center title
+                xanchor='center',
                 font=dict(size=20),  # Increase title font size
             ),
             template='plotly_white'
@@ -505,37 +388,15 @@ def plot_budget_profit(movies_plot):
         st.plotly_chart(fig2, use_container_width=True)
 
 
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import streamlit as st
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 def ROI_plot(movies_plot):
 
     # Tabs for switching between plots
-    tab1, tab2 = st.tabs(["ROI vs Budget (Log-Log Scale)", "ROI by Budget Range"])
+    tab1, tab2 = st.tabs(["ROI vs Budget (Log-Log Scale)", "ROI by Budget Range (Log - Linear Scale)"])
 
     with tab1:
-        #st.write("### ROI vs Budget (Log-Log Scale with Regression Line)")
-
         # Calculate profitability ratio
         movies_plot['profitability_ratio'] = movies_plot['adjusted_profit'] / movies_plot['adjusted_budget']
-
-        # Log transformation
-        log_budget = np.log(movies_plot['adjusted_budget'])
-        log_roi = np.log(movies_plot['profitability_ratio'])
-
-        # Prepare the data for regression (including a constant for the intercept)
-        X = sm.add_constant(log_budget)  # Add constant for intercept
-        y = log_roi
-
-        # Perform linear regression
-        model = sm.OLS(y, X).fit()
-
-        # Get regression line data (predicted y values)
-        y_pred = model.predict(X)
 
         # Create the scatter plot in log-log scale using Plotly
         fig1 = px.scatter(
@@ -549,21 +410,19 @@ def ROI_plot(movies_plot):
         )
         fig1.update_traces(marker=dict(size=5))
 
-        # Add the regression line in red (log-log regression line)
-        fig1.add_trace(go.Scatter(
-            x=movies_plot['adjusted_budget'],
-            y=np.exp(y_pred),  # Convert predicted values back to original scale
-            mode='lines',
-            line=dict(color='red', width=2),
-            name='Regression Line',
-        ))
-
-        fig1.update_layout(template='plotly_white')
+        # Make title slightly bigger and centered
+        fig1.update_layout(
+            title=dict(
+                text='ROI vs Budget (Log-Log Scale)',
+                x=0.5,  # Center title
+                xanchor='center',
+                font=dict(size=20),  # Increase title font size
+            ),
+            template='plotly_white'
+        )
         st.plotly_chart(fig1, use_container_width=True)
 
     with tab2:
-        #st.write("### ROI by Budget Range")
-
         # Create budget bins
         bins = [0, 1e6, 1e7, 5e7, 1e8, 5e8]
         labels = ['<1M', '1M-10M', '10M-50M', '50M-100M', '100M+']
@@ -593,12 +452,18 @@ def ROI_plot(movies_plot):
 
         # Update layout for better appearance
         fig2.update_layout(
-            title='Mean and Median ROI by Budget Range',
+            title=dict(
+                text='Mean and Median ROI by Budget Range (Log - Linear Scale)',
+                x=0.5,  # Center title
+                xanchor='center',
+                font=dict(size=20),  # Increase title font size
+            ),
             xaxis_title='Budget Range',
             yaxis_title='ROI',
+            yaxis=dict(type='log'),  # Log scale for the y-axis
             barmode='group',
             template='plotly_white'
         )
-
+        
         # Display interactive Plotly chart
         st.plotly_chart(fig2, use_container_width=True)

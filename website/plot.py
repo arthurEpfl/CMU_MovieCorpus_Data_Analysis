@@ -12,7 +12,11 @@ from sklearn.decomposition import TruncatedSVD
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
+import networkx as nx
+from pyvis.network import Network  
+import streamlit.components.v1 as components
 
+from format_text import apply_gradient_color, apply_gradient_color_small
 
 def text_intro():
     texts.format_text("""Alright, so we've talked about genres and their financial impact, but let's be real—genre 
@@ -24,21 +28,19 @@ def text_intro():
                       or "The Love Triangle" that really gives a movie its pizzazz. We'll explain the different approaches 
                       we used to do this and why it could be a game-changer for understanding financial success. Ready to dive into the plot twists? Let's go!
                     """)
-    st.markdown(f"""<div class='justified-text' style='text-align: justify; font-size: 18px; margin-bottom: 16px;'>
+    st.markdown(f"""<div class='justified-text' style='text-align: left; font-size: 18px; margin-bottom: 16px;'>
                 To achieve this, we experimented with <b>two different approaches</b>:<br>
-                1. <b>Clustering</b>: We used unsupervised clustering (KMeans) on plot summaries to explore any emergent plot structure patterns.<br>
-                2. <b>Large Language Model (LLM) Classification</b>: Using a predefined set of 15 plot structure categories, we use a LLM to classify each summary. This classification approach uses zero-shot prompting to assign each summary to a category.
+                <li> <b>Clustering</b>: We used unsupervised clustering (KMeans) on plot summaries to explore any emergent plot structure patterns.<br></li>
+                <li> <b>Large Language Model (LLM) Classification</b>: Using a predefined set of 15 plot structure categories, we use a LLM to classify each summary. This classification approach uses zero-shot prompting to assign each summary to a category.</li>
                 </div>""", unsafe_allow_html=True)
     
 def text_clustering():
-    st.subheader("Clustering Plot Summaries!")
+    apply_gradient_color_small("Clustering Plot Summaries!")
     texts.format_text("""First, we transform the plot summaries into a numerical format for clustering by applying <strong>TF-IDF (Term Frequency-Inverse Document Frequency)</strong> vectorization. TF-IDF highlights important words in each summary by reducing the weight of common terms and increasing the importance of unique terms.<br>
                       Afterwards, we used <strong>KMeans clustering</strong> to group the plot summaries based on their TF-IDF representations. This step aims to identify distinct plot structure patterns by clustering similar summaries together.<br>
 To determine the optimal number of clusters, we used the <strong>silhouette score</strong> for cluster values ranging from 5 to 20.
-However, we noticed that the silhouette score continually increased as the number of clusters increased.<br>
-Given these results, we proceeded with <strong>15 clusters</strong>. This number provides a balance between interpretability and granularity, allowing us to capture a range of plot structures without creating an excessive number of small, indistinct clusters.
+However, we noticed that the silhouette score continually increased as the number of clusters increased. Given these results, we proceeded with <strong>15 clusters</strong>. This number provides a balance between interpretability and granularity, allowing us to capture a range of plot structures without creating an excessive number of small, indistinct clusters. We finally obtain the following clusters:
                       """)
-    texts.format_text("We finally obtain the following clusters:")
 
 
 def plot_clusters(movies, combined_matrix):
@@ -122,7 +124,11 @@ def text_cluster_distribution():
     texts.format_text("""The distribution of plot summaries across clusters shows that the clustering algorithm has created some clusters with a significantly higher number of summaries than others. The top three clusters (2, 10, and 7) collectively hold a large portion of the summaries, indicating that certain plot structures may be more common. We have to dive more in the clusters.
                       """)
     
-    texts.format_text("""Let's visualize the top terms per clusters!""")
+    texts.format_text("""
+    <div style="text-align:left;">
+        Let's visualize the top terms per clusters!
+    </div>
+    """)
 
 
 def plot_word_clouds(tfidf_vectorizer, kmeans, n_clusters=15):
@@ -172,33 +178,36 @@ def plot_word_clouds(tfidf_vectorizer, kmeans, n_clusters=15):
 
 def text_cluster_interpretion():
     text = """
-    Here’s an interpretation of each cluster based on the top terms:<br><br>
-    - <strong>Cluster 1</strong>: Plots focused on competitive themes.<br>
-    - <strong>Cluster 2</strong>: Crime or thriller themes, involving murder, gangs, and police confrontations.<br>
-    - <strong>Cluster 3</strong>: Domestic and family-centered stories.<br>
-    - <strong>Cluster 4</strong>: Sci-fi or adventure narratives set in space or otherworldly environments.<br>
-    - <strong>Cluster 5</strong>: War or historical battle narratives, with themes of patriotism, loyalty, and military conflict.<br>
-    - <strong>Cluster 6</strong>: Family dynamics involving financial or personal struggles, often with a focus on character growth.<br>
-    - <strong>Cluster 7</strong>: Stories focused on love, personal growth, and the journey of family relationships.<br>
-    - <strong>Cluster 8</strong>: Character-driven drama with themes of love, relationships, and family life.<br>
-    - <strong>Cluster 9</strong>: Domestic dramas with family relationships at the center, often involving parents, spouses, and home life.<br>
-    - <strong>Cluster 10</strong>: School or sports settings, focusing on themes of teamwork, mentorship, and competition.<br>
-    - <strong>Cluster 11</strong>: Plots involving curses or superstitions, with an emphasis on individual struggles with fate or financial issues.<br>
-    - <strong>Cluster 12</strong>: Family and relationship-centered stories, possibly featuring complex dynamics within close-knit communities.<br>
-    - <strong>Cluster 13</strong>: Family-focused narratives often with themes of life challenges, father-son relationships, or personal introspection.<br>
-    - <strong>Cluster 14</strong>: Stories about family dynamics and personal relationships, with a recurring theme of domestic settings.<br>
-    - <strong>Cluster 15</strong>: Family-centered dramas, often highlighting parent-child dynamics and personal development.<br><br>
+    <ul>
+        <li><strong class="viridis-light">Cluster 1:</strong> Plots focused on competitive themes.</li>
+        <li><strong class="viridis-light">Cluster 2:</strong> Crime or thriller themes, involving murder, gangs, and police confrontations.</li>
+        <li><strong class="viridis-light">Cluster 3:</strong> Domestic and family-centered stories.</li>
+        <li><strong class="viridis-light">Cluster 4:</strong> Sci-fi or adventure narratives set in space or otherworldly environments.</li>
+        <li><strong class="viridis-light">Cluster 5:</strong> War or historical battle narratives, with themes of patriotism, loyalty, and military conflict.</li>
+        <li><strong class="viridis-light">Cluster 6:</strong> Family dynamics involving financial or personal struggles, often with a focus on character growth.</li>
+        <li><strong class="viridis-light">Cluster 7:</strong> Stories focused on love, personal growth, and the journey of family relationships.</li>
+        <li><strong class="viridis-light">Cluster 8:</strong> Character-driven drama with themes of love, relationships, and family life.</li>
+        <li><strong class="viridis-light">Cluster 9:</strong> Domestic dramas with family relationships at the center, often involving parents, spouses, and home life.</li>
+        <li><strong class="viridis-light">Cluster 10:</strong> School or sports settings, focusing on themes of teamwork, mentorship, and competition.</li>
+        <li><strong class="viridis-light">Cluster 11:</strong> Plots involving curses or superstitions, with an emphasis on individual struggles with fate or financial issues.</li>
+        <li><strong class="viridis-light">Cluster 12:</strong> Family and relationship-centered stories, possibly featuring complex dynamics within close-knit communities.</li>
+        <li><strong class="viridis-light">Cluster 13:</strong> Family-focused narratives often with themes of life challenges, father-son relationships, or personal introspection.</li>
+        <li><strong class="viridis-light">Cluster 14:</strong> Stories about family dynamics and personal relationships, with a recurring theme of domestic settings.</li>
+        <li><strong class="viridis-light">Cluster 15:</strong> Family-centered dramas, often highlighting parent-child dynamics and personal development.</li>
+    </ul>
     """
     texts.format_text(text)
 
-    texts.format_text("""Each cluster reveals distinct themes and settings. While this analysis helps to identify common elements within each group, <strong>we are not fully satisfied with this approach</strong> as it appears to capture <strong>genre and themes more than specific plot structures</strong>.
-                      """)
+
     texts.format_text("""
-    Since our goal is to identify different types of plot structures, clustering based solely on keywords may lack the depth needed to capture narrative progression and plot dynamics. Consequently, we explore alternative methods, such as leveraging large language models or deeper natural language processing techniques, to classify plot structures more accurately.
-                      """)
+    <div style="text-align:left;">
+        Each cluster reveals distinct themes and settings. While this analysis helps to identify common elements within each group, <strong>we are not fully satisfied with this approach</strong> as it appears to capture <strong>genre and themes more than specific plot structures</strong>. 
+        Since our goal is to identify different types of plot structures, clustering based solely on keywords may lack the depth needed to capture narrative progression and plot dynamics. Consequently, we explore alternative methods, such as leveraging large language models or deeper natural language processing techniques, to classify plot structures more accurately.
+    </div>
+    """)
 
 def text_llm_classification():
-    st.subheader("Classifying Plot Summaries with Large Language Models")
+    apply_gradient_color_small("Classifying Plot Summaries with Large Language Models")
 
     text1 = """
     As seen before clustering was not enough to extract a plot structure!
@@ -206,7 +215,7 @@ def text_llm_classification():
     text0= """
     To tackle this, we employed <strong>large language models (LLMs)</strong> for classifying plot summaries into specific plot structure categories. Here's a streamlined view of our process:
     """
-    texts.format_text(text1)
+    
     texts.format_text(text0)
 
     text2 = """
@@ -232,31 +241,53 @@ def text_llm_classification():
     texts.format_text(text5)
 
     text6 = """
-    1. <strong>Hero's Journey and Transformation</strong>: Personal growth and transformation through challenges.<br>
-    2. <strong>Quest for Vengeance or Justice</strong>: Seeking retribution or justice.<br>
-    3. <strong>Coming of Age and Self-Discovery</strong>: Maturation or self-awareness in overcoming obstacles.<br>
-    4. <strong>Survival or Escape</strong>: Struggles for survival or freedom.<br>
-    5. <strong>Rise and Fall of a Protagonist</strong>: A climb to success followed by a downfall.<br>
-    6. <strong>Love and Relationship Dynamics</strong>: Exploring romance and familial bonds.<br>
-    7. <strong>Comedy of Errors or Misadventure</strong>: Humorous unintended consequences.<br>
-    8. <strong>Crime and Underworld Exploration</strong>: Criminal activities or gang conflicts.<br>
-    9. <strong>Power Struggle and Betrayal</strong>: Conflicts for leadership, marked by betrayals.<br>
-    10. <strong>Mystery and Conspiracy Unveiling</strong>: Solving mysteries or uncovering conspiracies.<br>
-    11. <strong>Tragedy and Inevitability</strong>: Facing unavoidable negative outcomes.<br>
-    12. <strong>Conflict with Supernatural or Unknown Forces</strong>: Sci-fi or supernatural challenges.<br>
-    13. <strong>Comedy in Domestic Life</strong>: Everyday humor within family life.<br>
-    14. <strong>Social Rebellion or Fight Against Oppression</strong>: Challenging societal norms or systems.<br>
-    15. <strong>Fantasy or Science Fiction Quest</strong>: Epic quests in fantastical or sci-fi worlds.
-    """
+<style>
+    .viridis-light {
+        color: #3690c0;  /* Viridis color for cluster names */
+    }
+</style>
+<ul>
+    <li><strong class="viridis-light">Hero's Journey and Transformation:</strong> Personal growth and transformation through challenges.</li>
+    <li><strong class="viridis-light">Quest for Vengeance or Justice:</strong> Seeking retribution or justice.</li>
+    <li><strong class="viridis-light">Coming of Age and Self-Discovery:</strong> Maturation or self-awareness in overcoming obstacles.</li>
+    <li><strong class="viridis-light">Survival or Escape:</strong> Struggles for survival or freedom.</li>
+    <li><strong class="viridis-light">Rise and Fall of a Protagonist:</strong> A climb to success followed by a downfall.</li>
+    <li><strong class="viridis-light">Love and Relationship Dynamics:</strong> Exploring romance and familial bonds.</li>
+    <li><strong class="viridis-light">Comedy of Errors or Misadventure:</strong> Humorous unintended consequences.</li>
+    <li><strong class="viridis-light">Crime and Underworld Exploration:</strong> Criminal activities or gang conflicts.</li>
+    <li><strong class="viridis-light">Power Struggle and Betrayal:</strong> Conflicts for leadership, marked by betrayals.</li>
+    <li><strong class="viridis-light">Mystery and Conspiracy Unveiling:</strong> Solving mysteries or uncovering conspiracies.</li>
+    <li><strong class="viridis-light">Tragedy and Inevitability:</strong> Facing unavoidable negative outcomes.</li>
+    <li><strong class="viridis-light">Conflict with Supernatural or Unknown Forces:</strong> Sci-fi or supernatural challenges.</li>
+    <li><strong class="viridis-light">Comedy in Domestic Life:</strong> Everyday humor within family life.</li>
+    <li><strong class="viridis-light">Social Rebellion or Fight Against Oppression:</strong> Challenging societal norms or systems.</li>
+    <li><strong class="viridis-light">Fantasy or Science Fiction Quest:</strong> Epic quests in fantastical or sci-fi worlds.</li>
+</ul>
+"""
     texts.format_text(text6)
+
+
+
+    # texts plot structure  
 
     text7 = """
     By transitioning from broad genres to these detailed plot structures, we aim to uncover the <em>storytelling formulas</em> that truly drive financial success. Up next, we’ll explore how these plot structures align with movie profitability and whether certain narratives consistently outperform others.
     """
-    texts.format_text(text7)
+    texts.format_text(text7)  
 
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        components.html("""
+        <div class="tenor-gif-embed" data-postid="3555030" data-share-method="host" data-aspect-ratio="1.38889" data-width="100%">
+            <a href="https://tenor.com/view/money-rich-cash-rolling-in-the-dough-the-s-impsons-gif-3555030">Money GIF</a> from 
+            <a href="https://tenor.com/search/money-gifs">Money GIFs</a>
+        </div> 
+        <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+    """, height=300)  
+    texts.format_text("""<div style="text-align: center;"><em>As Homer Simpson here, a director want his movie to be profitable right?</em></div>""")  
+    
 def text_median_profit_intro():
-    st.subheader("Plot-tential Earnings: Which Stories Strike Gold?")
+    apply_gradient_color_small("Plot-tential Earnings: Which Stories Strike Gold?")
     texts.format_text("""
 Before we dive into the numbers, let's talk about why this is exciting. Plot structures are like the secret sauce of storytelling—they're the frameworks that hold our favorite movies together. But not all sauces are created equal. Some are rich and flavorful, while others... well, let's just say they leave a lot to be desired. Now, it's time to find out which narrative recipes rake in the big bucks and which ones just simmer on the back burner. Let’s take a look at the median profit per plot structure to see which stories truly pay off at the box office.
                       """)
@@ -329,9 +360,24 @@ def plot_median_profit(movies, adjusted=True):
     st.plotly_chart(fig, use_container_width=True)
 
 def text_conclusion_median_profit():
-    texts.format_text(""" FAIRE INTERPRETATION DE CE GRAPHE BEAUCOUP de BLABLA + TANSITION POUR HEATMAP
-                      A COMPLETER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                      """)
+    texts.format_text(""" In terms of median profits, Love and Relation dynamics are the most profitable plot structure, followed by Quest for Vengeance or Justice and Mystery and Conspiracy Unveiling.  
+                      By looking at the mean profits, Quest for Vengence or Justice is the most profitable one ! This is due to some outliers movies that generates very high revenues, while Love and Relation dynamics
+                      plot structure do not have such outliers, and more "stable" and important profits.
+                      """)  
+    
+    texts.format_text(""" Overall, mean and median profits according to plot structure decrease in a similar way. In terms of rating score, 
+                      and based on our data, Love and Relationship Dynamics and Crime and Underworld Exploration are the most appreciated plot structure by the audience.
+                      """)  
+
+    texts.format_text("""
+    <div style="text-align:left;">
+        Now that we analyzed the profits according to plot structures, it may be interesting to study
+        if plot structures and the genres of the movies are related in a certain way. Let's dive into it, shall we?
+    </div>
+""") 
+    
+    apply_gradient_color_small("Correlation between Plot Structure and Genres")  
+
 
 def plot_genre_plot_structure_heatmap(movies, top_genre):
     df_exploded = movies.explode('movie_genres')
@@ -385,10 +431,18 @@ def plot_genre_plot_structure_heatmap(movies, top_genre):
     st.plotly_chart(fig, use_container_width=True)
 
 def text_conclusion():
-    texts.format_text("""FAIRE INTERPRETATION DE CE GRAPHE BEAUCOUP de BLABLA + TANSITION POUR LA SUITE
-                      A COMPLETER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                      """)
+    texts.format_text("""The plot structures "Conflict with Supernatural or Unknown Forces", "Comedy of Errors or Misadventure" and "Hero's Journey 
+                      and "Transformation" are the most represented ones. Drama Comedy and Action are the most represented genres, as here, 
+                      889 Drama movies are categorized in "Hero's Journey and Transformation"
+                      """)  
 
+    texts.format_text("""Logically, taking the example of the plot structure "Comedy of Errors or Misadventure", 
+                      it is more likely to find Comedy or Drama movies in this category of plot structure ! It works well !  
+                      What about what brings the scenarios and plot structure to life, the directors ? 
+                      """)
+      
+
+    apply_gradient_color_small("Spotlight on Top Directors and Their Go-To Storylines")
 
 # --- UTILS --- #
 
@@ -403,3 +457,245 @@ def get_clusters(col):
     n_clusters = 15
     kmeans = KMeans(n_clusters=n_clusters, random_state=0)
     return kmeans.fit_predict(combined_matrix), combined_matrix, tfidf_vectorizer, kmeans
+
+
+# --- NETWORK GRAPH --- #
+def process_data_for_directors(movies):
+    data_filtered = movies.dropna(subset=['producer', 'plot_structure', 'adjusted_profit'])
+    director_revenue = data_filtered.groupby('producer')['adjusted_profit'].sum()
+    top_directors = director_revenue.nlargest(5).index
+    return data_filtered[data_filtered['producer'].isin(top_directors)]
+
+def create_graph(data):
+    """
+    Creates a NetworkX graph from a DataFrame, ensuring node attributes such as 'size' aggregate properly.
+    """
+    G = nx.Graph() 
+    node_attributes = {}
+    
+    size_factor = 1e50
+    offset = 5
+    for _, row in data.iterrows():
+        source = row['producer']
+        target = row['plot_structure']
+        weight = row['adjusted_profit'] / size_factor + offset
+
+        if source not in node_attributes:
+            node_attributes[source] = {'weight': weight, 'type': 'director'}
+        else:
+            node_attributes[source]['weight'] += weight
+
+        # Initialize or update target node attributes
+        if target not in node_attributes:
+            node_attributes[target] = {'weight': weight, 'type': 'plot'}
+        else:
+            node_attributes[target]['weight'] += weight
+
+
+    # Add nodes with aggregated attributes
+    for node, attrs in node_attributes.items():
+        color = '#72A0C1' if attrs['type'] == 'director' else '#90EE90'
+        G.add_node(node, type=attrs['type'], size=attrs['weight'], color=color)
+
+    # Add edges between nodes
+    for _, row in data.iterrows():
+        G.add_edge(row['producer'], row['plot_structure'], weight=6)
+
+    return G
+
+def create_network(data, selected_directors):
+    # Create network graph based on selected directors
+    df_select = data[data['producer'].isin(selected_directors)]
+    G = create_graph(df_select)
+
+    pos = nx.spring_layout(G)  # Positions for the nodes in G
+
+    # Preparing to collect edge data
+    edge_x = []
+    edge_y = []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
+
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=0.5, color='#888'),
+        mode='lines')
+
+    # Preparing to collect node data
+    node_x = []
+    node_y = []
+    node_text = []
+    node_sizes = []
+    node_colors = []
+    for node in G.nodes(data=True):
+        x, y = pos[node[0]]
+        node_x.append(x)
+        node_y.append(y)
+        node_text.append(str(node[0]))
+        # Assume 'size' and 'color' are attributes; scale size appropriately
+        node_sizes.append(node[1]['size'])  # Adjust scaling factor as needed
+        node_colors.append(node[1]['color'])
+
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers',
+        marker=dict(
+            showscale=False,
+            colorscale='YlGnBu',
+            size=node_sizes,
+            color=node_colors,
+            line_width=2),
+        text=node_text,
+        hoverinfo='text')
+
+    fig = go.Figure(data=[edge_trace, node_trace],
+                    layout=go.Layout(
+                        showlegend=False,
+                        hovermode='closest',
+                        margin=dict(b=0, l=0, r=0, t=0),
+                        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        template='plotly_white'  # Apply plotly_white theme
+                        ))
+
+    return fig
+
+def plot_network(data):
+    df_top_5 = process_data_for_directors(data)
+    director_list = sorted(df_top_5['producer'].unique())
+    fig = create_network(df_top_5, director_list)
+    st.plotly_chart(fig, use_container_width=True)
+        
+
+def text_network_intro():
+    st.markdown("""
+        <style>
+        .title-viridis-light {
+            background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 44px; 
+        }
+        .text-content {
+            font-size: 18px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        </style>
+        <div class="text-content">
+            We want to explore the connection between plot types and commercial success. For this reason, we looked at who brings these plots to life—the directors who craft stories that resonate with audiences.
+            In our network graph, directors are represented by blue nodes and plot structures by green. Each node's size reflects the total adjusted profit associated with that director or plot structure, providing a bit more insight into their commercial impact.
+        </div>
+    """, unsafe_allow_html=True)
+
+
+def text_network_conclusion():
+    st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; 
+        text-align: center; 
+    }
+    .text-content {
+        font-size: 18px;
+        text-align: left; 
+        margin: 20px;
+    }
+    </style>
+    <div class="text-content">
+        Every blockbuster shares a plot that connects with us on a deeper level. Some plots spark inspiration, others thrill us, and a few make us dream of escape.
+        <ol>
+            <li><strong>Hero’s Journey and Transformation</strong>
+                <ul>
+                    <li>Movies like <em>The Lord of the Rings</em> and <em>Star Wars</em> follow a hero’s growth, struggles, and triumph.</li>
+                    <li>This timeless plot resonates because everyone loves a journey of growth.</li>
+                </ul>
+            </li>
+            <li><strong>Survival or Escape</strong>
+                <ul>
+                    <li>Whether it’s escaping a dinosaur-infested island (<em>Jurassic Park</em>) or a killer shark (<em>Jaws</em>), survival stories keep audiences on the edge of their seats.</li>
+                    <li>These adrenaline-filled plots deliver the excitement people crave.</li>
+                </ul>
+            </li>
+            <li><strong>Conflict and Betrayal</strong>
+                <ul>
+                    <li>Betrayal stories add drama and depth, from kingdoms falling apart (<em>Game of Thrones</em>) to friendships tested (<em>The Dark Knight</em>).</li>
+                </ul>
+            </li>
+            <li><strong>Coming-of-Age and Self-Discovery</strong>
+                <ul>
+                    <li>These themes connect deeply with audiences, especially younger generations (<em>Harry Potter</em> and <em>Stand by Me</em>).</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    .text-content {
+        font-size: 18px;
+        text-align: left; 
+        margin: 20px; 
+    }
+    </style>
+    <div class="text-content">
+        Once we understood the plots, we looked at <strong>who tells these stories</strong>. Directors shape the narratives we love, and each has their own sweet spot when it comes to plot structures.
+        <ul>
+            <li><strong>George Lucas</strong> loves a <em>Hero’s Journey</em>. From <em>Star Wars</em>, he showed how powerful transformation stories could be when mixed with fantasy and epic conflicts.
+                <ul>
+                    <li><em>The rise of Luke Skywalker</em> isn’t just a movie—it’s a story of courage, destiny, and hope.</li>
+                </ul>
+            </li>
+            <li><strong>Chris Columbus</strong> thrives on <em>Coming-of-Age and Self-Discovery</em>. His success with <em>Harry Potter and the Sorcerer's Stone</em> speaks to the magic of relatable childhood journeys.</li>
+            <li><strong>Steven Spielberg</strong> takes us on adventures of <em>Survival and Escape</em>. From <em>Jaws</em> to <em>E.T.</em>, he’s the master of blending thrills with heartfelt moments.</li>
+            <li><strong>James Cameron</strong> brings drama with <em>Conflict and Power Struggles</em>. Think of <em>Titanic</em> and <em>Avatar</em>—both feature conflict at every level, from personal relationships to epic battles.</li>
+            <li><strong>Robert Zemeckis</strong> delivers stories of <em>Transformation and Growth</em>. Movies like <em>Back to the Future</em> mix adventure and self-discovery, adding a nostalgic charm.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    .text-insights {
+        font-size: 18px;
+        text-align: left;
+        margin: 20px; 
+    }
+    </style>
+    <div class="text-insights">
+        Our network graph uncovered some fascinating insights:
+        <ul>
+            <li><strong>Relatable Plots = Big Success</strong>: Themes like transformation, escape, and betrayal appear repeatedly in top-performing movies.</li>
+            <li><strong>Directors Have Their Comfort Zones</strong>: The most successful directors stick to plot structures they excel at.</li>
+            <li><strong>Genres Enhance the Plot</strong>: Adventure, Fantasy, and Drama amplify these plots, making them even more impactful.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    .text-closing {
+        font-size: 18px;
+        text-align: left;
+        margin: 20px;
+    }
+    .highlight {
+        font-weight: bold;
+        color: #31708f;
+    }
+    </style>
+    <div style="text-align:left; font-size:18px; margin:20px;">
+        The real magic of cinema starts with a powerful story. Directors like Lucas, 
+        Spielberg, and Columbus proved that the right plot structure, combined with strong execution, 
+        can create unforgettable experiences that audiences love—and box offices celebrate. 
+        But now, is it possible to have a model that will predict the profitability of a movie based on its plot structure or genre ? 
+        Can we find this so awaited Holy Grail to making a profitable movie ?
+    </div>
+    """, unsafe_allow_html=True)

@@ -8,7 +8,7 @@ import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-
+import networkx as nx
 
 def load_processed_inflation():
     df_inflation = pd.read_csv('data/raw/inflation_data.csv')
@@ -25,6 +25,17 @@ def load_processed_inflation():
 def load_processed_movies_imdb():
     movies_imdb = pd.read_csv("data/processed/movies_summary_BO.csv")
     return movies_imdb
+
+def load_final_complete_movies():
+    movies_final = pd.read_csv("data/processed/movies_budget_inflation_final.csv")
+    return movies_final
+
+def process_data_for_directors():
+    data = load_final_complete_movies()
+    data_filtered = data.dropna(subset=['producer', 'plot_structure', 'adjusted_profit'])
+    director_revenue = data_filtered.groupby('producer')['adjusted_profit'].sum()
+    top_directors = director_revenue.nlargest(5).index
+    return data_filtered[data_filtered['producer'].isin(top_directors)]
 
 def process_movies_imdb_inflation(movies_imdb, df_inflation):
     movie_years = movies_imdb['movie_release_date'].dropna().unique()

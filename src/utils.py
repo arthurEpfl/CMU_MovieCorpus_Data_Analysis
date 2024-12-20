@@ -126,7 +126,6 @@ def assign_node_attributes(G, size_factor=3e6, offset=1e3, color_mapping=None):
     node_sizes = [G.nodes[node]['weight'] * 3 / size_factor + offset for node in G.nodes]
     return node_colors, node_sizes
 
-
 def draw_graph(G, title="Graph Visualization", k=0.5, seed=42, iterations=100):
     """
     Draws a NetworkX graph with attributes.
@@ -142,7 +141,8 @@ def draw_graph(G, title="Graph Visualization", k=0.5, seed=42, iterations=100):
     pos = nx.spring_layout(G, k=k, seed=seed, iterations=iterations)
 
     # Assign node attributes
-    node_colors, node_sizes = assign_node_attributes(G)
+    node_colors = [G.nodes[node]['color'] for node in G]
+    node_sizes = [G.nodes[node]['size'] for node in G]  # Scale sizes up for visibility
 
     # Draw nodes, edges, and labels
     nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=node_sizes, alpha=0.4, edgecolors='k')
@@ -153,3 +153,40 @@ def draw_graph(G, title="Graph Visualization", k=0.5, seed=42, iterations=100):
     plt.axis('off')
     plt.tight_layout()
     plt.show()
+
+def create_graph2(data):
+    """
+    Creates a NetworkX graph from a DataFrame, ensuring node attributes such as 'size' aggregate properly.
+    """
+    G = nx.Graph() 
+    node_attributes = {}
+    
+    size_factor = 1e6
+    offset = 10
+    for _, row in data.iterrows():
+        source = row['producer']
+        target = row['plot_structure']
+        weight = row['adjusted_profit'] / size_factor + offset
+
+        if source not in node_attributes:
+            node_attributes[source] = {'weight': weight, 'type': 'director'}
+        else:
+            node_attributes[source]['weight'] += weight
+
+        # Initialize or update target node attributes
+        if target not in node_attributes:
+            node_attributes[target] = {'weight': weight, 'type': 'plot'}
+        else:
+            node_attributes[target]['weight'] += weight
+
+
+    # Add nodes with aggregated attributes
+    for node, attrs in node_attributes.items():
+        color = '#72A0C1' if attrs['type'] == 'director' else '#90EE90'
+        G.add_node(node, type=attrs['type'], size=attrs['weight'], color=color)
+
+    # Add edges between nodes
+    for _, row in data.iterrows():
+        G.add_edge(row['producer'], row['plot_structure'])
+
+    return G

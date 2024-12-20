@@ -8,16 +8,22 @@ from plotly.subplots import make_subplots
 import ast
 from sklearn.manifold import TSNE
 from sklearn.decomposition import TruncatedSVD
-import numpy as np
+import numpy as np  
 
-def intro_text():
-    st.subheader('First of all, what is the genre of a movie?')
+from format_text import apply_gradient_color, apply_gradient_color_small
+
+
+def intro_text():  
+    apply_gradient_color_small('First of all, what is the genre of a movie?')
     texts.format_text(""" The genre of a movie defines its category or type, characterized by shared themes, 
                       storytelling elements, and emotional tone. It helps audiences identify what kind of experience to expect, 
                       such as humor in comedies, suspense in thrillers, or emotional depth in dramas.
                       """)
-    texts.format_text(""" Therefore, we look into the distribution of genres in our dataset...
-                    """)
+    texts.format_text("""
+    <div style="text-align:center;">
+        Therefore, we look into the distribution of genres in our dataset !  
+    </div>
+""")
     
 def plot_genre_distribution(top_genre, color_dict):
     # Create Plotly pie chart
@@ -47,14 +53,14 @@ def plot_genre_distribution(top_genre, color_dict):
     )
 
     st.plotly_chart(fig, use_container_width=True)
-    texts.format_text(""" We observe that drama movies dominate in terms of frequency, followed by comedy
+    texts.format_text(""" We observe that Drama movies dominate in terms of frequency, followed by comedy
                        and thriller movies. Here, we display only the top 15 most frequent genres in the processed dataset. 
                       This raises the question, which genres generate the highest revenues? For filmmakers, this is a critical question, after all, 
                       the goal is to create a movie that generates money, right?
                       """)
     
 def text_genre_revenue():
-    st.subheader('Which genres generate the highest revenues?')
+    apply_gradient_color_small('Which genres generate the highest revenues?')
     texts.format_text("""To answer this question, we look at the average revenues for each genre by only keeping the 15 top genres. 
                       The average revenue is the total revenue divided by the number of movies in this genre.
                       """)
@@ -101,7 +107,7 @@ def text_mean_revenue_comment():
                       """)
     
 def text_transition_inflation():
-    st.subheader('What about the value of money over time?')
+    apply_gradient_color_small('What about the value of money over time?')
     texts.format_text("""Inflation is the rate at which the general level of prices for goods and services rises, 
                       leading to a decrease in the purchasing power of a nation's currency. 
                       In other words, the same amount of money will buy fewer goods and services over time.
@@ -175,11 +181,10 @@ def plot_distribution_revenue_by_decade(revenue_by_year):
                        TikTok, or video games competing for attention. Blockbusters like Jaws and Star Wars drew crowds like popcorn to butter, 
                       and with no home video options, theaters were the only place to catch these cultural phenomena. Plus, post-WWII baby boomers 
                       were prime movie-goers, and urbanization made cinemas the perfect weekend escape. 
-                      Hypothetically, this era also saw studios pouring money into epic productions and massive marketing campaigns that practically screamed, "You HAVE to see this in theaters!"
-                      """)
-    texts.format_text("""This is why we need to adjust for inflation to truly understand the financial success of a movie.
-                      Now, let's see the impact of inflation on our mean revenue by genre!
-                        """)
+                      Hypothetically, this era also saw studios pouring money into epic productions and massive marketing campaigns that practically screamed, "You HAVE to see this in theaters!".
+                      This is why we need to adjust for inflation to truly understand the financial success of a movie.
+        Now, let's see the impact of inflation on our mean revenue by genre!""")
+    
     
 def plot_comparison_genre_mean_revenue(filtered_df, classified_summaries_inflation_BO, color_dict):
     # Calculate the mean revenues and sort them in descending order for the first dataset
@@ -249,10 +254,12 @@ def text_transition_to_distribution():
     texts.format_text(""" Therefore, from now on, we will use the adjusted revenues to analyze the financial success of movies.
                       """)
     
-    st.subheader('Now, let\'s see go back to the distribution of revenues by genre!')
-    texts.format_text(""" TRANSITION TO SEE THE DISTRIBUTION OF REVENUES BY GENRE
-                      A COMPLETER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                      """)
+    apply_gradient_color_small('Now, let\'s see go back to the distribution of revenues by genre!')
+    texts.format_text("""
+    <div style="text-align:center;">
+        Consider that you are in a mystery movie, we want to find the outliers that may add insight revenue distributions!
+    </div>
+""")
     
 
 def plot_genre_distribution_revenue(classified_summaries_inflation_BO, color_dict):
@@ -293,7 +300,7 @@ def text_transition_to_median():
     texts.format_text(""" We can see that each genre has a lot (and we mean a lot) of variability
                        and outliers when it comes to revenues. It's like comparing apples, oranges, and the occasional
                        flying watermelon. So, relying on the mean revenue for our analysis might not be the brightest idea. 
-                      Let's be smarter about this and take a look at the median revenue instead!
+                      Let's be smarter about this and take a look at the median revenue instead, it's much more robust!
                       """)
 
 def plot_genre_median_revenue(filtered_df, color_dict, adjusted=False, key=0):
@@ -348,7 +355,7 @@ def text_transition_to_profit():
                         """)
 
 def text_intro_profit():
-    st.subheader('Show Me the Money: A Deep Dive into Movie Profits')
+    apply_gradient_color_small('Show Me the Money: A Deep Dive into Movie Profits')
     texts.format_text("""Now that we've seen which genres rake in the big bucks in terms of revenue, it's time to get real about what the 
                       studios actually take home. Profit is the true measure of financial success, so let's break down the numbers and see which genres are
                        not just making noise at the box office, but also filling up the bank accounts. Ready to find out who's really cashing in? Let's dive in!
@@ -415,10 +422,8 @@ def text_conclusion_profit():
                       Overall, it looks like some genres know how to make their money work harder!
                       """)
     
-    texts.format_text("""Overall, it looks like some genres know how to make their money work harder!""")
-
 def text_intro_time_series():
-    st.subheader("Profit Through the Ages")
+    apply_gradient_color_small("Profit Through the Ages")
     texts.format_text(""" Now that we've got a snapshot of the genres by median profit, let's turn our attention to how these profits have evolved over time. By examining 
                       the year-by-year progression of mean and median profit across genres, we can uncover trends, shifts in audience preferences, and how the industry's financial
                        landscape has changed. It's time to see which genres have been consistently profitable and which ones have had their moments of glory (or perhaps a few rough patches)
@@ -463,12 +468,20 @@ def plot_genre_profit_evolution(classified_summaries_inflation_BO, top_genre, co
     st.plotly_chart(fig, use_container_width=True)
 
 def text_conclusion_time_series():
-    texts.format_text(""" CONCLUSION TIME SERIES
-                      A COMPLETER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!""")
+    texts.format_text("""
+        It's noticeable here, that in general, and for all movie genres, 
+        same tendency is observed in terms of median profit with inflation adjustment, 
+        they are overall all most profitable between the 60s and 80s. This is really interesting,
+        It's during this period that lots of masterpieces came out in cinemas, such as the Godfather or Star Wars and many more!
+    """)  
 
-
-
-
+    texts.format_text("""
+        Now that we have analyzed genres and their related revenues and profits, we ask ourselves, what really makes a movie profitable? 
+        Is there another criterion or recipe that we may have missed? 
+        Could it be the star power of the actors, the director's vision, or perhaps the marketing strategy? 
+        Or is there something more intrinsic to the movie itself, like its plot structure, that holds the key to financial success? 
+        Let's dive deeper and analyze the plot structures of movies to uncover the secrets behind their success!
+""")  
 
 
 #### UTILS ####

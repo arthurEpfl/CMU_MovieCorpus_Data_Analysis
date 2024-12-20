@@ -22,6 +22,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 import statsmodels.api as sm
 import sklearn.metrics as metrics
 
+import networkx as nx
+import matplotlib.pyplot as plt
+from pyvis.network import Network
+
 # Set Streamlit page config
 st.set_page_config(
     page_title="Cinematic Moral Dilemmas",
@@ -96,6 +100,7 @@ st.markdown("""
         <h1 class="title-viridis-light">🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success</h1>
     </div>
 """, unsafe_allow_html=True)
+
 
 st.markdown("""
 <div style="font-size:18px; text-align:center;">
@@ -1256,6 +1261,156 @@ The plot structure "Quest for Vengeance or Justice" has the highest median box o
 """, unsafe_allow_html=True)
 
 
+st.markdown("---")
+
+st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; /* Adjust the font size as needed */
+    }
+    .text-content {
+        font-size: 18px;
+        text-align: center;
+        margin-top: 20px;
+    }
+    </style>
+    <div class="text-content">
+        <h2 id="spotlight-directors" class="title-viridis-light">Spotlight on Top Directors and Their Go-To Storylines</h2>
+        We want to explore the connection between plot types and commercial success. For this reason, we looked at who brings these plots to life—the directors who craft stories that resonate with audiences.
+    </div>
+""", unsafe_allow_html=True)
+
+
+df_top_5 = mod.process_data_for_directors()
+director_list = sorted(df_top_5['producer'].unique())
+# Implement multiselect dropdown menu for director selection (returns a list)
+selected_directors = st.multiselect('Select director(s) to visualize', director_list, default=director_list)
+
+if selected_directors:
+    plot_net = plot_app.create_network(df_top_5, selected_directors)
+    
+    try:
+        path = '/tmp'
+        plot_net.save_graph(f'{path}/director_plot_graph.html')
+        HtmlFile = open(f'{path}/director_plot_graph.html', 'r', encoding='utf-8')
+    except:
+        path = 'html_files'  # Local directory for HTML files if '/tmp' fails
+        plot_net.save_graph(f'{path}/director_plot_graph.html')
+        HtmlFile = open(f'{path}/director_plot_graph.html', 'r', encoding='utf-8')
+
+    st.components.v1.html(HtmlFile.read(), height=635)
+    
+else:
+    st.text('Choose at least one director to start visualizing their plot structures.')
+
+st.markdown("""
+<style>
+.title-viridis-light {
+    background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 44px; /* Adjust the font size as needed */
+    text-align: center; /* Keeps the title centered */
+}
+.text-content {
+    font-size: 18px;
+    text-align: left; /* Aligns the text to the left for better readability */
+    margin: 20px; /* Adds margin around the text for spacing */
+}
+</style>
+<div class="text-content">
+    Every blockbuster shares a plot that connects with us on a deeper level. Some plots spark inspiration, others thrill us, and a few make us dream of escape.
+    <ol>
+        <li><strong>Hero’s Journey and Transformation</strong>
+            <ul>
+                <li>Movies like <em>The Lord of the Rings</em> and <em>Star Wars</em> follow a hero’s growth, struggles, and triumph.</li>
+                <li>This timeless plot resonates because everyone loves a journey of growth.</li>
+            </ul>
+        </li>
+        <li><strong>Survival or Escape</strong>
+            <ul>
+                <li>Whether it’s escaping a dinosaur-infested island (<em>Jurassic Park</em>) or a killer shark (<em>Jaws</em>), survival stories keep audiences on the edge of their seats.</li>
+                <li>These adrenaline-filled plots deliver the excitement people crave.</li>
+            </ul>
+        </li>
+        <li><strong>Conflict and Betrayal</strong>
+            <ul>
+                <li>Betrayal stories add drama and depth, from kingdoms falling apart (<em>Game of Thrones</em>) to friendships tested (<em>The Dark Knight</em>).</li>
+            </ul>
+        </li>
+        <li><strong>Coming-of-Age and Self-Discovery</strong>
+            <ul>
+                <li>These themes connect deeply with audiences, especially younger generations (<em>Harry Potter</em> and <em>Stand by Me</em>).</li>
+            </ul>
+        </li>
+    </ol>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+.text-content {
+    font-size: 18px;
+    text-align: left; /* Ensures text is left-aligned for readability */
+    margin: 20px; /* Adds margin for better spacing */
+}
+</style>
+<div class="text-content">
+    Once we understood the plots, we looked at <strong>who tells these stories</strong>. Directors shape the narratives we love, and each has their own sweet spot when it comes to plot structures.
+    <ul>
+        <li><strong>George Lucas</strong> loves a <em>Hero’s Journey</em>. From <em>Star Wars</em>, he showed how powerful transformation stories could be when mixed with fantasy and epic conflicts.
+            <ul>
+                <li><em>The rise of Luke Skywalker</em> isn’t just a movie—it’s a story of courage, destiny, and hope.</li>
+            </ul>
+        </li>
+        <li><strong>Chris Columbus</strong> thrives on <em>Coming-of-Age and Self-Discovery</em>. His success with <em>Harry Potter and the Sorcerer's Stone</em> speaks to the magic of relatable childhood journeys.</li>
+        <li><strong>Steven Spielberg</strong> takes us on adventures of <em>Survival and Escape</em>. From <em>Jaws</em> to <em>E.T.</em>, he’s the master of blending thrills with heartfelt moments.</li>
+        <li><strong>James Cameron</strong> brings drama with <em>Conflict and Power Struggles</em>. Think of <em>Titanic</em> and <em>Avatar</em>—both feature conflict at every level, from personal relationships to epic battles.</li>
+        <li><strong>Robert Zemeckis</strong> delivers stories of <em>Transformation and Growth</em>. Movies like <em>Back to the Future</em> mix adventure and self-discovery, adding a nostalgic charm.</li>
+    </ul>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+.text-insights {
+    font-size: 18px;
+    text-align: left; /* Consistent text alignment */
+    margin: 20px; /* Adequate spacing */
+}
+</style>
+<div class="text-insights">
+    Our network graph uncovered some fascinating insights:
+    <ul>
+        <li><strong>Relatable Plots = Big Success</strong>: Themes like transformation, escape, and betrayal appear repeatedly in top-performing movies.</li>
+        <li><strong>Directors Have Their Comfort Zones</strong>: The most successful directors stick to plot structures they excel at.</li>
+        <li><strong>Genres Enhance the Plot</strong>: Adventure, Fantasy, and Drama amplify these plots, making them even more impactful.</li>
+    </ul>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+.text-closing {
+    font-size: 18px;
+    text-align: left;
+    margin: 20px;
+}
+.highlight {
+    font-weight: bold;
+    color: #31708f; /* A calm, attention-grabbing color */
+}
+</style>
+<div class="text-closing">
+    The real magic of cinema starts with a powerful story. Directors like Lucas, Spielberg, and Columbus proved that the right plot structure, combined with strong execution, can create unforgettable experiences that audiences love—and box offices celebrate.
+    <p class="highlight">
+        So, what’s the next story that will captivate the world? ✨
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -1350,7 +1505,8 @@ with profit_tabs[2]:
         st.write(f"- H-statistic: {kruskal_test.statistic:.2f}")
         st.write(f"- p-value: {kruskal_test.pvalue:.2e}")
  
- 
+
+
  ### Using movie plots and genres as predictors for financial success
 st.markdown("""
 <div style="font-size:11px; text-align:center; line-height:1.6;">
@@ -1503,13 +1659,3 @@ Sven, Anders, Adam, Malak, Arthur.
 
 
 st.markdown("""21""", unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
