@@ -136,7 +136,7 @@ def run():
 
     
     # --- DATA STORY --- #
-            
+          
     #### PART 1 - Genres ####
     with st.container():
         st.title("Movie genres: an important factor for financial success ?")
@@ -186,7 +186,7 @@ def run():
         genre.text_intro_time_series()
         genre.plot_genre_profit_evolution(filtered_df_inflation, top_genre, color_dict)
         genre.text_conclusion_time_series()
-
+    
     #### PART 2 - Plot Structures ####       
     with st.container():
         st.title("Beyond Genre: Unlocking the Secrets of Plot Structures")
@@ -218,6 +218,11 @@ def run():
         # HEAT MAP
         plot.plot_genre_plot_structure_heatmap(movies_for_reg, top_genre)
         plot.text_conclusion()
+        
+        # DIRECTORS NETWORK
+        plot.text_network_intro()
+        plot.plot_network(movies_for_reg)
+        plot.text_network_conclusion()
       
     #### PART 3 - Linear regression ####   
     with st.container():

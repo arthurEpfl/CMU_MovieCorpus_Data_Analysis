@@ -13,3 +13,4 @@ streamlit
 statsmodels
 networkx
 pyvis
+streamlit_lottie

@@ -1,31 +1,16 @@
 import streamlit as st
-from streamlit.logger import get_logger
-from streamlit_lottie import st_lottie
-import requests
 import pandas as pd
-import ast
-
 import plotly.express as px
 import plotly.graph_objects as go
 import statsmodels.api as sm
-import intro
-import genre
-import plot
-import conclusion as conc
-import format_text as texts
 import matplotlib.pyplot as plt
-import seaborn as sns
-import sys
-import os
 import sklearn
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.preprocessing import PolynomialFeatures
+import numpy as np
 
 def enhance_features(X_train, X_test):
     """
@@ -240,66 +225,6 @@ def preprocess4linreg(df, y_column, x_columns_to_drop, test_size=0.2):
     
     return X_train_scaled_df, X_test_scaled_df, y_train_no_index, y_test_no_index
 
-import streamlit as st
-import plotly.graph_objects as go
-import statsmodels.api as sm
-import numpy as np
-import matplotlib.pyplot as plt  # For using the Viridis color map
-
-import streamlit as st
-import plotly.graph_objects as go
-import statsmodels.api as sm
-import numpy as np
-import matplotlib.pyplot as plt  # For using the Viridis color map
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import numpy as np
-import plotly.graph_objects as go
-import streamlit as st
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-
-import plotly.graph_objects as go
-import pandas as pd
-import statsmodels.api as sm
-import numpy as np
-import streamlit as st
-
 def plot_reg_coeffs(movies_plot):
     # Preprocess data for regression
     movies_plot['plot_structure_cluster'] = add_plot_structure_cluster(movies_plot['plot_summary'])
@@ -400,31 +325,6 @@ def plot_reg_coeffs(movies_plot):
     # Display interactive plot in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-
-import streamlit as st
-import plotly.graph_objects as go
-import statsmodels.api as sm
-import numpy as np
-
-
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-import statsmodels.api as sm
-import streamlit as st
-
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-import statsmodels.api as sm
-import streamlit as st
-
-import streamlit as st
-import plotly.graph_objects as go
-import plotly.express as px
-import numpy as np
-import statsmodels.api as sm
-
 def plot_budget_profit(movies_plot):
 
     # Tabs for switching between plots
@@ -504,13 +404,6 @@ def plot_budget_profit(movies_plot):
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import streamlit as st
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 def ROI_plot(movies_plot):
 

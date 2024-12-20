@@ -12,7 +12,8 @@ from sklearn.decomposition import TruncatedSVD
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
-
+import networkx as nx
+from pyvis.network import Network
 
 def text_intro():
     texts.format_text("""Alright, so we've talked about genres and their financial impact, but let's be real—genre 
@@ -403,3 +404,246 @@ def get_clusters(col):
     n_clusters = 15
     kmeans = KMeans(n_clusters=n_clusters, random_state=0)
     return kmeans.fit_predict(combined_matrix), combined_matrix, tfidf_vectorizer, kmeans
+
+
+# --- NETWORK GRAPH --- #
+def process_data_for_directors(movies):
+    data_filtered = movies.dropna(subset=['producer', 'plot_structure', 'adjusted_profit'])
+    director_revenue = data_filtered.groupby('producer')['adjusted_profit'].sum()
+    top_directors = director_revenue.nlargest(5).index
+    return data_filtered[data_filtered['producer'].isin(top_directors)]
+
+def create_graph(data):
+    """
+    Creates a NetworkX graph from a DataFrame, ensuring node attributes such as 'size' aggregate properly.
+    """
+    G = nx.Graph() 
+    node_attributes = {}
+    
+    size_factor = 1e50
+    offset = 5
+    for _, row in data.iterrows():
+        source = row['producer']
+        target = row['plot_structure']
+        weight = row['adjusted_profit'] / size_factor + offset
+
+        if source not in node_attributes:
+            node_attributes[source] = {'weight': weight, 'type': 'director'}
+        else:
+            node_attributes[source]['weight'] += weight
+
+        # Initialize or update target node attributes
+        if target not in node_attributes:
+            node_attributes[target] = {'weight': weight, 'type': 'plot'}
+        else:
+            node_attributes[target]['weight'] += weight
+
+
+    # Add nodes with aggregated attributes
+    for node, attrs in node_attributes.items():
+        color = '#72A0C1' if attrs['type'] == 'director' else '#90EE90'
+        G.add_node(node, type=attrs['type'], size=attrs['weight'], color=color)
+
+    # Add edges between nodes
+    for _, row in data.iterrows():
+        G.add_edge(row['producer'], row['plot_structure'], weight=6)
+
+    return G
+
+def create_network(data, selected_directors):
+    # Create network graph based on selected directors
+    df_select = data[data['producer'].isin(selected_directors)]
+    G = create_graph(df_select)
+
+    pos = nx.spring_layout(G)  # Positions for the nodes in G
+
+    # Preparing to collect edge data
+    edge_x = []
+    edge_y = []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
+
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=0.5, color='#888'),
+        mode='lines')
+
+    # Preparing to collect node data
+    node_x = []
+    node_y = []
+    node_text = []
+    node_sizes = []
+    node_colors = []
+    for node in G.nodes(data=True):
+        x, y = pos[node[0]]
+        node_x.append(x)
+        node_y.append(y)
+        node_text.append(str(node[0]))
+        # Assume 'size' and 'color' are attributes; scale size appropriately
+        node_sizes.append(node[1]['size'])  # Adjust scaling factor as needed
+        node_colors.append(node[1]['color'])
+
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers',
+        marker=dict(
+            showscale=True,  # Enable color scale if needed
+            colorscale='YlGnBu',
+            size=node_sizes,
+            color=node_colors,
+            line_width=2),
+        text=node_text,
+        hoverinfo='text')
+
+    fig = go.Figure(data=[edge_trace, node_trace],
+                    layout=go.Layout(
+                        showlegend=False,
+                        hovermode='closest',
+                        margin=dict(b=0, l=0, r=0, t=0),
+                        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        template='plotly_white'  # Apply plotly_white theme
+                        ))
+
+    return fig
+
+def plot_network(data):
+    df_top_5 = process_data_for_directors(data)
+    director_list = sorted(df_top_5['producer'].unique())
+    fig = create_network(df_top_5, director_list)
+    st.plotly_chart(fig, use_container_width=True)
+        
+
+def text_network_intro():
+    st.markdown("""
+        <style>
+        .title-viridis-light {
+            background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 44px; 
+        }
+        .text-content {
+            font-size: 18px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        </style>
+        <div class="text-content">
+            <h2 id="spotlight-directors" class="title-viridis-light">Spotlight on Top Directors and Their Go-To Storylines</h2>
+            We want to explore the connection between plot types and commercial success. For this reason, we looked at who brings these plots to life—the directors who craft stories that resonate with audiences.
+            In our network graph, directors are represented by blue nodes and plot structures by green. Each node's size reflects the total adjusted profit associated with that director or plot structure, providing a bit more insight into their commercial impact.
+        </div>
+    """, unsafe_allow_html=True)
+    
+def text_network_conclusion():
+    st.markdown("""
+    <style>
+    .title-viridis-light {
+        background: linear-gradient(135deg, #3b528b 0%, #21918c 50%, #27ad81 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 44px; 
+        text-align: center; 
+    }
+    .text-content {
+        font-size: 18px;
+        text-align: left; 
+        margin: 20px;
+    }
+    </style>
+    <div class="text-content">
+        Every blockbuster shares a plot that connects with us on a deeper level. Some plots spark inspiration, others thrill us, and a few make us dream of escape.
+        <ol>
+            <li><strong>Hero’s Journey and Transformation</strong>
+                <ul>
+                    <li>Movies like <em>The Lord of the Rings</em> and <em>Star Wars</em> follow a hero’s growth, struggles, and triumph.</li>
+                    <li>This timeless plot resonates because everyone loves a journey of growth.</li>
+                </ul>
+            </li>
+            <li><strong>Survival or Escape</strong>
+                <ul>
+                    <li>Whether it’s escaping a dinosaur-infested island (<em>Jurassic Park</em>) or a killer shark (<em>Jaws</em>), survival stories keep audiences on the edge of their seats.</li>
+                    <li>These adrenaline-filled plots deliver the excitement people crave.</li>
+                </ul>
+            </li>
+            <li><strong>Conflict and Betrayal</strong>
+                <ul>
+                    <li>Betrayal stories add drama and depth, from kingdoms falling apart (<em>Game of Thrones</em>) to friendships tested (<em>The Dark Knight</em>).</li>
+                </ul>
+            </li>
+            <li><strong>Coming-of-Age and Self-Discovery</strong>
+                <ul>
+                    <li>These themes connect deeply with audiences, especially younger generations (<em>Harry Potter</em> and <em>Stand by Me</em>).</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    .text-content {
+        font-size: 18px;
+        text-align: left; 
+        margin: 20px; 
+    }
+    </style>
+    <div class="text-content">
+        Once we understood the plots, we looked at <strong>who tells these stories</strong>. Directors shape the narratives we love, and each has their own sweet spot when it comes to plot structures.
+        <ul>
+            <li><strong>George Lucas</strong> loves a <em>Hero’s Journey</em>. From <em>Star Wars</em>, he showed how powerful transformation stories could be when mixed with fantasy and epic conflicts.
+                <ul>
+                    <li><em>The rise of Luke Skywalker</em> isn’t just a movie—it’s a story of courage, destiny, and hope.</li>
+                </ul>
+            </li>
+            <li><strong>Chris Columbus</strong> thrives on <em>Coming-of-Age and Self-Discovery</em>. His success with <em>Harry Potter and the Sorcerer's Stone</em> speaks to the magic of relatable childhood journeys.</li>
+            <li><strong>Steven Spielberg</strong> takes us on adventures of <em>Survival and Escape</em>. From <em>Jaws</em> to <em>E.T.</em>, he’s the master of blending thrills with heartfelt moments.</li>
+            <li><strong>James Cameron</strong> brings drama with <em>Conflict and Power Struggles</em>. Think of <em>Titanic</em> and <em>Avatar</em>—both feature conflict at every level, from personal relationships to epic battles.</li>
+            <li><strong>Robert Zemeckis</strong> delivers stories of <em>Transformation and Growth</em>. Movies like <em>Back to the Future</em> mix adventure and self-discovery, adding a nostalgic charm.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    .text-insights {
+        font-size: 18px;
+        text-align: left;
+        margin: 20px; 
+    }
+    </style>
+    <div class="text-insights">
+        Our network graph uncovered some fascinating insights:
+        <ul>
+            <li><strong>Relatable Plots = Big Success</strong>: Themes like transformation, escape, and betrayal appear repeatedly in top-performing movies.</li>
+            <li><strong>Directors Have Their Comfort Zones</strong>: The most successful directors stick to plot structures they excel at.</li>
+            <li><strong>Genres Enhance the Plot</strong>: Adventure, Fantasy, and Drama amplify these plots, making them even more impactful.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    .text-closing {
+        font-size: 18px;
+        text-align: left;
+        margin: 20px;
+    }
+    .highlight {
+        font-weight: bold;
+        color: #31708f;
+    }
+    </style>
+    <div class="text-closing">
+        The real magic of cinema starts with a powerful story. Directors like Lucas, Spielberg, and Columbus proved that the right plot structure, combined with strong execution, can create unforgettable experiences that audiences love—and box offices celebrate.
+        <p class="highlight">
+            So, what’s the next story that will captivate the world? ✨
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
