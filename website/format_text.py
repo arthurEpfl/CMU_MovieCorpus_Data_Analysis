@@ -23,14 +23,14 @@ def regression_interpretation():
         Let’s take a systematic approach to answering this question. By fitting a linear regression model, we explored various factors to understand their influence on a movie's adjusted profit.
     """)
     format_text("Here’s how we structured the model:")
-    format_text("- <strong>Features considered</strong>: movie release date, budget, rating score, producer, genres, countries of production, plot structures, and plot clusters.")  
-    format_text("- <strong>Target variable</strong>: adjusted profit.")
+    format_text("<li> <strong>Features considered</strong>: movie release date, budget, rating score, producer, genres, countries of production, plot structures, and plot clusters.</li>")  
+    format_text("<li> <strong>Target variable</strong>: adjusted profit.</li>")
     format_text("Although the model achieved an R-squared value of 0.384 on the training set and 0.1803 on the test set—indicating limited generalizability—it still highlighted valuable insights. Below are some of the key findings based on features with statistically significant p-values (less than 0.05):")
-    format_text("- <strong>Movie Runtime:</strong> Longer movies tend to yield higher adjusted profits.")
-    format_text("- <strong>Rating Score:</strong> Higher ratings correlate positively with adjusted profits.")   
-    format_text("- <strong>Adjusted Budget:</strong> Larger budgets are strongly associated with greater financial success.")
-    format_text("- <strong>Genres:</strong> Certain genres such as Action/Adventure, Family Film, and Space Opera are positively linked to profitability. In contrast, genres like Drama, Crime Thriller, and Western tend to show negative associations.")
-    format_text("- *<strong>Plot Clusters:</strong> Specific clusters, such as sci-fi adventures (Cluster 4) and domestic dramas centered on family relationships (Cluster 9), exhibit a significant positive impact on adjusted profits.")
+    format_text("<li> <strong>Movie Runtime:</strong> Longer movies tend to yield higher adjusted profits. </li>")
+    format_text("<li> <strong>Rating Score:</strong> Higher ratings correlate positively with adjusted profits. </li>")   
+    format_text("<li> <strong>Adjusted Budget:</strong> Larger budgets are strongly associated with greater financial success. </li>")
+    format_text("<li><strong>Genres:</strong> Certain genres such as Action/Adventure, Family Film, and Space Opera are positively linked to profitability. In contrast, genres like Drama, Crime Thriller, and Western tend to show negative associations.</li>")
+    format_text("<li><strong>Plot Clusters:</strong> Specific clusters, such as sci-fi adventures (Cluster 4) and domestic dramas centered on family relationships (Cluster 9), exhibit a significant positive impact on adjusted profits.</li>")
     format_text("However, some caveats must be noted. The small sample sizes for certain genres and plot clusters may amplify their variability, making them appear more significant than they might be in a larger dataset.")
     format_text("Interestingly, while genres and plot structures contribute meaningfully, they alone do not reliably predict financial success. Instead, the budget emerged as the most direct and impactful predictor, with a highly significant p-value (0.000). This makes intuitive sense—budgeting decisions are typically made early in a movie's lifecycle and often set the stage for its eventual scale and reach.")
     format_text("To refine the model, we applied feature augmentation techniques, particularly focusing on the budget variable. This boosted the training R-squared to 0.397, further underscoring the centrality of budget as a predictor of financial success.")
@@ -45,9 +45,8 @@ def budget_interpretation2():
     format_text("""An initial visualization of the relationship between budget and profit shows that higher-budget films generally have more consistent profits with less variation. Conversely, lower-budget films exhibit a broader range of outcomes, including both exceptional successes and significant failures.
 """)
     format_text("""
-        However, the data suggests that while higher budgets reduce risk on average, they do not eliminate it entirely. Among the highest-budget films, there are some notable outliers—big-budget productions that turned into major flops at the box office. This highlights that even substantial investments are not entirely free from financial risk.
-            """)
-    format_text("""MAYBE ADD EXAMPLES OF HUGE FLOPS""")
+        However, the data suggests that while higher budgets reduce risk on average, they do not eliminate it entirely. Among the highest-budget films, there are some notable outliers—big-budget productions that turned into major flops at the box office. This highlights that even substantial investments are not entirely free from financial risk. 
+                Some of these movies include: Mars Needs Moms, The 13th Warrior, The Adventures of Pluto Nash and Cloud Atlas all registering losses upwards of 90M$.""")
 def ROI_interpretation():
     format_text("""
         When we assess the return on investment (ROI), a clearer pattern emerges. Variance in ROI decreases as budgets increase, suggesting that lower-budget films are inherently riskier ventures. This pattern is evident in the graph, where films with budgets exceeding 100M$ display a distribution similar to those between 10M$ and 100M$, indicating similar risk profiles. Nevertheless, very high-budget films tend to deliver higher absolute profits compared to their moderately high-budget counterparts.""")
@@ -56,10 +55,11 @@ def ROI_interpretation():
 
 def key_concl():
     format_text("Our analysis suggests the following:")
-    format_text("- <strong>Risk vs. Reward</strong>: Lower-budget films carry higher financial risk but offer the potential for greater profitability, as evidenced by their higher mean ROI.")
-    format_text("- <strong>Stability of High Budgets</strong>: Higher-budget films, while not immune to failure, tend to offer more stable returns.") 
+    format_text("<li> <strong>Risk vs. Reward</strong>: Lower-budget films carry higher financial risk but offer the potential for greater profitability, as evidenced by their higher mean ROI.</li>")
+    format_text("<li> <strong>Stability of High Budgets</strong>: Higher-budget films, while not immune to failure, tend to offer more stable returns.</li>") 
     format_text("However, it is important to consider bias: the findings indicate that lower-budget films appear to be more profitable on average. However, this is likely influenced by the skewness of the original dataset. Since we only include movies with available budget and revenue data and rely on a predefined dataset, it is probable that the sample of low-budget films is disproportionately successful compared to what would be observed in a truly random sample. An unbiased random sample would likely reveal a higher risk profile for low-budget films and demonstrate that they are significantly less profitable on average.")
-    format_text("")  
+    format_text("")
+
 
 
 def apply_gradient_color(text):

@@ -518,7 +518,7 @@ def return_processed_genre_df(movies):
     return genre_exploded, mean_revenues, median_revenues, color_dict, top_genre, filtered_df
     
 def load_processed_inflation():
-    df_inflation = pd.read_csv('data/raw/inflation_data.csv')
+    df_inflation = pd.read_csv('../data/raw/inflation_data.csv')
     df_inflation['date'] = pd.to_datetime(df_inflation['date'])
     df_inflation = df_inflation.set_index('date')
     df_inflation = df_inflation.reset_index()
