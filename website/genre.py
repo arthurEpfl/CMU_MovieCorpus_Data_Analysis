@@ -197,8 +197,8 @@ def plot_comparison_genre_mean_revenue(filtered_df, classified_summaries_inflati
 
     # Create subplots with shared y-axis
     fig = make_subplots(rows=1, cols=2, shared_yaxes=True, subplot_titles=(
-        'Mean Box Office Revenues by Top 15 Movie Genres',
-        'Mean Box Office Revenues by Top 15 Movie Genres (adjusted with inflation)'
+        'Mean Box Office Revenues',
+        'Mean Box Office Revenues (adjusted for inflation)'
     ))
 
     # Plot the first mean revenues using a bar plot
@@ -219,7 +219,7 @@ def plot_comparison_genre_mean_revenue(filtered_df, classified_summaries_inflati
 
     # Update layout for better appearance
     fig.update_layout(
-        title_text='Comparison of Mean Box Office Revenues by Genre',
+        title_text='Comparison of Mean Box Office Revenues by Genres (Top 15)',
         title={
             'text': 'Comparison of Mean Box Office Revenues by Genre',
             'y': 0.98,
