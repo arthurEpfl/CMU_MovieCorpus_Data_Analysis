@@ -106,6 +106,7 @@ def run():
     with st.container():
         st.title("🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success :sparkles:")
         st.subheader("Introduction")
+        st.markdown('<a id="intro"></a>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             # call intro.py
@@ -124,6 +125,14 @@ def run():
             st.title("Table of Contents")
             # --- NAVIGATION --- #
             # implement here the navigation through table of contents
+            st.markdown("""
+            <ol>
+                <li><a href="#intro">Introduction</a></li>
+                <li><a href="#movie-genres-an-important-factor-for-financial-success">Movie genres: an important factor for financial success?</a></li>
+                <li><a href="#beyond-genre-unlocking-the-secrets-of-plot-structures">Beyond Genre: Unlocking the Secrets of Plot Structures</a></li>
+                <li><a href="#overall-what-makes-a-movie-financially-successful">Overall, what makes a movie financially successful?</a></li>
+            </ol>
+            """, unsafe_allow_html=True)
 
     
     # --- DATA STORY --- #
@@ -131,6 +140,7 @@ def run():
     #### PART 1 - Genres ####
     with st.container():
         st.title("Movie genres: an important factor for financial success ?")
+        st.markdown('<a id="movie-genres-an-important-factor-for-financial-success"></a>', unsafe_allow_html=True)
 
         # INTRO
         genre.intro_text()
@@ -180,6 +190,8 @@ def run():
     #### PART 2 - Plot Structures ####       
     with st.container():
         st.title("Beyond Genre: Unlocking the Secrets of Plot Structures")
+        st.markdown('<a id="beyond-genre-unlocking-the-secrets-of-plot-structures"></a>', unsafe_allow_html=True)
+
         plot.text_intro()
 
         # CLUSTERING
@@ -210,6 +222,7 @@ def run():
     #### PART 3 - Linear regression ####   
     with st.container():
         st.title("Overall, what makes a movie financially successful ?")
+        st.markdown('<a id="overall-what-makes-a-movie-financially-successful"></a>', unsafe_allow_html=True)
         st.subheader("Fitting a linear regresion model")
         col1, col2 = st.columns(2)
         with col1:
