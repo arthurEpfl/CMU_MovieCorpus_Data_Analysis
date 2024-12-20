@@ -86,7 +86,8 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
     
    4.4 Analysis of Plot Structure:  
       - Distribution of plot structure across the dataset and the years.
-      - Relation between plot structure and box office revenues/profit. 
+      - Relation between plot structure and box office revenues/profit.  
+      - Directors and plot structure influence.   
 
 5. **Statistical Analysis**
    - Use statistical methods to compare the box office revenue of movies with different narrative structures.  
