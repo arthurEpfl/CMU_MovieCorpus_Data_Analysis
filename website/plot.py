@@ -691,7 +691,7 @@ def create_network(data, selected_directors):
         x=node_x, y=node_y,
         mode='markers',
         marker=dict(
-            showscale=True,  # Enable color scale if needed
+            showscale=False,
             colorscale='YlGnBu',
             size=node_sizes,
             color=node_colors,
