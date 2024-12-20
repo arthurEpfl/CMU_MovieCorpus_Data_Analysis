@@ -431,7 +431,7 @@ def plot_budget_profit(movies_plot):
     tab1, tab2 = st.tabs(["Budget vs Profit", "Budget vs Profit (Log-Log Scale)"])
 
     with tab1:
-        st.write("### Budget vs Profit")
+        #st.write("### Budget vs Profit")
 
         # Interactive scatter plot
         fig1 = px.scatter(
@@ -455,7 +455,7 @@ def plot_budget_profit(movies_plot):
         st.plotly_chart(fig1, use_container_width=True)
 
     with tab2:
-        st.write("### Budget vs Profit (Log-Log Scale)")
+        #st.write("### Budget vs Profit (Log-Log Scale)")
 
         # Log-transform the data
         log_budget = np.log(movies_plot['adjusted_budget'])
@@ -518,7 +518,7 @@ def ROI_plot(movies_plot):
     tab1, tab2 = st.tabs(["ROI vs Budget (Log-Log Scale)", "ROI by Budget Range"])
 
     with tab1:
-        st.write("### ROI vs Budget (Log-Log Scale with Regression Line)")
+        #st.write("### ROI vs Budget (Log-Log Scale with Regression Line)")
 
         # Calculate profitability ratio
         movies_plot['profitability_ratio'] = movies_plot['adjusted_profit'] / movies_plot['adjusted_budget']
@@ -562,7 +562,7 @@ def ROI_plot(movies_plot):
         st.plotly_chart(fig1, use_container_width=True)
 
     with tab2:
-        st.write("### ROI by Budget Range")
+        #st.write("### ROI by Budget Range")
 
         # Create budget bins
         bins = [0, 1e6, 1e7, 5e7, 1e8, 5e8]
