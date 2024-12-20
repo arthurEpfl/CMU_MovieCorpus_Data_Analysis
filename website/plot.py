@@ -842,7 +842,6 @@ def text_network_conclusion():
     <div class="text-closing">
         The real magic of cinema starts with a powerful story. Directors like Lucas, Spielberg, and Columbus proved that the right plot structure, combined with strong execution, can create unforgettable experiences that audiences love—and box offices celebrate.
         <p class="highlight">
-            So, what’s the next story that will captivate the world? ✨
         </p>
     </div>
     """, unsafe_allow_html=True)

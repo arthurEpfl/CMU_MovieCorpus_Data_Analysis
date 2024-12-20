@@ -354,7 +354,8 @@ def plot_budget_profit(movies_plot):
         fig1.update_layout(
             title=dict(
                 text='Budget vs Profit',
-                x=0.5,  # Center title
+                x=0.5,  # Center title,
+                xanchor='center',
                 font=dict(size=20),  # Increase title font size
             ),
             template='plotly_white'
@@ -379,6 +380,7 @@ def plot_budget_profit(movies_plot):
             title=dict(
                 text='Budget vs Profit (Log-Log Scale)',
                 x=0.5,  # Center title
+                xanchor='center',
                 font=dict(size=20),  # Increase title font size
             ),
             template='plotly_white'
@@ -413,6 +415,7 @@ def ROI_plot(movies_plot):
             title=dict(
                 text='ROI vs Budget (Log-Log Scale)',
                 x=0.5,  # Center title
+                xanchor='center',
                 font=dict(size=20),  # Increase title font size
             ),
             template='plotly_white'
@@ -452,6 +455,7 @@ def ROI_plot(movies_plot):
             title=dict(
                 text='Mean and Median ROI by Budget Range (Log - Linear Scale)',
                 x=0.5,  # Center title
+                xanchor='center',
                 font=dict(size=20),  # Increase title font size
             ),
             xaxis_title='Budget Range',
