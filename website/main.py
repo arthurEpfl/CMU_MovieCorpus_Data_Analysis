@@ -206,9 +206,24 @@ def run():
         # HEAT MAP
         plot.plot_genre_plot_structure_heatmap(movies_for_reg, top_genre)
         plot.text_conclusion()
+      
     #### PART 3 - Linear regression ####   
     with st.container():
         st.title("Overall, what makes a movie financially successful ?")
+        st.subheader("Fitting a linear regresion model")
+        col1, col2 = st.columns(2)
+        with col1:
+            # call intro.py
+
+            #replace this
+            texts.int()
+            texts.regression_interpretation()
+        with col2:
+            reg.plot_reg_coeffs(movies_for_reg)
+    with st.container():
+        reg.plot_budget_profit(movies_for_reg)
+
+        reg.ROI_plot(movies_for_reg)
 
         texts.format_text("call functions from reg.py")
 
