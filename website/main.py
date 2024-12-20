@@ -10,7 +10,8 @@ import genre
 import plot
 import regression as reg
 import conclusion as conc
-import format_text as texts
+import format_text as texts  
+from format_text import apply_gradient_color, apply_gradient_color_small
 
 
 # --- CONFIG --- #
@@ -41,12 +42,13 @@ def load_animation(url: str):
         return r.json()
 
 
+
 # @st.cache_data
 def load_data():
     # Load main datasets after preprocessing and classification
-    movies = pd.read_csv('../data/processed/movies_summary_BO.csv', sep=',')
-    classified = pd.read_csv('../data/processed/movies_with_classifications.csv')
-    movies_for_reg = pd.read_csv('../data/processed/movies_budget_inflation_final.csv')
+    movies = pd.read_csv('data/processed/movies_summary_BO.csv', sep=',')
+    classified = pd.read_csv('data/processed/movies_with_classifications.csv')
+    movies_for_reg = pd.read_csv('data/processed/movies_budget_inflation_final.csv')
     return movies, classified, movies_for_reg
 
 movies, classified, movies_for_reg = load_data()
@@ -104,15 +106,15 @@ def run():
 
     # --- INTRODUCTION --- #
     with st.container():
-        st.title("🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success :sparkles:")
-        st.subheader("Introduction")
+        apply_gradient_color("🎬 Decoding the Blueprint of a Blockbuster: Analyzing Plot Structures for Box Office Success")
+        apply_gradient_color_small("Introduction")
         st.markdown('<a id="intro"></a>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             # call intro.py
             texts.intro()
         with col2:
-            texts.format_text("Here goes somimage or animation.")
+            st.image("images_datastory/movie_clap.png", use_container_width=True, width=200)
 
         
 
@@ -137,7 +139,7 @@ def run():
           
     #### PART 1 - Genres ####
     with st.container():
-        st.title("Movie genres: an important factor for financial success ?")
+        apply_gradient_color("Movie genres: an important factor for financial success ?")
         st.markdown('<a id="movie-genres-an-important-factor-for-financial-success"></a>', unsafe_allow_html=True)
 
         # INTRO
@@ -187,7 +189,7 @@ def run():
     
     #### PART 2 - Plot Structures ####       
     with st.container():
-        st.title("Beyond Genre: Unlocking the Secrets of Plot Structures")
+        apply_gradient_color("Beyond Genre: Unlocking the Secrets of Plot Structures")
         st.markdown('<a id="beyond-genre-unlocking-the-secrets-of-plot-structures"></a>', unsafe_allow_html=True)
 
         plot.text_intro()
@@ -195,7 +197,7 @@ def run():
         # CLUSTERING
         plot.text_clustering()
         
-        movies_summary = pd.read_csv('../data/processed/movies_summary_BO.csv', sep=',')
+        movies_summary = pd.read_csv('data/processed/movies_summary_BO.csv', sep=',')
         movies_summary['plot_structure_cluster'], matrix, tfidf_vectorizer, kmeans = plot.get_clusters(movies_summary['plot_summary'])
         plot.plot_clusters(movies_summary, matrix)
 

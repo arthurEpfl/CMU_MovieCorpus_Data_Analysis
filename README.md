@@ -140,8 +140,8 @@ To enrich our analysis and fill gaps in the original dataset (CMU Movie Summary 
   - Web page and datastory have been finalized and deployed.  
 
 ## Organization withing the team
-- **Adam**: Preprocessing, Clustering, Zero-shot Classification, Analyses, Predictive modelling, Presenting results.  
-- **Arthur**: Web scraping, Preprocessing, Predictive modelling, Presenting results.  
+- **Adam**: Preprocessing, Clustering, Zero-shot Classification, Analyses, Predictive modelling, Presenting results, Datastory.  
+- **Arthur**: Web scraping, Preprocessing, Predictive modelling, Presenting results, Datastory.  
 - **Malak**: Web scraping, Preprocessing, Inflation, Analyses, Presenting results.  
 - **Anders**: Preprocessing, Zero-shot Classification, Presenting results, Interactive plots for Datastory.  
 - **Sven**: Datastory, Preprocessing, Inflation, Analyses, Presenting results, Structure of `results.ipynb`.

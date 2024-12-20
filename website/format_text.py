@@ -59,4 +59,36 @@ def key_concl():
     format_text("- <strong>Risk vs. Reward</strong>: Lower-budget films carry higher financial risk but offer the potential for greater profitability, as evidenced by their higher mean ROI.")
     format_text("- <strong>Stability of High Budgets</strong>: Higher-budget films, while not immune to failure, tend to offer more stable returns.") 
     format_text("However, it is important to consider bias: the findings indicate that lower-budget films appear to be more profitable on average. However, this is likely influenced by the skewness of the original dataset. Since we only include movies with available budget and revenue data and rely on a predefined dataset, it is probable that the sample of low-budget films is disproportionately successful compared to what would be observed in a truly random sample. An unbiased random sample would likely reveal a higher risk profile for low-budget films and demonstrate that they are significantly less profitable on average.")
-    format_text("")
+    format_text("")  
+
+
+def apply_gradient_color(text):
+    st.markdown(f"""
+        <style>
+        .title-viridis-light {{
+            background: linear-gradient(135deg, #5e4fa2 0%, #3288bd 50%, #66c2a5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }}
+        </style>
+        <div style="text-align:center;">
+            <h1 class="title-viridis-light">{text}</h1>
+        </div>
+    """, unsafe_allow_html=True)  
+
+
+def apply_gradient_color_small(text):
+    st.markdown(f"""
+        <style>
+        .title-viridis-light-small {{
+            background: linear-gradient(135deg, #a6bddb 0%, #67a9cf 50%, #3690c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;  /* Adjust the font size as needed */
+        }}
+        </style>
+        <div style="text-align:center;">
+            <h3 class="title-viridis-light-small">{text}</h3>
+        </div>
+    """, unsafe_allow_html=True) 
+

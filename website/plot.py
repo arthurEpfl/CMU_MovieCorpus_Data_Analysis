@@ -13,7 +13,8 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 import networkx as nx
-from pyvis.network import Network
+from pyvis.network import Network  
+from format_text import apply_gradient_color, apply_gradient_color_small
 
 def text_intro():
     texts.format_text("""Alright, so we've talked about genres and their financial impact, but let's be real—genre 
@@ -25,22 +26,24 @@ def text_intro():
                       or "The Love Triangle" that really gives a movie its pizzazz. We'll explain the different approaches 
                       we used to do this and why it could be a game-changer for understanding financial success. Ready to dive into the plot twists? Let's go!
                     """)
-    st.markdown(f"""<div class='justified-text' style='text-align: justify; font-size: 18px; margin-bottom: 16px;'>
+    st.markdown(f"""<div class='justified-text' style='text-align: center; font-size: 18px; margin-bottom: 16px;'>
                 To achieve this, we experimented with <b>two different approaches</b>:<br>
                 1. <b>Clustering</b>: We used unsupervised clustering (KMeans) on plot summaries to explore any emergent plot structure patterns.<br>
                 2. <b>Large Language Model (LLM) Classification</b>: Using a predefined set of 15 plot structure categories, we use a LLM to classify each summary. This classification approach uses zero-shot prompting to assign each summary to a category.
                 </div>""", unsafe_allow_html=True)
     
 def text_clustering():
-    st.subheader("Clustering Plot Summaries!")
+    apply_gradient_color_small("Clustering Plot Summaries!")
     texts.format_text("""First, we transform the plot summaries into a numerical format for clustering by applying <strong>TF-IDF (Term Frequency-Inverse Document Frequency)</strong> vectorization. TF-IDF highlights important words in each summary by reducing the weight of common terms and increasing the importance of unique terms.<br>
                       Afterwards, we used <strong>KMeans clustering</strong> to group the plot summaries based on their TF-IDF representations. This step aims to identify distinct plot structure patterns by clustering similar summaries together.<br>
 To determine the optimal number of clusters, we used the <strong>silhouette score</strong> for cluster values ranging from 5 to 20.
-However, we noticed that the silhouette score continually increased as the number of clusters increased.<br>
-Given these results, we proceeded with <strong>15 clusters</strong>. This number provides a balance between interpretability and granularity, allowing us to capture a range of plot structures without creating an excessive number of small, indistinct clusters.
+However, we noticed that the silhouette score continually increased as the number of clusters increased. Given these results, we proceeded with <strong>15 clusters</strong>. This number provides a balance between interpretability and granularity, allowing us to capture a range of plot structures without creating an excessive number of small, indistinct clusters.
                       """)
-    texts.format_text("We finally obtain the following clusters:")
-
+    texts.format_text("""
+    <div style="text-align:center;">
+        We finally obtain the following clusters:
+    </div>
+    """)
 
 def plot_clusters(movies, combined_matrix):
     X_reduced_tsne = TruncatedSVD(n_components=2, random_state=42).fit_transform(combined_matrix)
@@ -123,7 +126,11 @@ def text_cluster_distribution():
     texts.format_text("""The distribution of plot summaries across clusters shows that the clustering algorithm has created some clusters with a significantly higher number of summaries than others. The top three clusters (2, 10, and 7) collectively hold a large portion of the summaries, indicating that certain plot structures may be more common. We have to dive more in the clusters.
                       """)
     
-    texts.format_text("""Let's visualize the top terms per clusters!""")
+    texts.format_text("""
+    <div style="text-align:center;">
+        Let's visualize the top terms per clusters!
+    </div>
+    """)
 
 
 def plot_word_clouds(tfidf_vectorizer, kmeans, n_clusters=15):
@@ -173,33 +180,123 @@ def plot_word_clouds(tfidf_vectorizer, kmeans, n_clusters=15):
 
 def text_cluster_interpretion():
     text = """
-    Here’s an interpretation of each cluster based on the top terms:<br><br>
-    - <strong>Cluster 1</strong>: Plots focused on competitive themes.<br>
-    - <strong>Cluster 2</strong>: Crime or thriller themes, involving murder, gangs, and police confrontations.<br>
-    - <strong>Cluster 3</strong>: Domestic and family-centered stories.<br>
-    - <strong>Cluster 4</strong>: Sci-fi or adventure narratives set in space or otherworldly environments.<br>
-    - <strong>Cluster 5</strong>: War or historical battle narratives, with themes of patriotism, loyalty, and military conflict.<br>
-    - <strong>Cluster 6</strong>: Family dynamics involving financial or personal struggles, often with a focus on character growth.<br>
-    - <strong>Cluster 7</strong>: Stories focused on love, personal growth, and the journey of family relationships.<br>
-    - <strong>Cluster 8</strong>: Character-driven drama with themes of love, relationships, and family life.<br>
-    - <strong>Cluster 9</strong>: Domestic dramas with family relationships at the center, often involving parents, spouses, and home life.<br>
-    - <strong>Cluster 10</strong>: School or sports settings, focusing on themes of teamwork, mentorship, and competition.<br>
-    - <strong>Cluster 11</strong>: Plots involving curses or superstitions, with an emphasis on individual struggles with fate or financial issues.<br>
-    - <strong>Cluster 12</strong>: Family and relationship-centered stories, possibly featuring complex dynamics within close-knit communities.<br>
-    - <strong>Cluster 13</strong>: Family-focused narratives often with themes of life challenges, father-son relationships, or personal introspection.<br>
-    - <strong>Cluster 14</strong>: Stories about family dynamics and personal relationships, with a recurring theme of domestic settings.<br>
-    - <strong>Cluster 15</strong>: Family-centered dramas, often highlighting parent-child dynamics and personal development.<br><br>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;  /* Reduced font size */
+            text-align: left;
+        }
+        th, td {
+            padding: 10px;  /* Reduced padding */
+            border-bottom: 1px solid #ddd;
+            background-color: #001f3f;  /* Even darker blue background for all cells */
+            color: white;  /* White text color for better readability */
+        }
+        th {
+            background-color: #001a33;  /* Slightly darker blue for header */
+        }
+        tr:nth-child(even) {
+            background-color: #00264d;  /* Slightly lighter blue for even rows */
+        }
+        tr:hover {
+            background-color: #003366;  /* Highlight color on hover */
+        }
+        .viridis-light {
+            background: linear-gradient(135deg, #a6bddb 0%, #67a9cf 50%, #3690c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none; /* Prevent text from being clickable */
+        }
+    </style>
+    <table>
+        <thead>
+            <tr>
+                <th>Cluster</th>
+                <th>Interpretation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong class="viridis-light">Cluster 1</strong></td>
+                <td>Plots focused on competitive themes.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 2</strong></td>
+                <td>Crime or thriller themes, involving murder, gangs, and police confrontations.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 3</strong></td>
+                <td>Domestic and family-centered stories.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 4</strong></td>
+                <td>Sci-fi or adventure narratives set in space or otherworldly environments.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 5</strong></td>
+                <td>War or historical battle narratives, with themes of patriotism, loyalty, and military conflict.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 6</strong></td>
+                <td>Family dynamics involving financial or personal struggles, often with a focus on character growth.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 7</strong></td>
+                <td>Stories focused on love, personal growth, and the journey of family relationships.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 8</strong></td>
+                <td>Character-driven drama with themes of love, relationships, and family life.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 9</strong></td>
+                <td>Domestic dramas with family relationships at the center, often involving parents, spouses, and home life.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 10</strong></td>
+                <td>School or sports settings, focusing on themes of teamwork, mentorship, and competition.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 11</strong></td>
+                <td>Plots involving curses or superstitions, with an emphasis on individual struggles with fate or financial issues.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 12</strong></td>
+                <td>Family and relationship-centered stories, possibly featuring complex dynamics within close-knit communities.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 13</strong></td>
+                <td>Family-focused narratives often with themes of life challenges, father-son relationships, or personal introspection.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 14</strong></td>
+                <td>Stories about family dynamics and personal relationships, with a recurring theme of domestic settings.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Cluster 15</strong></td>
+                <td>Family-centered dramas, often highlighting parent-child dynamics and personal development.</td>
+            </tr>
+        </tbody>
+    </table>
     """
     texts.format_text(text)
 
-    texts.format_text("""Each cluster reveals distinct themes and settings. While this analysis helps to identify common elements within each group, <strong>we are not fully satisfied with this approach</strong> as it appears to capture <strong>genre and themes more than specific plot structures</strong>.
-                      """)
     texts.format_text("""
-    Since our goal is to identify different types of plot structures, clustering based solely on keywords may lack the depth needed to capture narrative progression and plot dynamics. Consequently, we explore alternative methods, such as leveraging large language models or deeper natural language processing techniques, to classify plot structures more accurately.
-                      """)
+    <div style="text-align:center;">
+        Each cluster reveals distinct themes and settings. While this analysis helps to identify common elements within each group, <strong>we are not fully satisfied with this approach</strong> as it appears to capture <strong>genre and themes more than specific plot structures</strong>.
+    </div>
+    """)
+
+    texts.format_text("""
+    <div style="text-align:center;">
+        Since our goal is to identify different types of plot structures, clustering based solely on keywords may lack the depth needed to capture narrative progression and plot dynamics. Consequently, we explore alternative methods, such as leveraging large language models or deeper natural language processing techniques, to classify plot structures more accurately.
+    </div>
+    """)
 
 def text_llm_classification():
-    st.subheader("Classifying Plot Summaries with Large Language Models")
+    apply_gradient_color_small("Classifying Plot Summaries with Large Language Models")
 
     text1 = """
     As seen before clustering was not enough to extract a plot structure!
@@ -207,7 +304,11 @@ def text_llm_classification():
     text0= """
     To tackle this, we employed <strong>large language models (LLMs)</strong> for classifying plot summaries into specific plot structure categories. Here's a streamlined view of our process:
     """
-    texts.format_text(text1)
+    texts.format_text("""
+    <div style="text-align:center;">
+        As seen before clustering was not enough to extract a plot structure!
+    </div>
+""")
     texts.format_text(text0)
 
     text2 = """
@@ -233,21 +334,106 @@ def text_llm_classification():
     texts.format_text(text5)
 
     text6 = """
-    1. <strong>Hero's Journey and Transformation</strong>: Personal growth and transformation through challenges.<br>
-    2. <strong>Quest for Vengeance or Justice</strong>: Seeking retribution or justice.<br>
-    3. <strong>Coming of Age and Self-Discovery</strong>: Maturation or self-awareness in overcoming obstacles.<br>
-    4. <strong>Survival or Escape</strong>: Struggles for survival or freedom.<br>
-    5. <strong>Rise and Fall of a Protagonist</strong>: A climb to success followed by a downfall.<br>
-    6. <strong>Love and Relationship Dynamics</strong>: Exploring romance and familial bonds.<br>
-    7. <strong>Comedy of Errors or Misadventure</strong>: Humorous unintended consequences.<br>
-    8. <strong>Crime and Underworld Exploration</strong>: Criminal activities or gang conflicts.<br>
-    9. <strong>Power Struggle and Betrayal</strong>: Conflicts for leadership, marked by betrayals.<br>
-    10. <strong>Mystery and Conspiracy Unveiling</strong>: Solving mysteries or uncovering conspiracies.<br>
-    11. <strong>Tragedy and Inevitability</strong>: Facing unavoidable negative outcomes.<br>
-    12. <strong>Conflict with Supernatural or Unknown Forces</strong>: Sci-fi or supernatural challenges.<br>
-    13. <strong>Comedy in Domestic Life</strong>: Everyday humor within family life.<br>
-    14. <strong>Social Rebellion or Fight Against Oppression</strong>: Challenging societal norms or systems.<br>
-    15. <strong>Fantasy or Science Fiction Quest</strong>: Epic quests in fantastical or sci-fi worlds.
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;  /* Reduced font size */
+            text-align: left;
+        }
+        th, td {
+            padding: 10px;  /* Reduced padding */
+            border-bottom: 1px solid #ddd;
+            background-color: #001f3f;  /* Even darker blue background for all cells */
+            color: white;  /* White text color for better readability */
+        }
+        th {
+            background-color: #001a33;  /* Slightly darker blue for header */
+        }
+        tr:nth-child(even) {
+            background-color: #00264d;  /* Slightly lighter blue for even rows */
+        }
+        tr:hover {
+            background-color: #003366;  /* Highlight color on hover */
+        }
+        .viridis-light {
+            background: linear-gradient(135deg, #a6bddb 0%, #67a9cf 50%, #3690c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none; /* Prevent text from being clickable */
+        }
+    </style>
+    <table>
+        <thead>
+            <tr>
+                <th>Plot Structure</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong class="viridis-light">Hero's Journey and Transformation</strong></td>
+                <td>Personal growth and transformation through challenges.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Quest for Vengeance or Justice</strong></td>
+                <td>Seeking retribution or justice.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Coming of Age and Self-Discovery</strong></td>
+                <td>Maturation or self-awareness in overcoming obstacles.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Survival or Escape</strong></td>
+                <td>Struggles for survival or freedom.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Rise and Fall of a Protagonist</strong></td>
+                <td>A climb to success followed by a downfall.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Love and Relationship Dynamics</strong></td>
+                <td>Exploring romance and familial bonds.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Comedy of Errors or Misadventure</strong></td>
+                <td>Humorous unintended consequences.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Crime and Underworld Exploration</strong></td>
+                <td>Criminal activities or gang conflicts.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Power Struggle and Betrayal</strong></td>
+                <td>Conflicts for leadership, marked by betrayals.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Mystery and Conspiracy Unveiling</strong></td>
+                <td>Solving mysteries or uncovering conspiracies.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Tragedy and Inevitability</strong></td>
+                <td>Facing unavoidable negative outcomes.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Conflict with Supernatural or Unknown Forces</strong></td>
+                <td>Sci-fi or supernatural challenges.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Comedy in Domestic Life</strong></td>
+                <td>Everyday humor within family life.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Social Rebellion or Fight Against Oppression</strong></td>
+                <td>Challenging societal norms or systems.</td>
+            </tr>
+            <tr>
+                <td><strong class="viridis-light">Fantasy or Science Fiction Quest</strong></td>
+                <td>Epic quests in fantastical or sci-fi worlds.</td>
+            </tr>
+        </tbody>
+    </table>
     """
     texts.format_text(text6)
 
@@ -257,7 +443,7 @@ def text_llm_classification():
     texts.format_text(text7)
 
 def text_median_profit_intro():
-    st.subheader("Plot-tential Earnings: Which Stories Strike Gold?")
+    apply_gradient_color_small("Plot-tential Earnings: Which Stories Strike Gold?")
     texts.format_text("""
 Before we dive into the numbers, let's talk about why this is exciting. Plot structures are like the secret sauce of storytelling—they're the frameworks that hold our favorite movies together. But not all sauces are created equal. Some are rich and flavorful, while others... well, let's just say they leave a lot to be desired. Now, it's time to find out which narrative recipes rake in the big bucks and which ones just simmer on the back burner. Let’s take a look at the median profit per plot structure to see which stories truly pay off at the box office.
                       """)
@@ -330,9 +516,24 @@ def plot_median_profit(movies, adjusted=True):
     st.plotly_chart(fig, use_container_width=True)
 
 def text_conclusion_median_profit():
-    texts.format_text(""" FAIRE INTERPRETATION DE CE GRAPHE BEAUCOUP de BLABLA + TANSITION POUR HEATMAP
-                      A COMPLETER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                      """)
+    texts.format_text(""" In terms of median profits, Love and Relation dynamics are the most profitable plot structure, followed by Quest for Vengeance or Justice and Mystery and Conspiracy Unveiling.  
+                      By looking at the mean profits, Quest for Vengence or Justice is the most profitable one ! This is due to some outliers movies that generates very high revenues, while Love and Relation dynamics
+                      plot structure do not have such outliers, and more "stable" and important profits.
+                      """)  
+    
+    texts.format_text(""" Overall, mean and median profits according to plot structure decrease in a similar way. In terms of rating score, 
+                      and based on our data, Love and Relationship Dynamics and Crime and Underworld Exploration are the most appreciated plot structure by the audience.
+                      """)  
+
+    texts.format_text("""
+    <div style="text-align:center;">
+        Now that we analyzed the profits according to plot structures, it may be interesting to study
+        if plot structures and the genres of the movies are related in a certain way. Let's dive into it, shall we?
+    </div>
+""") 
+    
+    apply_gradient_color_small("Correlation between Plot Structure and Genres")  
+
 
 def plot_genre_plot_structure_heatmap(movies, top_genre):
     df_exploded = movies.explode('movie_genres')
@@ -386,10 +587,10 @@ def plot_genre_plot_structure_heatmap(movies, top_genre):
     st.plotly_chart(fig, use_container_width=True)
 
 def text_conclusion():
-    texts.format_text("""FAIRE INTERPRETATION DE CE GRAPHE BEAUCOUP de BLABLA + TANSITION POUR LA SUITE
-                      A COMPLETER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    texts.format_text("""The plot structures "Conflict with Supernatural or Unknown Forces", "Comedy of Errors or Misadventure" and "Hero's Journey 
+                      and "Transformation" are the most represented ones. Drama Comedy and Action are the most represented genres, as here, 
+                      889 Drama movies are categorized in "Hero's Journey and Transformation"
                       """)
-
 
 # --- UTILS --- #
 
