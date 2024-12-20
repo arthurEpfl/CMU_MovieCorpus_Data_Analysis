@@ -45,9 +45,9 @@ def load_animation(url: str):
 # @st.cache_data
 def load_data():
     # Load main datasets after preprocessing and classification
-    movies = pd.read_csv('../data/processed/movies_summary_BO.csv', sep=',')
-    classified = pd.read_csv('../data/processed/movies_with_classifications.csv')
-    movies_for_reg = pd.read_csv('../data/processed/movies_budget_inflation_final.csv')
+    movies = pd.read_csv('data/processed/movies_summary_BO.csv', sep=',')
+    classified = pd.read_csv('data/processed/movies_with_classifications.csv')
+    movies_for_reg = pd.read_csv('data/processed/movies_budget_inflation_final.csv')
     return movies, classified, movies_for_reg
 
 movies, classified, movies_for_reg = load_data()
@@ -121,9 +121,9 @@ def run():
         # Add an extra layer of columns for centering
             # col2_1, col2_2, col2_3 = st.columns([1, 4, 1])  # Adjust proportions as needed
             # with col2_2:
-            #     st.image("../images_datastory/movie_clap.png", use_container_width=False, width=600)
+            #     st.image("images_datastory/movie_clap.png", use_container_width=False, width=600)
             # col1, col2, col3 = st.columns([1, 2, 1])
-            st.image("../images_datastory/movie_clap.png", use_container_width=False, width=600)
+            st.image("images_datastory/movie_clap.png", use_container_width=False, width=600)
             st_lottie(animation, speed=1, key="coding")
     # --- SIDEBAR --- #
     with st.container():
@@ -207,7 +207,7 @@ def run():
         # CLUSTERING
         plot.text_clustering()
         
-        movies_summary = pd.read_csv('../data/processed/movies_summary_BO.csv', sep=',')
+        movies_summary = pd.read_csv('data/processed/movies_summary_BO.csv', sep=',')
         movies_summary['plot_structure_cluster'], matrix, tfidf_vectorizer, kmeans = plot.get_clusters(movies_summary['plot_summary'])
         plot.plot_clusters(movies_summary, matrix)
 
