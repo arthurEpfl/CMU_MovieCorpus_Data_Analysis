@@ -132,16 +132,80 @@ def run():
     with st.container():
         st.title("Movie genres: an important factor for financial success ?")
 
-        # call functions from genre.py
+        # INTRO
         genre.intro_text()
-        genre.plot_genre_distribution(movies)
-    
+        genre_exploded, mean_revenues, median_revenues, color_dict, top_genre, filtered_df = genre.return_processed_genre_df(movies)
+        
+        # GENRE DISTRIBUTION
+        genre.plot_genre_distribution(top_genre, color_dict)
+        genre.text_genre_revenue()
+
+        # GENRE MEAN REVENUE
+        genre.plot_genre__mean_revenue(filtered_df, color_dict)
+        genre.text_mean_revenue_comment()
+
+        # INFLATION
+        genre.text_transition_inflation()
+        genre.text_explanation_inflation()
+
+        df_inflation = genre.load_processed_inflation()
+        revenue_data = genre.process_inflation_data(movies, df_inflation)
+
+        genre.plot_distribution_revenue_by_decade(revenue_data)
+
+        # GENRE MEAN REVENUE INFLATION
+        filtered_df_inflation = genre.add_inflation(filtered_df, df_inflation)        
+        genre.plot_comparison_genre_mean_revenue(filtered_df, filtered_df_inflation, color_dict)
+        genre.text_transition_to_distribution()
+
+        # GENRE DISTRIBUTION REVENUE
+        genre.plot_genre_distribution_revenue(filtered_df_inflation, color_dict)
+        genre.text_transition_to_median()
+
+        # GENRE MEDIAN REVENUE
+        genre.plot_genre_median_revenue(filtered_df_inflation, color_dict, adjusted=True)
+        genre.text_comment_median_revenue()
+        genre.text_transition_to_profit()
+
+        # GENRE PROFIT
+        genre.text_intro_profit()
+        genre.plot_median_and_mean_profit_adjusted(filtered_df_inflation, color_dict)
+        genre.text_conclusion_profit()
+
+        # TIME SERIES FOR PROFIT
+        genre.text_intro_time_series()
+        genre.plot_genre_profit_evolution(filtered_df_inflation, top_genre, color_dict)
+        genre.text_conclusion_time_series()
+
     #### PART 2 - Plot Structures ####       
     with st.container():
-        st.title("When story comes into play")
+        st.title("Beyond Genre: Unlocking the Secrets of Plot Structures")
+        plot.text_intro()
+
+        # CLUSTERING
+        plot.text_clustering()
         
-        texts.format_text("call functions from plot.py")
+        movies_summary = pd.read_csv('../data/processed/movies_summary_BO.csv', sep=',')
+        movies_summary['plot_structure_cluster'], matrix, tfidf_vectorizer, kmeans = plot.get_clusters(movies_summary['plot_summary'])
+        plot.plot_clusters(movies_summary, matrix)
+
+        plot.text_cluster_distribution()
+
+        plot.plot_word_clouds(tfidf_vectorizer, kmeans, 15)
+        plot.text_cluster_interpretion()
+
+
+        # LLM EXPLANATION
+        plot.text_llm_classification()
+
+        # LLM PLOTS PROFITS
+        plot.text_median_profit_intro()
+        plot.plot_median_profit(movies_for_reg)
+        plot.text_conclusion_median_profit()
         
+        # HEAT MAP
+        plot.plot_genre_plot_structure_heatmap(movies_for_reg, top_genre)
+        plot.text_conclusion()
     #### PART 3 - Linear regression ####   
     with st.container():
         st.title("Overall, what makes a movie financially successful ?")
