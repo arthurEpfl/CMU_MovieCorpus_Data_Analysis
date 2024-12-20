@@ -15,8 +15,6 @@ def intro():
     format_text("""The answer lies at the intersection of creativity and data. In a world increasingly dominated by streaming platforms and ever-growing libraries of content, understanding what makes a movie resonate with audiences is more important than ever. Plot success isn’t just about creativity; it’s also about patterns, structures, and underlying formulas that can be identified, analyzed, and even predicted.
     """)
     format_text("""Consider this: while Harry Potter may have captured imaginations with its magical world, what about its storytelling resonates across cultures and generations? And for Inception, is it the characters, the pacing, or the multilayered narrative that drives its massive appeal? By quantifying key storytelling features—like pacing, themes, character arcs, and conflict resolution—we can begin to unravel these mysteries.""")
-    format_text("""But this isn’t just about understanding stories; it’s about what we can do with that knowledge. How can filmmakers optimize their scripts to increase box office success? Can studios predict a movie's profitability based on its plot structure? Could aspiring screenwriters use data-driven insights to craft the next big hit?""")
-
 
 def regression_interpretation():
     format_text("""

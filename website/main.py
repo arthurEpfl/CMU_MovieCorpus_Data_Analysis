@@ -3,7 +3,7 @@ from streamlit.logger import get_logger
 from streamlit_lottie import st_lottie
 import requests
 import pandas as pd
-import ast
+import ast  
 
 import intro
 import genre
@@ -12,7 +12,6 @@ import regression as reg
 import conclusion as conc
 import format_text as texts  
 from format_text import apply_gradient_color, apply_gradient_color_small
-
 
 # --- CONFIG --- #
 
@@ -114,9 +113,18 @@ def run():
             # call intro.py
             texts.intro()
         with col2:
-            st.image("../images_datastory/movie_clap.png", use_container_width=True, width=200)
+            st.image("../images_datastory/movie_clap.png", use_container_width=True, width=200)  
 
-        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image("../images_datastory/titanic_image.webp", caption="Titanic Movie", use_container_width=True)
+        texts.format_text("""
+A movie like Titanic is a great example of a blockbuster that captivated audiences worldwide. It's interesting to study this, 
+is its success due to its genre, its plot structure, Jack Dawson itself, Rose DeWitt or something else? We will explore this in the following sections.
+""")
+
+        texts.format_text("""But here, this isn’t just about understanding stories; it’s about what we can do with that knowledge. How can filmmakers optimize their scripts to increase box office success? Can studios predict a movie's profitability based on its plot structure? 
+        Could aspiring screenwriters use data-driven insights to craft the next big hit?""")
 
     # --- SIDEBAR --- #
     with st.container():
@@ -138,7 +146,8 @@ def run():
     
     # --- DATA STORY --- #
           
-    #### PART 1 - Genres ####
+    #### PART 1 - Genres ####  
+
     with st.container():
         apply_gradient_color("Movie genres: an important factor for financial success ?")
         st.markdown('<a id="movie-genres-an-important-factor-for-financial-success"></a>', unsafe_allow_html=True)
@@ -188,9 +197,10 @@ def run():
         genre.plot_genre_profit_evolution(filtered_df_inflation, top_genre, color_dict)
         genre.text_conclusion_time_series()
     
-    #### PART 2 - Plot Structures ####       
+    #### PART 2 - Plot Structures ####  
+
     with st.container():
-        apply_gradient_color("Beyond Genre: Unlocking the Secrets of Plot Structures")
+        apply_gradient_color("Beyond Genres: Unlocking the Secrets of Plot Structures")
         st.markdown('<a id="beyond-genre-unlocking-the-secrets-of-plot-structures"></a>', unsafe_allow_html=True)
 
         plot.text_intro()
@@ -227,9 +237,9 @@ def run():
       
     #### PART 3 - Linear regression ####   
     with st.container():
-        st.title("Overall, what makes a movie financially successful ?")
+        apply_gradient_color("Overall, what makes a movie financially successful ?")
         st.markdown('<a id="overall-what-makes-a-movie-financially-successful"></a>', unsafe_allow_html=True)
-        st.subheader("Fitting a linear regresion model")
+        apply_gradient_color_small("Fitting a linear regresion model")
         col1, col2 = st.columns(2)
         with col1:
             # call intro.py
@@ -239,7 +249,7 @@ def run():
         with col2:
             reg.plot_reg_coeffs(movies_for_reg)
     with st.container():
-        st.subheader("Budget as a significant feature")
+        apply_gradient_color_small("Budget as a significant feature")
         texts.budget_interpretation1()
         reg.plot_budget_profit(movies_for_reg)
         texts.budget_interpretation2()
@@ -250,12 +260,11 @@ def run():
 
     #### PART 4 - Conclusion ####
     with st.container():
-        st.title("Conclusion")
-        conc.conclusion()
+        apply_gradient_color("Conclusion")
+        conc.conclusion()  
+
+
         
-        
-        
-     
         
 if __name__ == "__main__":
     run()

@@ -20,8 +20,35 @@ def conclusion():
             <li><strong>Inflation Adjustment</strong>: Adjusting revenue and budget data for inflation provided a more accurate comparison across different time periods, allowing for consistent comparisons between budgets, revenues and profits. This adjustment was crucial for understanding the true financial success of movies from different eras. </li>
 <li><strong>Key Factors Contributing to Commercial Success</strong>: Budget and rating score emerged as the most significant factors influencing commercial success. Budget, in particular, demonstrated a clear relationship with profit, showing a consistent reduction in risk on average as budget increases. However, lower-budget films exhibited significantly higher variability, underscoring the heightened financial risk and potential reward associated with smaller investments. </li>
 """)
-    texts.format_text("""Limitations and potential improvements include:""")
+    apply_gradient_color_small("Limitations and potential improvements include:")
     texts.format_text("""<li><strong>Unbiased Dataset for Lower-Budget Films</strong>: The dataset may disproportionately represent successful low-budget films, making them appear more profitable than they typically are. While this skew still captures their variance and risk, it potentially does not accurately reflect the average performance of all low-budget films. </li>
 <li><strong>Skewed Classification in LLM Application</strong>: The classification of plot structures using the current LLM model is highly skewed, which could contribute to the lack of significance observed in the relationship between plot structures and financial success.</li>
-<li><strong>Simplistic Linear Regression Model</strong>: The use of a simple linear regression model may fail to capture the nuanced and complex relationships within the data, particularly those linked to plot structures and their potential impact on profitability. More advanced modeling techniques could provide deeper insights.</li>
-""")
+<li><strong>Simplistic Linear Regression Model</strong>: The use of a simple linear regression model may fail to capture the nuanced and complex relationships within the data, particularly those linked to plot structures and their potential impact on profitability. More advanced modeling techniques could provide deeper insights.</li> 
+<br><br>
+""")  
+    
+    texts.format_text("""
+<div style="text-align: center;">
+    <span class="viridis-light">Our findings highlight the importance of storytelling and plot structures 
+    in the film industry. While various factors contribute to a movie's success, 
+    the plot structure remains a very important element that can significantly influence audience
+    engagement and box office performance. This project showed that even by leveraging natural 
+    language processing and machine learning techniques, it's still a bit difficult to quantify 
+    and analyze the impact of plot structures on commercial success. It gives overview of which 
+    genres and plot structure are in general the most profitable ones, but it's complicated to 
+    really have kind of a "secret recipe" to make a movie really successful in terms of profitability.</span>
+    <br><br>
+    <span class="viridis-light">This project provides valuable insights for filmmakers, producers, and marketers, helping them make informed decisions about the types of stories that are likely to resonate with audiences and achieve financial success. Future research could further explore the role of other narrative elements, such as character development and dialogue, actors, directors, historical events influence etc.</span>
+    <span class="viridis-light">Overall, the project underscores the timeless appeal of well-crafted stories and plot structure and their enduring power to captivate audiences and drive box office revenues (and profits).</span>
+</div>
+""")  
+    
+    apply_gradient_color("A story by Arthur, Adam, Malak, Sven & Anders")   
+    texts.format_text("""<div style="text-align: center;"><a href="https://github.com/epfl-ada/ada-2024-project-adarable">Link to our Github project</a></div>""")
+    texts.format_text("""<div style="text-align: center;">The Adarable team</div>""")  
+    texts.format_text("""<div style="text-align: center;">21</div>""")
+
+
+
+    
+

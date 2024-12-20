@@ -14,6 +14,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 import networkx as nx
 from pyvis.network import Network  
+import streamlit.components.v1 as components
+
 from format_text import apply_gradient_color, apply_gradient_color_small
 
 def text_intro():
@@ -37,13 +39,9 @@ def text_clustering():
     texts.format_text("""First, we transform the plot summaries into a numerical format for clustering by applying <strong>TF-IDF (Term Frequency-Inverse Document Frequency)</strong> vectorization. TF-IDF highlights important words in each summary by reducing the weight of common terms and increasing the importance of unique terms.<br>
                       Afterwards, we used <strong>KMeans clustering</strong> to group the plot summaries based on their TF-IDF representations. This step aims to identify distinct plot structure patterns by clustering similar summaries together.<br>
 To determine the optimal number of clusters, we used the <strong>silhouette score</strong> for cluster values ranging from 5 to 20.
-However, we noticed that the silhouette score continually increased as the number of clusters increased. Given these results, we proceeded with <strong>15 clusters</strong>. This number provides a balance between interpretability and granularity, allowing us to capture a range of plot structures without creating an excessive number of small, indistinct clusters.
+However, we noticed that the silhouette score continually increased as the number of clusters increased. Given these results, we proceeded with <strong>15 clusters</strong>. This number provides a balance between interpretability and granularity, allowing us to capture a range of plot structures without creating an excessive number of small, indistinct clusters. We finally obtain the following clusters:
                       """)
-    texts.format_text("""
-    <div style="text-align:center;">
-        We finally obtain the following clusters:
-    </div>
-    """)
+
 
 def plot_clusters(movies, combined_matrix):
     X_reduced_tsne = TruncatedSVD(n_components=2, random_state=42).fit_transform(combined_matrix)
@@ -180,108 +178,26 @@ def plot_word_clouds(tfidf_vectorizer, kmeans, n_clusters=15):
 
 def text_cluster_interpretion():
     text = """
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 16px;  /* Reduced font size */
-            text-align: left;
-        }
-        th, td {
-            padding: 10px;  /* Reduced padding */
-            border-bottom: 1px solid #ddd;
-            background-color: #001f3f;  /* Even darker blue background for all cells */
-            color: white;  /* White text color for better readability */
-        }
-        th {
-            background-color: #001a33;  /* Slightly darker blue for header */
-        }
-        tr:nth-child(even) {
-            background-color: #00264d;  /* Slightly lighter blue for even rows */
-        }
-        tr:hover {
-            background-color: #003366;  /* Highlight color on hover */
-        }
-        .viridis-light {
-            background: linear-gradient(135deg, #a6bddb 0%, #67a9cf 50%, #3690c0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none; /* Prevent text from being clickable */
-        }
-    </style>
-    <table>
-        <thead>
-            <tr>
-                <th>Cluster</th>
-                <th>Interpretation</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong class="viridis-light">Cluster 1</strong></td>
-                <td>Plots focused on competitive themes.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 2</strong></td>
-                <td>Crime or thriller themes, involving murder, gangs, and police confrontations.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 3</strong></td>
-                <td>Domestic and family-centered stories.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 4</strong></td>
-                <td>Sci-fi or adventure narratives set in space or otherworldly environments.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 5</strong></td>
-                <td>War or historical battle narratives, with themes of patriotism, loyalty, and military conflict.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 6</strong></td>
-                <td>Family dynamics involving financial or personal struggles, often with a focus on character growth.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 7</strong></td>
-                <td>Stories focused on love, personal growth, and the journey of family relationships.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 8</strong></td>
-                <td>Character-driven drama with themes of love, relationships, and family life.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 9</strong></td>
-                <td>Domestic dramas with family relationships at the center, often involving parents, spouses, and home life.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 10</strong></td>
-                <td>School or sports settings, focusing on themes of teamwork, mentorship, and competition.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 11</strong></td>
-                <td>Plots involving curses or superstitions, with an emphasis on individual struggles with fate or financial issues.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 12</strong></td>
-                <td>Family and relationship-centered stories, possibly featuring complex dynamics within close-knit communities.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 13</strong></td>
-                <td>Family-focused narratives often with themes of life challenges, father-son relationships, or personal introspection.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 14</strong></td>
-                <td>Stories about family dynamics and personal relationships, with a recurring theme of domestic settings.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Cluster 15</strong></td>
-                <td>Family-centered dramas, often highlighting parent-child dynamics and personal development.</td>
-            </tr>
-        </tbody>
-    </table>
+    <ul>
+        <li><strong class="viridis-light">Cluster 1:</strong> Plots focused on competitive themes.</li>
+        <li><strong class="viridis-light">Cluster 2:</strong> Crime or thriller themes, involving murder, gangs, and police confrontations.</li>
+        <li><strong class="viridis-light">Cluster 3:</strong> Domestic and family-centered stories.</li>
+        <li><strong class="viridis-light">Cluster 4:</strong> Sci-fi or adventure narratives set in space or otherworldly environments.</li>
+        <li><strong class="viridis-light">Cluster 5:</strong> War or historical battle narratives, with themes of patriotism, loyalty, and military conflict.</li>
+        <li><strong class="viridis-light">Cluster 6:</strong> Family dynamics involving financial or personal struggles, often with a focus on character growth.</li>
+        <li><strong class="viridis-light">Cluster 7:</strong> Stories focused on love, personal growth, and the journey of family relationships.</li>
+        <li><strong class="viridis-light">Cluster 8:</strong> Character-driven drama with themes of love, relationships, and family life.</li>
+        <li><strong class="viridis-light">Cluster 9:</strong> Domestic dramas with family relationships at the center, often involving parents, spouses, and home life.</li>
+        <li><strong class="viridis-light">Cluster 10:</strong> School or sports settings, focusing on themes of teamwork, mentorship, and competition.</li>
+        <li><strong class="viridis-light">Cluster 11:</strong> Plots involving curses or superstitions, with an emphasis on individual struggles with fate or financial issues.</li>
+        <li><strong class="viridis-light">Cluster 12:</strong> Family and relationship-centered stories, possibly featuring complex dynamics within close-knit communities.</li>
+        <li><strong class="viridis-light">Cluster 13:</strong> Family-focused narratives often with themes of life challenges, father-son relationships, or personal introspection.</li>
+        <li><strong class="viridis-light">Cluster 14:</strong> Stories about family dynamics and personal relationships, with a recurring theme of domestic settings.</li>
+        <li><strong class="viridis-light">Cluster 15:</strong> Family-centered dramas, often highlighting parent-child dynamics and personal development.</li>
+    </ul>
     """
     texts.format_text(text)
+
 
     texts.format_text("""
     <div style="text-align:center;">
@@ -334,114 +250,51 @@ def text_llm_classification():
     texts.format_text(text5)
 
     text6 = """
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 16px;  /* Reduced font size */
-            text-align: left;
-        }
-        th, td {
-            padding: 10px;  /* Reduced padding */
-            border-bottom: 1px solid #ddd;
-            background-color: #001f3f;  /* Even darker blue background for all cells */
-            color: white;  /* White text color for better readability */
-        }
-        th {
-            background-color: #001a33;  /* Slightly darker blue for header */
-        }
-        tr:nth-child(even) {
-            background-color: #00264d;  /* Slightly lighter blue for even rows */
-        }
-        tr:hover {
-            background-color: #003366;  /* Highlight color on hover */
-        }
-        .viridis-light {
-            background: linear-gradient(135deg, #a6bddb 0%, #67a9cf 50%, #3690c0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none; /* Prevent text from being clickable */
-        }
-    </style>
-    <table>
-        <thead>
-            <tr>
-                <th>Plot Structure</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong class="viridis-light">Hero's Journey and Transformation</strong></td>
-                <td>Personal growth and transformation through challenges.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Quest for Vengeance or Justice</strong></td>
-                <td>Seeking retribution or justice.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Coming of Age and Self-Discovery</strong></td>
-                <td>Maturation or self-awareness in overcoming obstacles.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Survival or Escape</strong></td>
-                <td>Struggles for survival or freedom.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Rise and Fall of a Protagonist</strong></td>
-                <td>A climb to success followed by a downfall.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Love and Relationship Dynamics</strong></td>
-                <td>Exploring romance and familial bonds.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Comedy of Errors or Misadventure</strong></td>
-                <td>Humorous unintended consequences.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Crime and Underworld Exploration</strong></td>
-                <td>Criminal activities or gang conflicts.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Power Struggle and Betrayal</strong></td>
-                <td>Conflicts for leadership, marked by betrayals.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Mystery and Conspiracy Unveiling</strong></td>
-                <td>Solving mysteries or uncovering conspiracies.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Tragedy and Inevitability</strong></td>
-                <td>Facing unavoidable negative outcomes.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Conflict with Supernatural or Unknown Forces</strong></td>
-                <td>Sci-fi or supernatural challenges.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Comedy in Domestic Life</strong></td>
-                <td>Everyday humor within family life.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Social Rebellion or Fight Against Oppression</strong></td>
-                <td>Challenging societal norms or systems.</td>
-            </tr>
-            <tr>
-                <td><strong class="viridis-light">Fantasy or Science Fiction Quest</strong></td>
-                <td>Epic quests in fantastical or sci-fi worlds.</td>
-            </tr>
-        </tbody>
-    </table>
-    """
+<style>
+    .viridis-light {
+        color: #3690c0;  /* Viridis color for cluster names */
+    }
+</style>
+<ul>
+    <li><strong class="viridis-light">Hero's Journey and Transformation:</strong> Personal growth and transformation through challenges.</li>
+    <li><strong class="viridis-light">Quest for Vengeance or Justice:</strong> Seeking retribution or justice.</li>
+    <li><strong class="viridis-light">Coming of Age and Self-Discovery:</strong> Maturation or self-awareness in overcoming obstacles.</li>
+    <li><strong class="viridis-light">Survival or Escape:</strong> Struggles for survival or freedom.</li>
+    <li><strong class="viridis-light">Rise and Fall of a Protagonist:</strong> A climb to success followed by a downfall.</li>
+    <li><strong class="viridis-light">Love and Relationship Dynamics:</strong> Exploring romance and familial bonds.</li>
+    <li><strong class="viridis-light">Comedy of Errors or Misadventure:</strong> Humorous unintended consequences.</li>
+    <li><strong class="viridis-light">Crime and Underworld Exploration:</strong> Criminal activities or gang conflicts.</li>
+    <li><strong class="viridis-light">Power Struggle and Betrayal:</strong> Conflicts for leadership, marked by betrayals.</li>
+    <li><strong class="viridis-light">Mystery and Conspiracy Unveiling:</strong> Solving mysteries or uncovering conspiracies.</li>
+    <li><strong class="viridis-light">Tragedy and Inevitability:</strong> Facing unavoidable negative outcomes.</li>
+    <li><strong class="viridis-light">Conflict with Supernatural or Unknown Forces:</strong> Sci-fi or supernatural challenges.</li>
+    <li><strong class="viridis-light">Comedy in Domestic Life:</strong> Everyday humor within family life.</li>
+    <li><strong class="viridis-light">Social Rebellion or Fight Against Oppression:</strong> Challenging societal norms or systems.</li>
+    <li><strong class="viridis-light">Fantasy or Science Fiction Quest:</strong> Epic quests in fantastical or sci-fi worlds.</li>
+</ul>
+"""
     texts.format_text(text6)
+
+
+
+    # texts plot structure  
 
     text7 = """
     By transitioning from broad genres to these detailed plot structures, we aim to uncover the <em>storytelling formulas</em> that truly drive financial success. Up next, we’ll explore how these plot structures align with movie profitability and whether certain narratives consistently outperform others.
     """
-    texts.format_text(text7)
+    texts.format_text(text7)  
 
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        components.html("""
+        <div class="tenor-gif-embed" data-postid="3555030" data-share-method="host" data-aspect-ratio="1.38889" data-width="100%">
+            <a href="https://tenor.com/view/money-rich-cash-rolling-in-the-dough-the-s-impsons-gif-3555030">Money GIF</a> from 
+            <a href="https://tenor.com/search/money-gifs">Money GIFs</a>
+        </div> 
+        <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+    """, height=300)  
+    texts.format_text("""<div style="text-align: center;"><em>As Homer Simpson here, a director want its plot structure to be profitable right?</em></div>""")  
+    
 def text_median_profit_intro():
     apply_gradient_color_small("Plot-tential Earnings: Which Stories Strike Gold?")
     texts.format_text("""
@@ -590,7 +443,15 @@ def text_conclusion():
     texts.format_text("""The plot structures "Conflict with Supernatural or Unknown Forces", "Comedy of Errors or Misadventure" and "Hero's Journey 
                       and "Transformation" are the most represented ones. Drama Comedy and Action are the most represented genres, as here, 
                       889 Drama movies are categorized in "Hero's Journey and Transformation"
+                      """)  
+
+    texts.format_text("""Logically, taking the example of the plot structure "Comedy of Errors or Misadventure", 
+                      it is more likely to find Comedy or Drama movies in this category of plot structure ! It works well !  
+                      What about what brings the scenarios and plot structure to life, the directors ? 
                       """)
+      
+
+    apply_gradient_color_small("Spotlight on Top Directors and Their Go-To Storylines")
 
 # --- UTILS --- #
 
@@ -734,12 +595,12 @@ def text_network_intro():
         }
         </style>
         <div class="text-content">
-            <h2 id="spotlight-directors" class="title-viridis-light">Spotlight on Top Directors and Their Go-To Storylines</h2>
             We want to explore the connection between plot types and commercial success. For this reason, we looked at who brings these plots to life—the directors who craft stories that resonate with audiences.
             In our network graph, directors are represented by blue nodes and plot structures by green. Each node's size reflects the total adjusted profit associated with that director or plot structure, providing a bit more insight into their commercial impact.
         </div>
     """, unsafe_allow_html=True)
-    
+
+
 def text_network_conclusion():
     st.markdown("""
     <style>
@@ -839,11 +700,14 @@ def text_network_conclusion():
         color: #31708f;
     }
     </style>
-    <div class="text-closing">
-        The real magic of cinema starts with a powerful story. Directors like Lucas, Spielberg, and Columbus proved that the right plot structure, combined with strong execution, can create unforgettable experiences that audiences love—and box offices celebrate.
-        <p class="highlight">
+    <div style="text-align:center; font-size:18px; margin:20px;">
+        The real magic of cinema starts with a powerful story. Directors like Lucas, 
+        Spielberg, and Columbus proved that the right plot structure, combined with strong execution, 
+        can create unforgettable experiences that audiences love—and box offices celebrate. 
+        But now, is it possible to have a model that will predict the profitability of a movie based on its plot structure or genre ? 
+        Can we find this so awaited Holy Grail of making a profitable movie ?
+        <p style="font-weight:bold; color:#31708f; font-size:24px; margin-top:20px;">
+            So, what’s the next story that will captivate the world, and can we predict its profitability ? ✨
         </p>
     </div>
     """, unsafe_allow_html=True)
-
-    st.markdown("---")

@@ -426,11 +426,6 @@ def text_conclusion_profit():
                       Overall, it looks like some genres know how to make their money work harder!
                       """)
     
-    texts.format_text("""
-        <div style="text-align:center;">
-     Overall, it looks like some genres know how to make their money work harder!
-        </div>
-    """)
 def text_intro_time_series():
     apply_gradient_color_small("Profit Through the Ages")
     texts.format_text(""" Now that we've got a snapshot of the genres by median profit, let's turn our attention to how these profits have evolved over time. By examining 
@@ -495,8 +490,6 @@ def text_conclusion_time_series():
         Let's dive deeper and analyze the plot structures of movies to uncover the secrets behind their success!
     </div>
 """)  
-
-
 
 
 #### UTILS ####
